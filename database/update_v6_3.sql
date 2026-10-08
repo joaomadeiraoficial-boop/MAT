@@ -1,0 +1,9 @@
+USE mat_temporis_lab;
+
+ALTER TABLE marcos
+  ADD COLUMN IF NOT EXISTS inventores TEXT NULL AFTER origem,
+  ADD COLUMN IF NOT EXISTS organizacao VARCHAR(500) NULL AFTER inventores,
+  ADD COLUMN IF NOT EXISTS ambiente VARCHAR(120) NULL AFTER organizacao;
+
+ALTER TABLE marcos_raw MODIFY COLUMN raw_source TEXT NULL;
+ALTER TABLE fontes MODIFY COLUMN nome VARCHAR(500) NOT NULL;

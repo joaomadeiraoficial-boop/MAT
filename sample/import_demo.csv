@@ -1,0 +1,7 @@
+nome;ano;categoria;fonte;pais;cidade;civilizacao;descricao
+Máquina a vapor;1769;Energia e indústria;Base demonstrativa;Reino Unido;;Europa Industrial;Marco demonstrativo para testar importação e revisão.
+Penicilina;1928;Medicina;Base demonstrativa;Reino Unido;Londres;;Descoberta associada a Alexander Fleming.
+Transistor;1947;Eletrônica;Base demonstrativa;Estados Unidos;Murray Hill;;Marco demonstrativo de eletrônica.
+ARPANET;1969;Comunicação;Base demonstrativa;Estados Unidos;;;Rede precursora da Internet.
+World Wide Web;1989;Computação e comunicação;Base demonstrativa;Suíça;Genebra;;Marco demonstrativo para revisão.
+WWW;1989;Computação e comunicação;Outra base demonstrativa;Suíça;Genebra;;Registro propositalmente duplicado para testar a detecção.

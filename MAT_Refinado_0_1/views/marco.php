@@ -1,0 +1,23 @@
+<?php $m=find_marker((int)($_GET['id']??0));if(!$m){http_response_code(404);echo '<div class="empty-box">Dossiê não encontrado. <a href="'.mat_url('acervo').'">Voltar ao acervo ↗</a></div>';return;} ?>
+<div class="dossier-top"><a href="<?=mat_url('acervo')?>" class="back-link">← VOLTAR AO ACERVO</a><span>DOSSIÊ Nº <?=str_pad((string)$m['id'],4,'0',STR_PAD_LEFT)?> <i>◆</i> <?=strtoupper(status_text($m['status']))?></span></div>
+<header class="dossier-heading"><div class="section-overline"><span class="category-dot <?=cat_tone((string)$m['categoria'])?>"></span> <?=h(strtoupper((string)$m['categoria']))?> <span class="overline-sep">/</span> <?=h($m['periodo'])?></div><h1><?=h($m['titulo'])?></h1><p><?=h($m['descricao'])?></p></header>
+<div class="dossier-layout"><div class="dossier-main"><div class="dossier-plate"><?php if(!empty($m['imagem_url']) && preg_match('~^https://~i',(string)$m['imagem_url'])): ?><img class="plate-image" src="<?=h($m['imagem_url'])?>" alt="Ilustração associada ao acontecimento" loading="lazy" referrerpolicy="no-referrer"><?php endif;?><div class="plate-number">MAT / REGISTRO HISTÓRICO</div><div class="plate-orbit"><span><?=yfmt((int)$m['ano'])?></span></div><span class="plate-caption"><?=h($m['local']?:'ORIGEM NÃO DOCUMENTADA')?></span></div>
+<div class="paper-panel dossier-section"><div class="panel-head"><span>NOTAS DE PESQUISA</span><span>01 / 03</span></div><h2>O acontecimento</h2><p><?=nl2br(h($m['detalhes']?:$m['descricao']))?></p><div class="panel-head panel-head-bottom"><span>CRITÉRIO DE INCLUSÃO</span></div><p><?=nl2br(h($m['criterio_inclusao']?:'Pendente de documentação.'))?></p></div>
+</div><aside class="dossier-aside"><section class="data-ledger"><div class="panel-head"><span>FICHA DE ACERVO</span><span>02 / 03</span></div>
+<?php foreach([['Data',yfmt((int)$m['ano'])],['Precisão',$m['precisao_data']],['Período',$m['periodo']],['Área',$m['categoria']],['Local',$m['local']?:'Não informado'],['Civilização',$m['civilizacao']?:'Não informado'],['Criador',$m['criador']?:'Não informado'],['Situação',status_text($m['status'])]] as $field):?><div class="ledger-row"><span><?=h($field[0])?></span><strong><?=h((string)$field[1])?></strong></div><?php endforeach;?></section>
+<section class="source-ledger"><div class="panel-head"><span>PROVENIÊNCIA</span><span>03 / 03</span></div><p><?=h($m['fonte']?:'Sem referência bibliográfica.')?></p><?php if($m['fonte_pagina']):?><small>Página: <?=h($m['fonte_pagina'])?></small><?php endif;?><?php if($m['referencia_url']):?><a href="<?=h($m['referencia_url'])?>" target="_blank" rel="noopener noreferrer">Abrir fonte original ↗</a><?php endif;?><div class="status-note">ⓘ <?=($m['status']==='aprovado'?'Registro aprovado sob protocolo local experimental.':'Registro ainda não integra a série científica validada.')?></div></section>
+<?php if(is_admin()):?><a class="btn btn-dark btn-full" href="<?=mat_url('editar',['id'=>$m['id']])?>">Editar dossiê ↗</a><?php endif;?></aside></div>
+
+<div class="paper-panel research-dossier-addendum"><div class="panel-head"><span>PARECER CIENTÍFICO</span><span>V6.2 · RASTREABILIDADE</span></div>
+<div class="research-keyline"><span>Escopo</span><strong><?=h(($m['elegibilidade_temporis']??'revisar'))?> · <?=!empty($m['escopo_revisado'])?'revisado':'pendente'?></strong></div>
+<div class="research-keyline"><span>Inclusão na Têmporis</span><strong><?=!empty($m['incluir_temporis'])?'Autorizada':'Não autorizada'?></strong></div>
+<p><?=nl2br(h($m['motivo_escopo']??'Aguardando justificativa metodológica.'))?></p>
+<div class="panel-head"><span>VÍNCULOS DOCUMENTAIS</span><span><?=count(linked_sources((int)$m['id']))?> FONTES</span></div>
+<?php foreach(linked_sources((int)$m['id']) as $source):?><div class="research-keyline"><span><?=h($source['papel'])?></span><strong><?=h($source['titulo'])?> <?=h($source['pagina']?'(p. '.$source['pagina'].')':'')?></strong></div><?php endforeach;?>
+<?php if(is_admin()):?><p><a class="text-link" href="<?=mat_url('triagem',['id'=>$m['id']])?>">Rever escopo ↗</a> &nbsp; <a class="text-link" href="<?=mat_url('fontes',['marco_id'=>$m['id']])?>">Adicionar fonte ↗</a></p><?php endif;?></div>
+
+<?php if(is_admin() && !empty($m['import_item_id'])): $raw=source_payload((int)$m['import_item_id']);if($raw): ?>
+<details class="paper-panel research-raw" style="margin-top:21px"><summary>PROVENIÊNCIA DE IMPORTAÇÃO · ver registro bruto</summary>
+<p>Origem: lote #<?=h((string)$raw['lote_id'])?> · <?=h($raw['arquivo_nome'])?> · linha <?=h((string)$raw['numero_linha'])?></p>
+<pre><?=h(json_encode(json_decode($raw['bruto_json'],true),JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE))?></pre></details>
+<?php endif;endif; ?>

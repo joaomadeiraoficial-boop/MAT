@@ -1,0 +1,27 @@
+MAT — OBSERVATÓRIO DO TEMPO | V6.2 INTEGRADA
+
+O NOVO MAT MANTEVE A IDENTIDADE VISUAL DO OBSERVATÓRIO.
+O LABORATÓRIO CIENTÍFICO DO MAT v6 FOI INTEGRADO EM MÓDULOS.
+
+1. PARA CONHECER O VISUAL AGORA:
+   Abra ABRIR_PREVIA.html. É uma prévia offline, somente visual.
+
+2. PARA INSTALAR EM UM XAMPP NOVO:
+   Copie MAT_Observatorio_v6_2_Integrado para C:\xampp\htdocs\.
+   Importe database/schema.sql no phpMyAdmin para criar o banco independente mat_observatorio.
+   Copie config.example.php para config.local.php e crie o usuário administrador conforme README.md.
+   Acesse http://localhost/MAT_Observatorio_v6_2_Integrado/
+
+3. SE VOCÊ JÁ INSTALOU O OBSERVATÓRIO 6.1:
+   Faça BACKUP antes. Substitua arquivos de aplicação e execute database/update_v6_2.sql UMA VEZ.
+
+4. PARA MIGRAR O MAT TÊMPORIS LAB ANTIGO:
+   Leia README.md e docs/PARIDADE_E_MIGRACAO.md.
+   O importador copia registros APENAS PARA PREPARAÇÃO, sem aprovar notas ou alterar o banco antigo.
+
+5. PARA O GIT:
+   A branch sugerida é feature/observatorio-v6-2-integrado.
+   Inclua docs/ROADMAP_MAT_GIT.md no commit.
+
+ATENÇÃO: os dados de demonstração não constituem evidência científica validada.
+O banco real do MAT Lab NÃO estava dentro do ZIP enviado; apenas seu código, estrutura e exemplos.

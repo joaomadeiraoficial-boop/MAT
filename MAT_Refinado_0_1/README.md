@@ -71,3 +71,12 @@ Antes de cada commit, inspecione `git diff --cached --stat` e confirme que nenhu
 A marca `MAT — Observatório do Tempo` continua; **Versão Refinada 0.1** é o rótulo do novo ciclo e aparece nos títulos e no rodapé. Não confunda `0.1.0` (ciclo novo) com as versões internas legadas `6.2/6.8`, nem com validação científica do índice.
 
 O desenvolvimento seguinte começa pela **paridade funcional com o Lab antigo**, e não pelo módulo preditivo. Consulte a tabela LF01–LF25 do caderno técnico.
+
+### Atualização corretiva 0.1.1
+
+A série histórica foi corrigida para ordenar datas internamente e calcular `K_base`
+apenas com eventos até o ano-base. Notas fracionárias dos sete critérios agora
+são rejeitadas. Detalhes e regressões: `docs/CORRECOES_0_1_1.md`.
+
+As fórmulas e escalas originais **não foram alteradas**. Não houve migração de
+banco nesta revisão. Esta atualização não constitui validação científica.

@@ -65,3 +65,16 @@
 - **Em uma conversa futura:** começar por `docs/02_CADERNO_TECNICO.md` → seção «Estado e retomada»; consultar este roadmap; verificar `git status`, branch ativa e changelog antes de qualquer alteração.
 
 **Registro editorial:** este documento é deliberadamente geral. Contratos, escalas, esquema, matriz de funcionalidades e protocolo experimental pertencem ao caderno técnico.
+
+
+### Atualização corretiva (0.1.1 · 28/10/2026)
+
+- [x] Corrigida a dependência da ordem dos marcos em `K_base`.
+- [x] Impedido truncamento silencioso de notas das sete rubricas.
+- [x] Criadas regressões para datas a.C., eventos futuros e valores inválidos.
+- [ ] **M4 permanece parcial**: falta comparar formalmente os métodos A e B,
+  fixar escalas, pesos e parâmetros no protocolo científico.
+- [ ] **M1 permanece pendente**: paridade funcional com o Têmporis Lab antigo.
+- [ ] Validação PHP+MySQL no XAMPP e testes de concorrência permanecem pendentes.
+
+Relatório detalhado: `docs/CORRECOES_0_1_1.md`.

@@ -1,0 +1,13 @@
+/config.local.php
+/uploads/*
+!/uploads/.gitkeep
+/.env
+/.idea/
+/.vscode/
+/vendor/
+/node_modules/
+*.sql.gz
+*.dump
+*.bak
+*.log
+/data/private/

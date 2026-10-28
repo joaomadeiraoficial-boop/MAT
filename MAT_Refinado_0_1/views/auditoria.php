@@ -1,0 +1,5 @@
+<header class="page-heading"><div class="section-overline">LABORATÓRIO / RASTREABILIDADE</div><h1>O histórico <em>das decisões.</em></h1><p>Uma avaliação só pode ser reproduzida quando sabemos o que foi alterado, quando e por quem. Aqui ficam registradas as mudanças feitas neste Observatório.</p></header>
+<?php if(!is_admin()):?><div class="empty-box">A trilha contém informações de revisão e exige acesso do pesquisador. <a href="<?=mat_url('login')?>">Entrar ↗</a></div>
+<?php elseif(!db()):?><div class="empty-box">Banco de dados indisponível.</div>
+<?php else:?><div class="paper-panel"><div class="panel-head"><span>ÚLTIMAS 100 ALTERAÇÕES</span><span>TRILHA DE PESQUISA</span></div>
+<?php foreach(audit_rows() as $event):?><div class="audit-entry"><span>#<?=$event['id']?> · <?=h($event['criado_em'])?></span><div><strong><?=h($event['operacao'])?></strong><p><?=h($event['titulo']??'Registro não encontrado')?> — <?=h($event['revisor']??'Sistema / não informado')?></p></div><a href="<?=mat_url('marco',['id'=>$event['marco_id']])?>">Dossiê ↗</a></div><?php endforeach;?><?php if(!audit_rows()):?><p>Nenhuma revisão registrada.</p><?php endif;?></div><?php endif;?>

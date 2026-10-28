@@ -334,3 +334,18 @@ A tag `refinado-v0.1.0` só será aplicada depois de revisar a branch e concluir
 - OECD/JRC (2008). *Handbook on Constructing Composite Indicators*.
 
 > As fontes históricas e metodológicas devem ser citadas conforme sua efetiva utilização. Não confundir bibliografia planejada com referências já analisadas integralmente.
+
+
+---
+
+### Registro de manutenção — 28/10/2026 · Refinado 0.1.1
+
+Correções pontuais, registradas em [`CORRECOES_0_1_1.md`](CORRECOES_0_1_1.md):
+ordenação cronológica no cálculo da Têmporis, cálculo restrito de `K_base`,
+rejeição de datas inválidas no motor e validação estrita de rubricas 0–3.
+As definições científicas dos métodos A/B, seus pesos, o corte temporal e
+os expoentes **não foram calibrados nem alterados** nesta manutenção.
+
+A versão antiga permanece como referência de paridade; o cálculo B por sete critérios
+continua **não integrado ao motor principal**. Testes unitários e carga sintética
+passaram sem driver MySQL. Testes reais no XAMPP são pendência explícita.

@@ -21,6 +21,7 @@
     <div class="art-title"><span>MAT</span><small>ESTUDO Nº 001<br>O MAPA NÃO É O TERRITÓRIO</small></div>
  </section>
 </div>
+<?php require __DIR__ . '/mat_acessos_inicio.php'; ?>
 <section class="metric-band" aria-label="Indicadores do acervo">
  <div class="metric-cell"><span class="metric-label">01 / MARCOS DOCUMENTADOS</span><strong><?=short_num($stats['total'])?></strong><small>Registros no acervo <?=site_mode()==='demonstracao'?'ilustrativo':'local'?></small></div>
  <div class="metric-cell"><span class="metric-label">02 / AMPLITUDE HISTÓRICA</span><strong class="metric-date"><?=$stats['min_year']===null?'—':yfmt((int)$stats['min_year'])?></strong><small>Primeiro ponto da cronologia</small></div>

@@ -1,0 +1,78 @@
+<?php
+declare(strict_types=1);
+/** Corrige links sem substituir todo o layout existente. Faz backup, e idempotente. */
+if(PHP_SAPI!=='cli'){http_response_code(403);exit('Somente CLI');}
+$root=dirname(__DIR__);
+$header=$root.'/views/header.php';
+$home=$root.'/views/mat_acessos_inicio.php';
+$landing=$root.'/views/observatorio.php';
+$repository=$root.'/app/repository.php';
+$changes=[];
+$write=static function(string $file,string $old,string $new)use(&$changes): void {
+    if($old!==$new)$changes[$file]=[$old,$new];
+};
+if(!is_file($header)){fwrite(STDERR,"Arquivo de menu ausente: $header\n");exit(2);}
+$s=file_get_contents($header);
+// O atalho de demonstração deve desaparecer, inclusive quando injetado por v0.7.
+$s=preg_replace('~\s*<\?php\s+if\s*\(is_file\(MAT_ROOT\s*\.\s*[\'\"]/?resultado_temporis_piloto\.php[\'\"]\)\):\s*\?>\s*<a\b[^>]*href=[\'\"]resultado_temporis_piloto\.php[\'\"][^>]*>.*?</a>\s*<\?php\s+endif;\s*\?>~si','',$s);
+// Padrão das barras laterais das versões MAT 0.1-0.2.
+if(!str_contains($s,'href="triagem_300_reais.php"')){
+    $link='   <?php if (is_admin() && is_file(MAT_ROOT . "/triagem_300_reais.php")): ?><a href="triagem_300_reais.php" class="nav-item"><span class="nav-glyph">◎</span><span>Triagem real dos 300</span></a><?php endif; ?>' . "\n";
+    $anchor='<div class="rail-bottom">';
+    if(str_contains($s,$anchor))$s=str_replace($anchor,$link.$anchor,$s);
+    else fwrite(STDERR,"[AVISO] Menu sem ponto de insercao. Use o link direto de triagem.\n");
+}
+$s=str_replace("'MODO DE LEITURA / DEMO'","'BANCO DESCONECTADO'",$s);
+$s=str_replace('<strong>Acervo ilustrativo.</strong> Banco MySQL ainda não conectado. Você pode explorar a interface, mas alterações exigem instalação. Nenhum marco de exemplo é tratado como evidência validada.',
+  '<strong>Banco MySQL desconectado.</strong> O MAT não exibirá exemplos fictícios como registros reais. Inicie o MySQL para consultar o acervo.', $s);
+$write($header,file_get_contents($header),$s);
+if(is_file($home)){
+    $old=file_get_contents($home);$s=$old;
+    $s=preg_replace('~\s*if\s*\(is_file\(MAT_ROOT\s*\.\s*[\'\"]/?resultado_temporis_piloto\.php[\'\"]\)\)\s*\{\s*\$matHomeActions\[\]\s*=\s*\[[^;]*resultado_temporis_piloto\.php[^;]*;\s*\}~si','',$s);
+    if(!str_contains($s,"['triagem_300_reais.php'")){
+        $needle="if (is_admin()) {";
+        if(str_contains($s,$needle))$s=str_replace($needle,$needle."\n    if (is_file(MAT_ROOT . '/triagem_300_reais.php')) \$matHomeActions[] = ['triagem_300_reais.php', 'Triagem real dos 300', 'Propostas de notas e progresso auditavel'];",$s);
+    }
+    $s=str_replace('Ensaio demonstrativo e sugestões de IA não constituem resultados históricos validados.', 'Candidatos e notas de IA permanecem pendentes de revisão científica.', $s);
+    $write($home,$old,$s);
+}
+if(is_file($landing)){
+    $old=file_get_contents($landing);$s=$old;
+    if(is_file($home) && !str_contains($s,'mat_acessos_inicio.php'))$s.="\n<?php require __DIR__.'/mat_acessos_inicio.php'; ?>\n";
+    $write($landing,$old,$s);
+}
+// Nunca mostrar sample_markers quando o banco real estiver fora do ar.
+if(is_file($repository)){
+    $old=file_get_contents($repository);$s=$old;
+    $start=strpos($s,'    if(!$pdo){');
+    $end=$start===false?false:strpos($s,'    $where=[];', $start);
+    if($start!==false&&$end!==false){
+        $s=substr($s,0,$start)."    if(!\$pdo) return ['rows'=>[], 'total'=>0, 'page'=>\$page, 'pages'=>1];\n".substr($s,$end);
+    }
+    $s=str_replace("if(!db()) {foreach(sample_markers() as \$m){if((int)\$m['id']===\$id) return \$m;}return null;}","if(!db()) return null;",$s);
+    $s=str_replace("if(!db()) return \$status ? array_values(array_filter(sample_markers(),fn(\$m)=>\$m['status']==\$status)) : sample_markers();","if(!db()) return [];",$s);
+    // Exclui somente registros explicitamente rotulados 'demonstracao' das paginas publicas.
+    $s=str_replace('    $where=[];$params=[];', '    $where=["status <> \'demonstracao\'"];$params=[];', $s);
+    $s=str_replace('SELECT * FROM marcos WHERE id = ? LIMIT 1', "SELECT * FROM marcos WHERE id = ? AND status <> \\'demonstracao\\' LIMIT 1", $s);
+    $s=str_replace('FROM marcos m ORDER BY ano ASC,id ASC', "FROM marcos m WHERE m.status <> \\'demonstracao\\' ORDER BY ano ASC,id ASC", $s);
+    $write($repository,$old,$s);
+}
+if($changes===[]){echo "MAT REAL: menu e interface ja configurados.\n";exit(0);}
+$backup=dirname($root).'/.mat-backups-modo-real';
+if(!is_dir($backup)&&!mkdir($backup,0750,true)&&!is_dir($backup))throw new RuntimeException('Falha na pasta de backup');
+file_put_contents($backup.'/.htaccess',"Require all denied\nDeny from all\n");
+$suffix=date('Ymd-His').'-'.getmypid();
+$created=[];
+foreach($changes as $file=>[$old,$new]){
+    $target=$backup.'/'.basename($file).'-'.$suffix.'.bak';
+    if(!copy($file,$target))throw new RuntimeException('Nao consegui fazer backup: '.$file);
+    $created[$file]=$target;
+}
+foreach($changes as $file=>[$old,$new]){
+    if(file_put_contents($file,$new,LOCK_EX)===false){
+        foreach($created as $dest=>$source)copy($source,$dest);
+        throw new RuntimeException('Falha ao gravar, originais restaurados: '.$file);
+    }
+    echo '[OK] '.$file.' | backup: '.basename($created[$file])."\n";
+}
+echo "MAT REAL: MENU ATUALIZADO, SIMULACOES OCULTADAS, NENHUM REGISTRO DO BANCO ALTERADO.\n";

@@ -10,18 +10,8 @@ function get_categories(): array {
 function get_periods(): array { return ['Pré-história','Antiguidade','Idade Média','Idade Moderna','Era Industrial','Era Digital','Era Contemporânea']; }
 function get_markers(array $filter=[], int $page=1, int $perPage=12): array {
     $pdo=db(); $page=max(1,$page);$perPage=max(1,min(100,$perPage));$offset=($page-1)*$perPage;
-    if(!$pdo){
-        $rows=array_filter(sample_markers(),static function($r)use($filter){
-            if(!empty($filter['q']) && stripos(implode(' ',[$r['titulo'],$r['descricao'],$r['local']]),(string)$filter['q'])===false) return false;
-            if(!empty($filter['categoria']) && $r['categoria']!==$filter['categoria'])return false;
-            if(!empty($filter['periodo']) && $r['periodo']!==$filter['periodo'])return false;
-            if(!empty($filter['status']) && $r['status']!==$filter['status'])return false;
-            return true;
-        });
-        usort($rows,fn($a,$b)=>($a['ano']<=>$b['ano']));$total=count($rows);
-        return ['rows'=>array_slice($rows,$offset,$perPage),'total'=>$total,'page'=>$page,'pages'=>max(1,(int)ceil($total/$perPage))];
-    }
-    $where=[];$params=[];
+    if(!$pdo) return ['rows'=>[], 'total'=>0, 'page'=>$page, 'pages'=>1];
+    $where=["status <> 'demonstracao'"];$params=[];
     if(!empty($filter['q'])){ $where[]='(titulo LIKE :q1 OR descricao LIKE :q2 OR local LIKE :q3)';$q='%'.trim((string)$filter['q']).'%';$params+=['q1'=>$q,'q2'=>$q,'q3'=>$q]; }
     if(!empty($filter['categoria'])){$where[]='categoria = :categoria';$params['categoria']=$filter['categoria'];}
     if(!empty($filter['periodo'])){$where[]='periodo = :periodo';$params['periodo']=$filter['periodo'];}
@@ -36,13 +26,13 @@ function get_markers(array $filter=[], int $page=1, int $perPage=12): array {
 }
 function find_marker(int $id): ?array {
     if(!$id)return null;
-    if(!db()) {foreach(sample_markers() as $m){if((int)$m['id']===$id) return $m;}return null;}
-    $stmt=db()->prepare('SELECT * FROM marcos WHERE id = ? LIMIT 1');$stmt->execute([$id]);return $stmt->fetch() ?: null;
+    if(!db()) return null;
+    $stmt=db()->prepare('SELECT * FROM marcos WHERE id = ? AND status <> \'demonstracao\' LIMIT 1');$stmt->execute([$id]);return $stmt->fetch() ?: null;
 }
 function all_markers(?string $status = null): array {
-    if(!db()) return $status ? array_values(array_filter(sample_markers(),fn($m)=>$m['status']===$status)) : sample_markers();
+    if(!db()) return [];
     if($status){$s=db()->prepare('SELECT m.*, (SELECT COUNT(*) FROM marco_fontes mf WHERE mf.marco_id=m.id) AS fonte_vinculada FROM marcos m WHERE status=? ORDER BY ano ASC,id ASC');$s->execute([$status]);return $s->fetchAll();}
-    return db()->query('SELECT m.*, (SELECT COUNT(*) FROM marco_fontes mf WHERE mf.marco_id=m.id) AS fonte_vinculada FROM marcos m ORDER BY ano ASC,id ASC')->fetchAll();
+    return db()->query('SELECT m.*, (SELECT COUNT(*) FROM marco_fontes mf WHERE mf.marco_id=m.id) AS fonte_vinculada FROM marcos m WHERE m.status <> \'demonstracao\' ORDER BY ano ASC,id ASC')->fetchAll();
 }
 function app_stats(): array {
     $rows=all_markers();$cats=[];$periods=[];$states=['aprovado'=>0,'pendente'=>0,'importado'=>0,'demonstracao'=>0,'rejeitado'=>0];

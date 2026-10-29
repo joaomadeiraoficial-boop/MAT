@@ -37,6 +37,7 @@
    <a href="<?=mat_url('laboratorio')?>" class="nav-item <?=$navPage==='laboratorio'?'active':''?>"><span class="nav-glyph">⌬</span> <span>Laboratório científico</span></a>
    <a href="mat_proj/" class="nav-item"><span class="nav-glyph">↗</span> <span>MAT-Proj · Projeções</span></a>
    <a href="<?=mat_url('importar')?>" class="nav-item <?=$navPage==='importar'?'active':''?>"><span class="nav-glyph">⇣</span> <span>Importar cronologias</span></a>
+   <a href="assistente_ia.php" class="nav-item"><span class="nav-glyph">✦</span> <span>Assistente de triagem IA</span></a>
    <a href="<?=mat_url('triagem')?>" class="nav-item <?=$navPage==='triagem'?'active':''?>"><span class="nav-glyph">◈</span> <span>Triagem de escopo</span></a>
    <a href="<?=mat_url('fontes')?>" class="nav-item <?=$navPage==='fontes'?'active':''?>"><span class="nav-glyph">✣</span> <span>Fontes &amp; vínculos</span></a>
    <a href="<?=mat_url('duplicatas')?>" class="nav-item <?=$navPage==='duplicatas'?'active':''?>"><span class="nav-glyph">≋</span> <span>Conferir duplicatas</span></a>
@@ -48,9 +49,19 @@
    <a href="<?=mat_url('login')?>" class="nav-item <?=$navPage==='login'?'active':''?>"><span class="nav-glyph">⌑</span> <span>Acesso do pesquisador</span></a>
    <?php endif; ?>
  </nav>
- <div class="rail-bottom">
+  <!-- MAT_NAV_EXTENSIONS_V07_START -->
+ <div class="rail-divider"></div>
+ <div class="rail-label">FERRAMENTAS DA PESQUISA</div>
+ <nav class="nav-list nav-small" aria-label="Ferramentas da pesquisa">
+ <?php if (is_admin()): ?>
+ <?php endif; ?>
+ </nav>
+ <!-- MAT_NAV_EXTENSIONS_V07_END -->
+   <?php if (is_admin() && is_file(MAT_ROOT . "/experimento_temporis.php")): ?><a href="experimento_temporis.php" class="nav-item"><span class="nav-glyph">∑</span><span>Teste histórico Têmporis</span></a><?php endif; ?>
+   <?php if (is_admin() && is_file(MAT_ROOT . "/triagem_300_reais.php")): ?><a href="triagem_300_reais.php" class="nav-item"><span class="nav-glyph">◎</span><span>Triagem real dos 300</span></a><?php endif; ?>
+<div class="rail-bottom">
     <div class="rail-quote">“A história da humanidade é também a história das ferramentas que inventa.”</div>
-    <div class="rail-foot"><span class="live-dot"></span> <?=site_mode()==='mysql'?'ACERVO CONECTADO':'MODO DE LEITURA / DEMO'?><span>Refinada 0.1 · núcleo 6.2.1</span></div>
+    <div class="rail-foot"><span class="live-dot"></span> <?=site_mode()==='mysql'?'ACERVO CONECTADO':'BANCO DESCONECTADO'?><span>Refinada 0.1 · núcleo 6.2.1</span></div>
  </div>
 </aside>
 <div class="main-column">
@@ -61,4 +72,4 @@
 </header>
 <main id="conteudo" class="main-content">
 <?php if($flash):?><div class="flash <?=h($flash['type'])?>" role="status"><?=h($flash['message'])?></div><?php endif;?>
-<?php if(site_mode()==='demonstracao'):?><div class="data-notice"><span class="data-notice-dot">!</span><span><strong>Acervo ilustrativo.</strong> Banco MySQL ainda não conectado. Você pode explorar a interface, mas alterações exigem instalação. Nenhum marco de exemplo é tratado como evidência validada.</span><a href="<?=mat_url('metodo')?>">Entenda o estado do projeto ↗</a></div><?php endif;?>
+<?php if(site_mode()==='demonstracao'):?><div class="data-notice"><span class="data-notice-dot">!</span><span><strong>Banco MySQL desconectado.</strong> O MAT não exibirá exemplos fictícios como registros reais. Inicie o MySQL para consultar o acervo.</span><a href="<?=mat_url('metodo')?>">Entenda o estado do projeto ↗</a></div><?php endif;?>

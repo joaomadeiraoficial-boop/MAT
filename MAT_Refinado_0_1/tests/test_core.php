@@ -15,6 +15,11 @@ $series=temporis_series($set,1900);
 check_test(count($series['series'])===2,'Duas observacoes no indice');
 check_test(abs((float)$series['t_latest']-100)<0.000001,'Indice no ano base = 100');
 check_test($series['k_base']>0,'K_base positivo com amostra elegivel');
-check_test(get_markers(['q'=>'penicilina'])['total']>=1 || db()!==null,'Filtro de busca no modo demonstracao');
+if (db() === null) {
+    check_test(get_markers(['q'=>'penicilina'])['total']===0, 'Sem banco, busca nao inventa marcos');
+} else {
+    $busca = get_markers(['q'=>'penicilina']);
+    check_test(isset($busca['total'], $busca['rows']) && is_array($busca['rows']), 'Busca no acervo real retorna estrutura valida');
+}
 check_test(hash_equals(csrf_token(),csrf_token()),'Protecao CSRF estavel por sessao');
 echo "TESTES DO NUCLEO CONCLUIDOS\n";

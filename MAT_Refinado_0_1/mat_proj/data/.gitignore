@@ -1,0 +1,3 @@
+# Dados reais baixados localmente e seu registro de coleta não são versionados por padrão.
+/owid_internet.csv
+/owid_metadata_local.txt

@@ -35,6 +35,7 @@
  <div class="rail-label">ESTAÇÃO DE TRABALHO</div>
  <nav class="nav-list nav-small" aria-label="Administração">
    <a href="<?=mat_url('laboratorio')?>" class="nav-item <?=$navPage==='laboratorio'?'active':''?>"><span class="nav-glyph">⌬</span> <span>Laboratório científico</span></a>
+   <a href="mat_proj/" class="nav-item"><span class="nav-glyph">↗</span> <span>MAT-Proj · Projeções</span></a>
    <a href="<?=mat_url('importar')?>" class="nav-item <?=$navPage==='importar'?'active':''?>"><span class="nav-glyph">⇣</span> <span>Importar cronologias</span></a>
    <a href="<?=mat_url('triagem')?>" class="nav-item <?=$navPage==='triagem'?'active':''?>"><span class="nav-glyph">◈</span> <span>Triagem de escopo</span></a>
    <a href="<?=mat_url('fontes')?>" class="nav-item <?=$navPage==='fontes'?'active':''?>"><span class="nav-glyph">✣</span> <span>Fontes &amp; vínculos</span></a>

@@ -1,0 +1,20 @@
+MAT-PROJ 0.1.0 — LABORATORIO DE PROJECOES
+
+1) Extrair ZIP NA PASTA:
+   D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git
+
+2) O arquivo ja tem a estrutura MAT_Refinado_0_1\mat_proj.
+   Nao extrair DENTRO de MAT_Refinado_0_1, senao duplica a pasta.
+
+3) Abrir com Apache ligado:
+   http://localhost/MAT_Refinado_Git/MAT_Refinado_0_1/mat_proj/
+
+4) Testar no PowerShell:
+   cd "D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git"
+   & "D:\Faculdade nero\xampp\php\php.exe" .\MAT_Refinado_0_1\mat_proj\tests\test_engine.php
+
+5) Os dados incluidos sao SINTETICOS, inventados apenas para demonstracao.
+   Para dados reais, use o botao Baixar dados reais (OWID) e carregue o CSV.
+   Leia mat_proj\README.md para download automatico e detalhes cientificos.
+
+ATENCAO: Nao altera Têmporis, MySQL ou os arquivos preexistentes do MAT.

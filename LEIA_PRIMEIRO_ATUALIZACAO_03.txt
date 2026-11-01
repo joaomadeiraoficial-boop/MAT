@@ -1,0 +1,33 @@
+MAT - ATUALIZACAO CIENTIFICA 03 (incremental)
+
+Extrair o conteudo DESTE ZIP diretamente em:
+D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git
+
+Requisito: atualizacao 02 ja instalada (AuditoriaAmbiguidade.php).
+Nao extraia em MAT_Refinado_0_1, pois a estrutura ja esta dentro do ZIP.
+
+1) Teste offline:
+& "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\tests\test_pipeline_cientifico.php"
+
+2) Ligue MySQL e execute diagnostico (SEM custos de API):
+& "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\cli\pipeline_cientifico.php" --modo=diagnostico
+
+3) API EXTERNA OPCIONAL (COM CUSTO; confirme precos e limites na sua conta):
+$env:MAT_OPENAI_API_KEY="SUA_CHAVE_AQUI"
+& "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\cli\pipeline_cientifico.php" --modo=api --limite=3 --modelo=gpt-4.1-mini
+Remove-Item Env:MAT_OPENAI_API_KEY
+
+4) Exportar relatorio (nao chama a API):
+& "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\cli\pipeline_cientifico.php" --modo=exportar
+
+SAIDA: diretorio privado da triagem (lote300/pipeline_relatorio.csv), fora do htdocs.
+NAO COPIAR CHAVE PARA config.local.php OU GITHUB.
+
+IMPORTANTE:
+- Sem pesquisa documental online embutida. A API apenas avalia o trecho existente.
+- Um trecho literal NAO confirma fonte historica ou independencia documental.
+- Nem uma proposta com 11 notas vira dado validado automaticamente.
+- O banco de marcos oficiais e formulas da Temporis nao sao alterados.
+- --refazer reprocessa, mas pode gerar custos extras; falhas sao salvas e exigem --refazer.
+- diagnostico cria/atualiza arquivos privados individuais; exportar nao altera propostas.
+- Requer extensao curl ativa e API OpenAI paga disponivel para chamada.

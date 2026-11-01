@@ -1,0 +1,19 @@
+MAT — ATUALIZACAO 04: DESBLOQUEIO DA IDENTIFICACAO ASSISTIDA
+
+Extraia este ZIP em: D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git
+Requer os arquivos das atualizacoes 02 e 03. Nao substitui arquivos existentes.
+
+1. Teste (na raiz do repositorio):
+& "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\tests\test_normalizacao_candidatos.php"
+
+2. Diagnostico com MySQL ligado (sem custo de API):
+& "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\cli\normalizar_candidatos.php" --modo=diagnostico
+
+3. Depois de configurar MAT_OPENAI_API_KEY no PowerShell, teste 3 (pode gerar cobranca):
+& "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\cli\normalizar_candidatos.php" --modo=api --limite=3 --modelo=gpt-4.1-mini
+
+Saidas: fora do htdocs, em MAT_IA_TRIAGEM_PRIVADA\lote300\normalizacao_*.json e normalizacao_relatorio.csv.
+
+IMPORTANTE: 'A revisar:' deixa de impedir IDENTIFICACAO por IA, mas continua impedindo APROVACAO e PONTUACAO oficial. Nao ha verificacao independente de fontes nesta etapa.
+
+Git: git add MAT_Refinado_0_1/app/NormalizacaoCandidatos.php MAT_Refinado_0_1/cli/normalizar_candidatos.php MAT_Refinado_0_1/tests/test_normalizacao_candidatos.php; git commit -m "feat: separa identificacao assistida de validacao cientifica"; git push

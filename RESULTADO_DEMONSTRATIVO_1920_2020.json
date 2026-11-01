@@ -1,0 +1,142 @@
+{
+    "status_cientifico": "DADOS_SIMULADOS_NAO_VALIDOS",
+    "metadata": {
+        "mode": "SIMULADO_NAO_VALIDADO",
+        "included": 189
+    },
+    "test_1920_2020": {
+        "origin": 1920,
+        "target": 2020,
+        "horizon": 100,
+        "n_train": 89,
+        "n_after_origin": 100,
+        "k_origin": 38.76444444444442,
+        "k_observed": 82.31999999999968,
+        "t_observed": 120.08473663661474,
+        "status": "comparavel",
+        "models": {
+            "media50": {
+                "label": "Média de pesos/ano nos 50 anos anteriores",
+                "status": "calculado",
+                "k_predicted": 64.89777777777776,
+                "t_predicted": 113.71532022880184,
+                "error_points": -6.369416407812892,
+                "absolute_error": 6.369416407812892,
+                "relative_error_percent": 5.304101575446024
+            },
+            "media100": {
+                "label": "Média de pesos/ano nos 100 anos anteriores",
+                "status": "calculado",
+                "k_predicted": 61.41333333333333,
+                "t_predicted": 112.24026760884098,
+                "error_points": -7.844469027773755,
+                "absolute_error": 7.844469027773755,
+                "relative_error_percent": 6.532444711530406
+            },
+            "tendencia100": {
+                "label": "Tendência das taxas nas duas metades de 50 anos",
+                "status": "calculado",
+                "k_predicted": 71.93635555555556,
+                "t_predicted": 116.47077064941399,
+                "error_points": -3.613965987200743,
+                "absolute_error": 3.613965987200743,
+                "relative_error_percent": 3.0095131891215035
+            }
+        },
+        "notes": [
+            "Notas podem ter sido atribuídas retrospectivamente com conhecimento posterior ao corte; isto deve ser auditado.",
+            "O índice observado é calculado pelo método e pela amostra aprovada, não uma verdade externa independente."
+        ]
+    },
+    "folds_anterior_ao_corte": [
+        {
+            "origin": 1799,
+            "target": 1899,
+            "models": {
+                "media50": {
+                    "label": "Média de pesos/ano nos 50 anos anteriores",
+                    "status": "calculado",
+                    "k_predicted": 26.56888888888888,
+                    "t_predicted": 130.25440924512537,
+                    "error_points": -7.3360356294777205,
+                    "absolute_error": 7.3360356294777205,
+                    "relative_error_percent": 5.331791488982844
+                },
+                "media100": {
+                    "label": "Média de pesos/ano nos 100 anos anteriores",
+                    "status": "calculado",
+                    "k_predicted": 23.52,
+                    "t_predicted": 125.6517265876747,
+                    "error_points": -11.938718286928392,
+                    "absolute_error": 11.938718286928392,
+                    "relative_error_percent": 8.676996645958285
+                },
+                "tendencia100": {
+                    "label": "Tendência das taxas nas duas metades de 50 anos",
+                    "status": "calculado",
+                    "k_predicted": 32.72764444444444,
+                    "t_predicted": 138.1729058269177,
+                    "error_points": 0.5824609523146194,
+                    "absolute_error": 0.5824609523146194,
+                    "relative_error_percent": 0.42332950725281937
+                }
+            }
+        },
+        {
+            "origin": 1819,
+            "target": 1919,
+            "models": {
+                "media50": {
+                    "label": "Média de pesos/ano nos 50 anos anteriores",
+                    "status": "calculado",
+                    "k_predicted": 32.666666666666664,
+                    "t_predicted": 126.14140452434532,
+                    "error_points": -4.772762404604208,
+                    "absolute_error": 4.772762404604208,
+                    "relative_error_percent": 3.645718806883986
+                },
+                "media100": {
+                    "label": "Média de pesos/ano nos 100 anos anteriores",
+                    "status": "calculado",
+                    "k_predicted": 28.746666666666673,
+                    "t_predicted": 121.70086630518583,
+                    "error_points": -9.2133006237637,
+                    "absolute_error": 9.2133006237637,
+                    "relative_error_percent": 7.037665089954699
+                },
+                "tendencia100": {
+                    "label": "Tendência das taxas nas duas metades de 50 anos",
+                    "status": "calculado",
+                    "k_predicted": 40.58506666666666,
+                    "t_predicted": 133.71858421374674,
+                    "error_points": 2.8044172847972106,
+                    "absolute_error": 2.8044172847972106,
+                    "relative_error_percent": 2.1421801403046317
+                }
+            }
+        }
+    ],
+    "summary_prior_folds": {
+        "media50": {
+            "label": "Média de pesos/ano nos 50 anos anteriores",
+            "n_folds": 2,
+            "mae": 6.054399017040964,
+            "rmse": 6.188565250838433,
+            "mape_percent": 4.488755147933415
+        },
+        "media100": {
+            "label": "Média de pesos/ano nos 100 anos anteriores",
+            "n_folds": 2,
+            "mae": 10.576009455346046,
+            "rmse": 10.66343994024637,
+            "mape_percent": 7.857330867956492
+        },
+        "tendencia100": {
+            "label": "Tendência das taxas nas duas metades de 50 anos",
+            "n_folds": 2,
+            "mae": 1.693439118555915,
+            "rmse": 2.02534158455316,
+            "mape_percent": 1.2827548237787254
+        }
+    }
+}

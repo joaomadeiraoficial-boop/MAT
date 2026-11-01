@@ -1,0 +1,27 @@
+MAT — Atualização científica 05 / Gemini gratuito (fase identificação)
+
+Extrair este ZIP dentro de: D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git
+Instale antes as atualizações 02 e 04 (já usadas em seu teste).
+
+ALTERAÇÕES
+- Substitui apenas a identificação de candidatos (normalização) por Gemini, sem cobrança automática.
+- Mantém limite de solicitações --limite=3 e reaproveita arquivos de resultados anteriores.
+- Bloqueia outros provedores nesta rotina para não usar a OpenAI paga sem querer.
+- Não altera fórmula ou aprovação Têmporis.
+
+1. Acesse https://aistudio.google.com/apikey e obtenha uma chave de projeto gratuito, SEM habilitar billing. Verifique modelo e cota no AI Studio.
+2. Na MESMA janela do PowerShell, execute:
+   $env:MAT_GEMINI_API_KEY = Read-Host 'Chave Gemini'
+3. Teste offline:
+   & 'D:\Faculdade nero\xampp\php\php.exe' '.\MAT_Refinado_0_1\tests\test_gemini_mat.php'
+4. Rode tres identificacoes (cota gratuita, se seu projeto/modelo forem elegiveis):
+   & 'D:\Faculdade nero\xampp\php\php.exe' '.\MAT_Refinado_0_1\cli\normalizar_candidatos.php' --modo=api --limite=3 --modelo=gemini-2.5-flash-lite
+5. Para ver o diagnostico (sem API):
+   & 'D:\Faculdade nero\xampp\php\php.exe' '.\MAT_Refinado_0_1\cli\normalizar_candidatos.php' --modo=diagnostico
+
+AVISOS
+- Uso gratuito depende de modelo, região, limites e estado de faturamento do SEU projeto; esta atualização não pode certificar billing.
+- Não envie trechos protegidos de livros ou material confidencial à API gratuita sem autorização.
+- A chave NÃO deve ser escrita nos arquivos e NÃO deve ser enviada ao Git.
+- Esta atualização NÃO implementa pesquisa independente de fontes nem pontuação dos 11 critérios.
+- O pipeline_cientifico.php anterior continua exclusivamente OpenAI; não rode em modo API.

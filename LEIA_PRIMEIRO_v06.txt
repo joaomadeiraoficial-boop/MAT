@@ -1,0 +1,32 @@
+MAT - CORRECAO DO ERRO RevisedMethodology not found (v0.6)
+================================================================
+Esta atualizacao corrige a dependencia na PAGINA WEB do ensaio.
+Nao altera o banco de dados, configuracoes, fontes nem a Têmporis oficial.
+
+1) Baixe e copie MAT_CORRECAO_TEMPORIS_PAGINA_v06.zip para:
+   D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git
+
+2) Abra o PowerShell do VS Code e execute:
+
+   cd "D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git"
+   Expand-Archive -LiteralPath ".\MAT_CORRECAO_TEMPORIS_PAGINA_v06.zip" -DestinationPath "." -Force
+
+3) Teste AS DUAS partes (o segundo teste simula a propria pagina web):
+
+   & "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\tests\test_temporis_piloto.php"
+   & "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\tests\test_pagina_temporis.php"
+
+4) Entre no MAT, atualize com Ctrl+F5 e abra:
+   http://localhost/MAT_Refinado_Git/MAT_Refinado_0_1/resultado_temporis_piloto.php
+
+O QUE A CORRECAO FAZ
+- Prioriza a classe oficial app/RevisedMethodology.php, se existir.
+- Se estiver faltando, usa uma copia do metodo MAT 0.2 SOMENTE NA DEMONSTRACAO.
+- Se a instalacao nao possuir o repositorio de avaliacoes revisadas,
+  marca o status real como 'Indisponivel' (nao inventa resultados).
+- Adiciona um teste de integracao da pagina, que faltava na v0.5.
+
+IMPORTANTE
+118,59 e resultado de NOTAS HIPOTETICAS para seis acontecimentos.
+Nao representa aceleracao tecnologica comprovada ou notas cientificas.
+A integraçao futura do modulo revisado oficial ao banco requer verificacao especifica.

@@ -1,0 +1,19 @@
+MAT — ATUALIZACAO INCREMENTAL 02: AUDITORIA DE AMBIGUIDADE
+
+1. Extraia o conteudo deste ZIP em:
+   D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git
+   (O ZIP ja contem a pasta MAT_Refinado_0_1.)
+2. Nenhum arquivo existente sera sobrescrito nesta atualizacao.
+3. Teste no PowerShell:
+   & "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\tests\test_auditoria_ambiguidades.php"
+4. Ligue o MySQL no XAMPP, certifique-se de que o lote 300 foi importado e execute:
+   & "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\cli\auditar_ambiguidades.php"
+5. A saida sera gravada na mesma pasta PRIVADA da triagem de 300, fora do Git/htdocs.
+6. Revise o CSV; nenhum marco e aprovado, nenhuma nota e alterada.
+
+Esta primeira entrega NAO inclui API externa. Ela cria o filtro deterministico para,
+na proxima etapa, enviar somente candidatos bem definidos para pesquisa documental
+e avaliação externa estruturada; a integracao nao deve transmitir dados sem
+autorizacao e configuracao apropriada.
+
+Git: antes de commitar, confira git status e proteja credenciais.

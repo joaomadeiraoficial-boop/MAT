@@ -1,0 +1,31 @@
+MAT - CORRECAO DO ERRO "Class RevisedMethodology not found"
+========================================================
+
+Esta atualizacao altera SOMENTE os 3 arquivos do assistente:
+  MAT_Refinado_0_1/app/AssistenteCientifico.php
+  MAT_Refinado_0_1/assistente_ia.php
+  MAT_Refinado_0_1/tests/test_assistente_ia.php
+
+Nao altera o banco MySQL, a Temporis, o bootstrap.php,
+o MAT-Proj, nem os dados da importacao.
+
+COMO APLICAR (Windows/PowerShell):
+1. Baixe MAT_CORRECAO_ASSISTENTE_IA_v03.zip
+2. No Explorador, copie o ZIP para:
+   D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git
+3. Execute no PowerShell:
+
+cd "D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git"
+Expand-Archive -LiteralPath ".\MAT_CORRECAO_ASSISTENTE_IA_v03.zip" -DestinationPath "." -Force
+& "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\tests\test_assistente_ia.php"
+
+4. Reabra ou atualize a pagina do Assistente de triagem (Ctrl+F5),
+   selecione um candidato com trecho documental e clique em analisar.
+
+Se o modelo retornar outro erro, capture a mensagem completa.
+
+NOTA CIENTIFICA:
+A rubrica revisada e carregada automaticamente quando instalada.
+Se ela nao existir, o ASSISTENTE usa apenas orientacoes de triagem
+copiadas da versao revisada, sem alterar ou recalcular a Temporis.
+As sugestoes continuam NAO VALIDADAS. Ollama nao foi testado aqui.

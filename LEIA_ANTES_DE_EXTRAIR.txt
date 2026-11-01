@@ -1,0 +1,27 @@
+MAT — ATUALIZAÇÃO DIRETA 01 (31/10/2026)
+
+DESTINO EXATO:
+D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git\
+
+Extraia o CONTEÚDO deste ZIP dentro da pasta acima.
+Ao perguntar, permita substituir MAT_Refinado_0_1\views\header.php.
+Não extraia dentro de MAT_Refinado_0_1: isso duplicaria a subpasta.
+
+ARQUIVOS:
+- MAT_Refinado_0_1\app\RevisedMethodology.php (novo; ponte de compatibilidade)
+- MAT_Refinado_0_1\views\header.php (atualizado; menu do resultado Têmporis piloto)
+
+NÃO ALTERA: banco de dados, marcos, notas, formulas, configuracoes ou .git.
+
+ANTES: feche arquivos em edição e execute git status na pasta do projeto.
+DEPOIS: teste a página, verifique git diff e faça commit.
+
+Comandos no PowerShell:
+cd "D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git"
+git status
+git diff --check
+git add MAT_Refinado_0_1/app/RevisedMethodology.php MAT_Refinado_0_1/views/header.php
+git commit -m "fix: corrige menu Temporis e compatibilidade da metodologia"
+git push
+
+ATENÇÃO: Este patch contém SOMENTE as duas correções auditadas. Não é o MAT 2.0.

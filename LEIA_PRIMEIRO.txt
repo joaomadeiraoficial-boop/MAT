@@ -1,0 +1,17 @@
+MAT v1.4 — Correcao do modo real + testes para Git
+
+Esta correcao nasceu de uma falha reproduzida em app/repository.php apos executar o ativador v1.0: o script colocou as aspas de 'demonstracao' dentro de uma string PHP de aspas simples, causando Parse error. Ha tambem teste antigo exigindo dados ilustrativos, que nao devem aparecer no modo real.
+
+Arquivos incluidos:
+  MAT_Refinado_0_1/cli/corrigir_backtest_real_v14.php
+  MAT_Refinado_0_1/tests/test_integracao_pagina_backtest.php
+  MAT_Refinado_0_1/tests/test_core.php
+
+A correcao faz backup de app/repository.php e do ativador quando modifica; cria .mat-backups-v14 com .htaccess; testa sintaxe e restaura se necessario. Nao altera MySQL, pontuacoes ou marcos. Nao instala dados ficticios.
+
+Instalar (ZIP extraido NA RAIZ MAT_Refinado_Git, e nao dentro da subpasta MAT_Refinado_0_1):
+  & "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\cli\corrigir_backtest_real_v14.php"
+  & "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\tests\test_integracao_pagina_backtest.php"
+  & "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\tests\test_core.php"
+
+Se algum teste falhar, NÃO envie ao GitHub; o teste imprime o erro real. O patch foi testado numa copia da v0.2+v1.0 em PHP 8.2 local; nao foi executado no Windows do usuario.

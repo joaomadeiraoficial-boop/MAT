@@ -16,7 +16,7 @@ final class TriagemLoteReal {
         $fromEnv=getenv('MAT_TRIAGEM_PRIVADA');
         if(is_string($fromEnv) && trim($fromEnv)!=='')return rtrim($fromEnv,"\\/");
         // No projeto atual: D:\Faculdade nero\MAT_IA_TRIAGEM_PRIVADA
-        return dirname(MAT_ROOT,4).DIRECTORY_SEPARATOR.'MAT_IA_TRIAGEM_PRIVADA';
+        return dirname(realpath(MAT_ROOT),4).DIRECTORY_SEPARATOR.'MAT_IA_TRIAGEM_PRIVADA';
     }
     public static function directory(bool $create=false): string {
         $dir=self::privateDir().DIRECTORY_SEPARATOR.'lote300';

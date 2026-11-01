@@ -1,0 +1,12 @@
+MAT — Atualizacao 06 (diagnostico de erro Gemini)
+
+1. Extraia este ZIP na pasta D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git.
+2. Substitua os dois arquivos PHP.
+3. No PowerShell, com chave NOVA configurada na variavel de ambiente MAT_GEMINI_API_KEY:
+   & "D:\Faculdade nero\xampp\php\php.exe" ".\MAT_Refinado_0_1\cli\normalizar_candidatos.php" --modo=api --limite=1 --modelo=gemini-2.5-flash-lite
+4. Envie somente a mensagem de erro, revisando se ha segredos antes de compartilhar.
+
+Este patch mostra a mensagem do Google sanitizada, limita seu comprimento e para o lote em erros HTTP que nao devem ser repetidos. Nao muda calculos, dados ou aprovacao da Temporis.
+Nao ha teste de conexao real neste pacote; revise a saida no seu ambiente.
+
+IMPORTANTE: Chaves previamente divulgadas devem ser revogadas.

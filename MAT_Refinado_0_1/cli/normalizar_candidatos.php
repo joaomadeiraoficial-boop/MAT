@@ -20,13 +20,14 @@ try {
  $folder=TriagemLoteReal::directory(true);
  $stats=['total'=>count($rows),'elegiveis_identificacao'=>0,'pendentes_de_dados'=>0,'requisicoes_nesta_execucao'=>0,'identificacoes_uteis_nesta_execucao'=>0,'erros_nesta_execucao'=>0,'resultados_salvos'=>0];
  $lines=[];
+ $stopOnHttpError=false;
  foreach($rows as $row){
   $id=(int)$row['id'];$triage=NormalizacaoCandidatos::classify($row);
   $eligible=$triage['elegivel_identificacao'];$stats[$eligible?'elegiveis_identificacao':'pendentes_de_dados']++;
   $file=$folder.DIRECTORY_SEPARATOR.'normalizacao_'.$id.'.json';
   $previous=is_file($file)?json_decode((string)file_get_contents($file),true):null;
   $entry=is_array($previous)?$previous:null;
-  if($mode==='api' && $eligible && $stats['requisicoes_nesta_execucao']<$limit &&
+  if($mode==='api' && !$stopOnHttpError && $eligible && $stats['requisicoes_nesta_execucao']<$limit &&
      (isset($args['refazer'])||!is_array($entry)||($entry['estado']??'')==='erro')){
     $stats['requisicoes_nesta_execucao']++;
     try {
@@ -38,6 +39,10 @@ try {
     }catch(Throwable $e){$stats['erros_nesta_execucao']++;
       $entry=['versao'=>NormalizacaoCandidatos::VERSION,'id'=>$id,'estado'=>'erro','erro'=>$e->getMessage()];
       fwrite(STDERR,"Falha #$id: ".$e->getMessage()."\n");
+      if(preg_match('/Gemini HTTP (400|401|402|403|404|429)\b/',$e->getMessage())){
+        $stopOnHttpError=true;
+        fwrite(STDERR,"Lote interrompido: corrija o problema antes de gastar novas requisicoes.\n");
+      }
     }
     $tmp=$file.'.tmp';file_put_contents($tmp,json_encode($entry,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR),LOCK_EX);
     if(!rename($tmp,$file))throw new RuntimeException('Falha ao salvar '.$file);

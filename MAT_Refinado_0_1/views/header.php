@@ -53,6 +53,7 @@
  <div class="rail-divider"></div>
  <div class="rail-label">FERRAMENTAS DA PESQUISA</div>
  <nav class="nav-list nav-small" aria-label="Ferramentas da pesquisa">
+   <?php if (is_admin()): ?><a href="resultado_temporis_piloto.php" class="nav-item"><span class="nav-glyph">∿</span> <span>Resultado Têmporis · piloto</span></a><?php endif; ?>
  <?php if (is_admin()): ?>
  <?php endif; ?>
  </nav>

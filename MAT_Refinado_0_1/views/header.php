@@ -12,7 +12,9 @@
 <link rel="stylesheet" href="assets/progresso-marcos.css?v=1">
 <link rel="stylesheet" href="assets/navegacao-grupos.css?v=1">
 <link rel="stylesheet" href="assets/rodadas.css?v=1">
-<script defer src="assets/app.js?v=1.3"></script>
+<link rel="stylesheet" href="assets/revisao-temporis.css?v=1">
+<link rel="stylesheet" href="assets/duplicatas-comparacao.css?v=1">
+<script defer src="assets/app.js?v=1.4"></script>
 </head>
 <body class="page-<?=h($page)?>">
 <a href="#conteudo" class="skip-link">Pular para o conteúdo</a>
@@ -39,7 +41,7 @@
  // A página ativa abre automaticamente o seu grupo (inclusive sem JavaScript).
  $matScript = basename((string)($_SERVER['SCRIPT_NAME'] ?? ''));
  $grupoHistoria = in_array($navPage, ['linha','atlas','acervo','galeria'], true);
- $grupoTemporis = in_array($navPage, ['temporis','metodo','laboratorio'], true)
+ $grupoTemporis = in_array($navPage, ['temporis','temporis_legado','metodo','laboratorio'], true)
      || in_array($matScript, ['experimento_temporis.php','resultado_temporis_piloto.php'], true);
  $grupoPesquisa = in_array($navPage, ['rodadas','andamento','importar','triagem','fontes','duplicatas','auditoria','editar'], true)
      || in_array($matScript, ['assistente_ia.php','triagem_300_reais.php'], true);
@@ -61,6 +63,7 @@
    <summary><span class="nav-number">03</span><span>Índice Têmporis</span><span class="mat-nav-chevron" aria-hidden="true">⌄</span></summary>
    <div class="mat-nav-submenu">
     <a href="<?=mat_url('temporis')?>" class="nav-item <?=$navPage==='temporis'?'active':''?>" <?=$navPage==='temporis'?'aria-current="page"':''?>><span class="nav-number">03.1</span><span>Têmporis · reformulada</span></a>
+    <a href="<?=mat_url('temporis_legado')?>" class="nav-item <?=$navPage==='temporis_legado'?'active':''?>" <?=$navPage==='temporis_legado'?'aria-current="page"':''?>><span class="nav-number">03.2</span><span>Têmporis · original (legado)</span></a>
     <a href="<?=mat_url('metodo')?>" class="nav-item <?=$navPage==='metodo'?'active':''?>" <?=$navPage==='metodo'?'aria-current="page"':''?>><span class="nav-number">03.2</span><span>Caderno de método</span></a>
     <a href="<?=mat_url('laboratorio')?>" class="nav-item <?=$navPage==='laboratorio'?'active':''?>" <?=$navPage==='laboratorio'?'aria-current="page"':''?>><span class="nav-number">03.3</span><span>Laboratório científico</span></a>
     <a href="mat_proj/" class="nav-item"><span class="nav-number">03.4</span><span>MAT-Proj · Projeções</span></a>
@@ -119,7 +122,7 @@
   <?php
     $matBreadcrumbGroup = match($navPage) {
         'linha','atlas','acervo','galeria' => 'Exploração histórica',
-        'temporis','metodo','laboratorio' => 'Índice Têmporis',
+        'temporis','temporis_legado','metodo','laboratorio' => 'Índice Têmporis',
         'rodadas','andamento','importar','triagem','fontes','duplicatas','auditoria','editar','login' => 'Pesquisa e curadoria',
         default => null,
     };

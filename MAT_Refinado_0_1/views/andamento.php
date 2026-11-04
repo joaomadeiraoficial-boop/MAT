@@ -31,14 +31,17 @@ $percent=$progress ? min(100,max(0,(float)$progress['progresso_percentual'])) : 
  <div class="mat-progress-stat"><span>CATALOGADOS</span><strong><?=short_num($progress['total'])?></strong><small>IDs únicos na base de curadoria</small></div>
  <div class="mat-progress-stat"><span>PESQUISADOS</span><strong><?=short_num($progress['pesquisados'])?></strong><small>Com documentação proposta</small></div>
  <div class="mat-progress-stat"><span>COM AS 11 NOTAS</span><strong><?=short_num($progress['propostas_11'])?></strong><small>Preenchimento completo, não aprovação</small></div>
- <div class="mat-progress-stat"><span>REVISADOS POR HUMANO</span><strong><?=short_num($progress['revisados_humanos'])?></strong><small>Revisão explicitamente registrada</small></div>
+ <div class="mat-progress-stat"><span>DECISÕES HUMANAS</span><strong><?=short_num($progress['revisados_humanos'])?></strong><small>Aprovado, rejeitado ou homologado</small></div>
+ <div class="mat-progress-stat"><span>EM REVISÃO</span><strong><?=short_num($progress['em_revisao_humana'])?></strong><small>Aberto para conferência</small></div>
+ <div class="mat-progress-stat"><span>APROVADOS</span><strong><?=short_num($progress['aprovados_humanos'])?></strong><small>Decisão humana, sem homologação</small></div>
+ <div class="mat-progress-stat"><span>REJEITADOS</span><strong><?=short_num($progress['rejeitados_humanos'])?></strong><small>Ficam preservados para auditoria</small></div>
  <div class="mat-progress-stat"><span>HOMOLOGADOS</span><strong><?=short_num($progress['homologados'])?></strong><small>Elegíveis somente após aprovação</small></div>
 </div>
 <section class="paper-panel mat-progress-section mat-progress-pipeline">
  <div class="panel-head"><span>ETAPAS DOCUMENTAIS</span><span>NÃO SE TRATA DE PREVISÃO AUTOMÁTICA</span></div>
  <h2>O que já foi realizado</h2>
  <div class="mat-progress-stages">
- <?php $steps=[['01','Candidatos catalogados',$progress['total'],'Identificação e trecho original'],['02','Pesquisa histórica',$progress['pesquisados'],'Fontes e interpretação documentadas'],['03','Onze critérios propostos',$progress['propostas_11'],'Dossiês com todas as rubricas pontuadas'],['04','Revisão independente',$progress['revisados_humanos'],'Etapa humana distinta da pesquisa'],['05','Homologação científica',$progress['homologados'],'Só após validação explícita']];foreach($steps as [$num,$name,$val,$sub]): ?>
+ <?php $steps=[['01','Candidatos catalogados',$progress['total'],'Identificação e trecho original'],['02','Pesquisa histórica',$progress['pesquisados'],'Fontes e interpretação documentadas'],['03','Onze critérios propostos',$progress['propostas_11'],'Dossiês com todas as rubricas pontuadas'],['04','Decisão humana registrada',$progress['revisados_humanos'],'Decisão interna, sem presumir validação externa'],['05','Homologação científica',$progress['homologados'],'Só após validação explícita']];foreach($steps as [$num,$name,$val,$sub]): ?>
  <div class="mat-progress-stage"><span class="mat-progress-stage-index"><?=h($num)?></span><div><b><?=h($name)?></b><small><?=h($sub)?></small></div><strong><?=short_num($val)?></strong></div>
  <?php endforeach; ?>
  </div>

@@ -73,9 +73,9 @@ final class CuradoriaRodadas
         }
         $counts['trechos_pendentes'] = $counts['total'] - $counts['trechos_suficientes'];
         $counts['criterios_registrados'] = (int)$pdo->query('SELECT COUNT(*) FROM cur_criterios')->fetchColumn();
-        $counts['notas_propostas'] = (int)$pdo->query('SELECT COUNT(*) FROM cur_criterios WHERE nota BETWEEN 1 AND 3')->fetchColumn();
+        $counts['notas_propostas'] = (int)$pdo->query('SELECT COUNT(*) FROM cur_criterios WHERE nota BETWEEN 0 AND 3')->fetchColumn();
         $counts['criterios_sem_evidencia'] = (int)$pdo->query('SELECT COUNT(*) FROM cur_criterios WHERE nota IS NULL OR situacao=\'SEM_EVIDENCIA\'')->fetchColumn();
-        $counts['propostas_11'] = (int)$pdo->query('SELECT COUNT(*) FROM (SELECT id_extracao FROM cur_criterios WHERE nota BETWEEN 1 AND 3 GROUP BY id_extracao HAVING COUNT(DISTINCT codigo)=11) AS completos')->fetchColumn();
+        $counts['propostas_11'] = (int)$pdo->query('SELECT COUNT(*) FROM (SELECT id_extracao FROM cur_criterios WHERE nota BETWEEN 0 AND 3 GROUP BY id_extracao HAVING COUNT(DISTINCT codigo)=11) AS completos')->fetchColumn();
         $counts['fontes_curadoria'] = (int)$pdo->query('SELECT COUNT(*) FROM cur_fontes')->fetchColumn();
         $counts['avaliacoes'] = $counts['pesquisados'];
         // Campo legado apenas para compatibilidade das telas. Não existe uma fila de 300 neste banco.
@@ -90,8 +90,11 @@ final class CuradoriaRodadas
     public static function progressSnapshot(PDO $pdo, bool $includeActivity = false): array {
         $v = self::overview($pdo);
         $v['revisados_humanos'] = (int)$pdo->query(
-            "SELECT COUNT(*) FROM cur_candidatos WHERE estado_revisao_humana NOT IN ('NAO_REVISADO','PENDENTE','') AND estado_revisao_humana IS NOT NULL"
+            "SELECT COUNT(*) FROM cur_candidatos WHERE estado_revisao_humana IN ('APROVADO','REJEITADO','HOMOLOGADO')"
         )->fetchColumn();
+        $v['em_revisao_humana'] = (int)$pdo->query("SELECT COUNT(*) FROM cur_candidatos WHERE estado_revisao_humana='EM_REVISAO'")->fetchColumn();
+        $v['aprovados_humanos'] = (int)$pdo->query("SELECT COUNT(*) FROM cur_candidatos WHERE estado_revisao_humana='APROVADO'")->fetchColumn();
+        $v['rejeitados_humanos'] = (int)$pdo->query("SELECT COUNT(*) FROM cur_candidatos WHERE estado_revisao_humana='REJEITADO'")->fetchColumn();
         $v['em_analise'] = max(0, $v['total'] - $v['pesquisados']);
         $v['progresso_percentual'] = $v['total'] > 0 ? round(100 * $v['pesquisados'] / $v['total'], 1) : 0.0;
         $v['pontuacao_percentual'] = $v['pesquisados'] > 0 ? round(100 * $v['notas_propostas'] / (11 * $v['pesquisados']), 1) : 0.0;
@@ -116,6 +119,10 @@ final class CuradoriaRodadas
             'planejados' => "r.estado='PLANEJADA'",
             'nao_iniciados' => "c.status_avaliacao IN ('NAO_INICIADO','PENDENTE_DE_TRIAGEM')",
             'duplicatas' => 'c.duplicatas_json IS NOT NULL AND JSON_VALID(c.duplicatas_json) AND JSON_LENGTH(c.duplicatas_json)>0',
+            'em_revisao' => "c.estado_revisao_humana='EM_REVISAO'",
+            'aprovados' => "c.estado_revisao_humana='APROVADO'",
+            'homologados' => "c.estado_revisao_humana='HOMOLOGADO' AND c.homologado=1",
+            'rejeitados' => "c.estado_revisao_humana='REJEITADO'",
             'sem_evidencia' => '(NOT EXISTS(SELECT 1 FROM cur_criterios t WHERE t.id_extracao=c.id_extracao) OR EXISTS(SELECT 1 FROM cur_criterios t WHERE t.id_extracao=c.id_extracao AND t.nota IS NULL))',
         ];
         if (isset($allowed[$filter])) $parts[]=$allowed[$filter];
@@ -136,7 +143,7 @@ final class CuradoriaRodadas
         $s->execute($params);$total=(int)$s->fetchColumn();
         $perPage=max(1,min(50,$perPage));$pages=max(1,(int)ceil($total/$perPage));$page=max(1,min($page,$pages));
         $sql='SELECT c.id_extracao,c.titulo_proposto,c.titulo_original AS titulo_extraido, c.ano_original, c.ano_validado,c.pagina_livro, '
-            .'c.status_avaliacao AS estado_fluxo,c.status_avaliacao,c.homologado,c.rodada AS rodada_pesquisa, '
+            .'c.status_avaliacao AS estado_fluxo,c.status_avaliacao,c.estado_revisao_humana,c.homologado,c.rodada AS rodada_pesquisa, '
             .'r.estado AS estado_rodada'
             .$join.$where.' ORDER BY c.rodada ASC,c.id_extracao ASC LIMIT :limite OFFSET :inicio';
         $s=$pdo->prepare($sql);
@@ -194,7 +201,7 @@ final class CuradoriaRodadas
             $sum=0;
             foreach($keys as $key){
                 $c=$criteria[$key]??null;$v=$c['nota']??null;
-                if($v===null||!in_array((int)$v,[1,2,3],true)){$complete=false;$scores[$key]=null;continue;}
+                if($v===null||!preg_match('/^[0-3]$/D',(string)$v)){$complete=false;$scores[$key]=null;continue;}
                 $scores[$key]=(int)$v;$sum+=(int)$v;$used++;
                 if(trim((string)($c['justificativa']??''))===''||!self::decodeArray((string)($c['fontes_ids_json']??'')))$complete=false;
             }
@@ -222,6 +229,10 @@ final class CuradoriaRodadas
             'PROPOSTA_COMPLETA_AGUARDANDO_AUDITORIA' => '11 propostas · aguardando auditoria',
             'PENDENTE_DE_EVIDENCIAS' => 'Pesquisado · evidências pendentes',
             'NAO_REVISADO' => 'Revisão humana pendente',
+            'EM_REVISAO' => 'Em revisão humana',
+            'APROVADO' => 'Aprovado pelo pesquisador',
+            'REJEITADO' => 'Rejeitado · preservado',
+            'HOMOLOGADO' => 'Homologado',
             'NAO_INICIADO' => 'Não iniciado',
             'PENDENTE_DE_TRIAGEM' => 'Aguardando triagem',
             'PLANEJADA' => 'Planejada',

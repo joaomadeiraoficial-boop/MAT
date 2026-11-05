@@ -16,6 +16,7 @@ $percent=$progress ? min(100,max(0,(float)$progress['progresso_percentual'])) : 
 <h2>Banco de curadoria não encontrado.</h2>
 <p>Verifique a conexão com <strong><?=h(CuradoriaRodadas::databaseName())?></strong>. Esta página não usa números fixos nem arquivos locais para substituir registros do MySQL.</p></section>
 <?php else: ?>
+<?php if(is_admin()): ?><div class="mat-quick-link-strip"><a href="<?=mat_url('fila_rapida')?>">✓ Curadoria de todos os <?=short_num($progress['total'])?> candidatos (0–11 notas) →</a><span>Aprovação individual e auditável · <a href="export_curadoria_pendencias.php">Exportar pendências CSV ↗</a></span></div><?php endif; ?>
 <div class="mat-cur-statusbar"><span class="mat-cur-statusdot"></span> DADOS DA PESQUISA · <?=h(CuradoriaRodadas::databaseName())?> <span class="mat-cur-statusright">SOMENTE LEITURA · ATUALIZADO AO ABRIR</span></div>
 <section class="paper-panel mat-progress-hero" aria-labelledby="mat-progress-title">
   <div class="panel-head"><span>ESTADO DA CURADORIA</span><span>CONTAGEM VERIFICÁVEL · MYSQL</span></div>

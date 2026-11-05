@@ -29,6 +29,10 @@ final class CuradoriaRodadas
 
     /** Nome do banco de pesquisa: nunca aponta automaticamente para o banco de marcos do MAT. */
     public static function databaseName(): string { return 'mat_temporis_curadoria'; }
+    /** IDs do livro e dos lotes externos importados mantêm formatos distintos. */
+    public static function validId(string $id): bool {
+        return (bool)preg_match('/^(?:MCD-[0-9]{5}|TEMP-R[0-9]{2}-[0-9]{3})$/D',$id);
+    }
 
     public static function connect(): ?PDO {
         static $attempted = false, $pdo = null;
@@ -163,14 +167,14 @@ final class CuradoriaRodadas
     }
 
     public static function record(PDO $pdo,string $id): ?array {
-        if (!preg_match('/^MCD-[0-9]{5}$/D',$id)) return null;
+        if (!self::validId($id)) return null;
         $s=$pdo->prepare('SELECT c.* FROM cur_candidatos c WHERE c.id_extracao=:id LIMIT 1');
         $s->execute([':id'=>$id]);$r=$s->fetch(PDO::FETCH_ASSOC);
         if (!$r) return null;
         $r['titulo_extraido'] = (string)($r['titulo_original']??'');
         $r['ano_importado'] = $r['ano_original'];
         $r['categoria_original'] = $r['categoria'];
-        $r['fonte_original'] = 'McClellan III & Dorn (2006)';
+        $r['fonte_original'] = str_starts_with($id,'MCD-') ? 'McClellan III & Dorn (2006)' : 'Lote externo: confira o registro de proveniência';
         $r['estado_fluxo'] = $r['status_avaliacao'];
         // O banco contém o fragmento de extração, não o texto integral do livro.
         $r['original'] = [
@@ -197,17 +201,26 @@ final class CuradoriaRodadas
     /** Cálculo individual demonstrativo segundo a rubrica existente, jamais homologação. */
     public static function memory(array $criteria,array $sources): array {
         $scores=[];$sums=[];$used=0;$complete=true;
+        $idsDisponiveis=[];
+        foreach($sources as $fonte) {
+            $id=trim((string)($fonte['fonte_id']??''));
+            if($id!=='')$idsDisponiveis[$id]=true;
+        }
         foreach(self::GRUPOS as $group=>$keys){
             $sum=0;
             foreach($keys as $key){
                 $c=$criteria[$key]??null;$v=$c['nota']??null;
                 if($v===null||!preg_match('/^[0-3]$/D',(string)$v)){$complete=false;$scores[$key]=null;continue;}
                 $scores[$key]=(int)$v;$sum+=(int)$v;$used++;
-                if(trim((string)($c['justificativa']??''))===''||!self::decodeArray((string)($c['fontes_ids_json']??'')))$complete=false;
+                $ligadas=self::decodeArray((string)($c['fontes_ids_json']??''));
+                if(trim((string)($c['justificativa']??''))==='' || !$ligadas)$complete=false;
+                foreach($ligadas as $fid) {
+                    if(!is_string($fid) || trim($fid)==='' || !isset($idsDisponiveis[$fid]))$complete=false;
+                }
             }
             $sums[$group]=$sum;
         }
-        $result=['scores'=>$scores,'sums'=>$sums,'avaliadas'=>$used,'completa'=>$complete && $used===11 && count($sources)>0,'I'=>null,'C'=>null,'F'=>null,'peso'=>null];
+        $result=['scores'=>$scores,'sums'=>$sums,'avaliadas'=>$used,'completa'=>$complete && $used===11 && count($idsDisponiveis)>0,'I'=>null,'C'=>null,'F'=>null,'peso'=>null];
         if($result['completa']){
             $result['I']=1+9*$sums['Impacto']/12;
             $result['C']=$sums['Confiabilidade histórica']/12;

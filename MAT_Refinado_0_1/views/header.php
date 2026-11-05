@@ -13,8 +13,12 @@
 <link rel="stylesheet" href="assets/navegacao-grupos.css?v=1">
 <link rel="stylesheet" href="assets/rodadas.css?v=1">
 <link rel="stylesheet" href="assets/revisao-temporis.css?v=1">
-<link rel="stylesheet" href="assets/duplicatas-comparacao.css?v=1">
-<script defer src="assets/app.js?v=1.4"></script>
+<link rel="stylesheet" href="assets/datacao-intervalo.css?v=1">
+<link rel="stylesheet" href="assets/fila-rapida.css?v=2">
+<link rel="stylesheet" href="assets/duplicatas-comparacao.css?v=3">
+<script defer src="assets/app.js?v=1.6"></script>
+<?php if(in_array($page,['rodadas','fila_rapida'],true)): ?><script defer src="assets/datacao-intervalo.js?v=1"></script><?php endif; ?>
+<?php if($page==='fila_rapida'): ?><script defer src="assets/fila-rapida.js?v=2"></script><?php endif; ?>
 </head>
 <body class="page-<?=h($page)?>">
 <a href="#conteudo" class="skip-link">Pular para o conteúdo</a>
@@ -43,7 +47,7 @@
  $grupoHistoria = in_array($navPage, ['linha','atlas','acervo','galeria'], true);
  $grupoTemporis = in_array($navPage, ['temporis','temporis_legado','metodo','laboratorio'], true)
      || in_array($matScript, ['experimento_temporis.php','resultado_temporis_piloto.php'], true);
- $grupoPesquisa = in_array($navPage, ['rodadas','andamento','importar','triagem','fontes','duplicatas','auditoria','editar'], true)
+ $grupoPesquisa = in_array($navPage, ['rodadas','fila_rapida','andamento','importar','triagem','fontes','duplicatas','auditoria','editar'], true)
      || in_array($matScript, ['assistente_ia.php','triagem_300_reais.php'], true);
  ?>
  <nav class="mat-nav" aria-label="Menu principal">
@@ -82,6 +86,7 @@
     <a href="<?=mat_url('andamento')?>" class="nav-item <?=$navPage==='andamento'?'active':''?>" <?=$navPage==='andamento'?'aria-current="page"':''?>><span class="nav-glyph">◈</span><span>Progresso científico</span></a>
     <?php if(is_admin()): ?>
      <a href="<?=mat_url('rodadas')?>" class="nav-item <?=$navPage==='rodadas'?'active':''?>" <?=$navPage==='rodadas'?'aria-current="page"':''?>><span class="nav-glyph">◷</span><span>Rodadas de pesquisa</span></a>
+        <a href="<?=mat_url('fila_rapida')?>" class="nav-item <?=$navPage==='fila_rapida'?'active':''?>" <?=$navPage==='fila_rapida'?'aria-current="page"':''?>><span class="nav-glyph">✓</span><span>Fila de revisão rápida</span></a>
     <?php endif; ?>
     <span class="mat-nav-subheading">INVESTIGAÇÃO</span>
     <a href="<?=mat_url('importar')?>" class="nav-item <?=$navPage==='importar'?'active':''?>" <?=$navPage==='importar'?'aria-current="page"':''?>><span class="nav-glyph">⇣</span><span>Importar cronologias</span></a>
@@ -123,7 +128,7 @@
     $matBreadcrumbGroup = match($navPage) {
         'linha','atlas','acervo','galeria' => 'Exploração histórica',
         'temporis','temporis_legado','metodo','laboratorio' => 'Índice Têmporis',
-        'rodadas','andamento','importar','triagem','fontes','duplicatas','auditoria','editar','login' => 'Pesquisa e curadoria',
+        'rodadas','fila_rapida','andamento','importar','triagem','fontes','duplicatas','auditoria','editar','login' => 'Pesquisa e curadoria',
         default => null,
     };
   ?>

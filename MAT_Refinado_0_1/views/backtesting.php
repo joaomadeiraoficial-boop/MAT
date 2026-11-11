@@ -7,6 +7,9 @@ $btCoorte=(string)($_GET['coorte']??'ampla');
 if(!isset(TemporisFinal::COORTES[$btCoorte]))$btCoorte='ampla';
 $btHoriz=filter_var($_GET['horizonte']??25,FILTER_VALIDATE_INT);
 if(!in_array($btHoriz,[10,25,50,100],true))$btHoriz=25;
+$btRef=(string)($_GET['referencia']??'mediana');
+if(!isset(TemporisFinal::MODELOS[$btRef]))$btRef='mediana';
+$btShowAll=($_GET['mostrar_todos']??'')==='1';
 $btError=null;$btRows=[];$btAudit=[];$btSource='—';$btFonteReal='';$btCount=0;
 $btFmt=static fn(?float $n,int $digits=1):string=>$n===null?'—':number_format($n,$digits,',','.');
 try {
@@ -19,19 +22,27 @@ try {
         $stat=TemporisFinal::validar($btLine,$id,$btHoriz,2026);
         $btRows[]=['id'=>$id,'label'=>$label,'stat'=>$stat];
     }
-    usort($btRows,static function($a,$b){
-        $x=$a['stat']['wape'];$y=$b['stat']['wape'];
-        if($x===null)return $y===null?0:1;
-        if($y===null)return -1;
-        return $x<=>$y;
-    });
 } catch(Throwable $e){$btError=$e->getMessage();}
+$btById=[]; foreach($btRows as $r){ $btById[$r['id']]=$r; }
 $btRanked=array_values(array_filter($btRows,static fn($r)=>$r['stat']['wape']!==null));
+usort($btRanked,static function($a,$b){
+    $x=$a['stat']['wape'];$y=$b['stat']['wape'];
+    if($x===null)return $y===null?0:1;
+    if($y===null)return -1;
+    return $x<=>$y;
+});
 $btBest=$btRanked[0]??null;
+$btWorst=$btRanked ? $btRanked[count($btRanked)-1] : null;
 $btTop=array_slice($btRanked,0,3);
-$btSample=$btBest && $btBest['stat']['folds'] ? $btBest['stat']['folds'][count($btBest['stat']['folds'])-1] : null;
+$btRefRow=$btById[$btRef]??null;
+$btSampleBase=$btRefRow && !empty($btRefRow['stat']['folds']) ? $btRefRow : ($btBest && !empty($btBest['stat']['folds']) ? $btBest : null);
+$btSample=$btSampleBase ? $btSampleBase['stat']['folds'][count($btSampleBase['stat']['folds'])-1] : null;
 $btNCounts=array_unique(array_map(static fn($r)=>(int)$r['stat']['n'],$btRanked));
 $btDifferentSamples=count($btNCounts)>1;
+$btPosRank=null;
+if($btRefRow && $btRefRow['stat']['wape']!==null){
+    foreach($btRanked as $i=>$r){ if($r['id']===$btRef){ $btPosRank=$i+1; break; } }
+}
 ?>
 <header class="page-heading tf-heading tf-bt-heading">
  <div class="section-overline">ÍNDICE TÊMPORIS / TESTE DAS PREVISÕES</div>
@@ -45,9 +56,12 @@ $btDifferentSamples=count($btNCounts)>1;
   <label for="bt-horizonte">Prever quantos anos à frente?
    <select name="horizonte" id="bt-horizonte"><?php foreach([10,25,50,100] as $h):?><option value="<?=$h?>" <?=$btHoriz===$h?'selected':''?>><?=$h?> anos</option><?php endforeach;?></select>
   </label>
+  <label for="bt-referencia">Seu método (modelo de referência)
+   <select name="referencia" id="bt-referencia"><?php foreach(TemporisFinal::MODELOS as $id=>$label):?><option value="<?=h($id)?>" <?=$btRef===$id?'selected':''?>><?=h($label)?></option><?php endforeach;?></select>
+  </label>
   <button class="btn btn-dark" type="submit">Ver resultado →</button>
  </div>
- <details class="tf-bt-options"><summary>Mostrar mais · escolher fonte e conjunto de marcos</summary>
+ <details class="tf-bt-options" <?=$btShowAll?'open':''?>><summary>Mostrar mais opções · fonte, conjunto e exibição</summary>
   <div class="tf-form-advanced">
    <label for="bt-fonte">De onde vêm os dados?
     <select name="fonte" id="bt-fonte"><?php foreach(TemporisFinal::FONTES as $id=>$label):?><option value="<?=h($id)?>" <?=$btSrc===$id?'selected':''?>><?=h($label)?></option><?php endforeach;?></select>
@@ -55,6 +69,7 @@ $btDifferentSamples=count($btNCounts)>1;
    <label for="bt-coorte">Quais marcos entram no teste?
     <select name="coorte" id="bt-coorte"><?php foreach(TemporisFinal::COORTES as $id=>$label):?><option value="<?=h($id)?>" <?=$btCoorte===$id?'selected':''?>><?=h($label)?></option><?php endforeach;?></select>
    </label>
+   <label class="tf-check-inline"><input type="checkbox" name="mostrar_todos" value="1" <?=$btShowAll?'checked':''?>> Mostrar comparação detalhada de todos os modelos</label>
   </div>
  </details>
 </form>
@@ -69,71 +84,90 @@ $btDifferentSamples=count($btNCounts)>1;
 
 <section class="tf-bt-result" aria-labelledby="bt-resultado-titulo">
  <div class="tf-bt-result-main">
-  <span class="tf-bt-kicker">01 / O RESULTADO EM POUCAS PALAVRAS</span>
-  <h2 id="bt-resultado-titulo">Qual modelo chegou mais perto dos dados históricos?</h2>
-  <?php if($btBest): ?>
-  <p>Para previsões de <strong><?=$btHoriz?> anos</strong>, o modelo <strong><?=h($btBest['label'])?></strong> apresentou o menor erro percentual agregado entre os que puderam ser calculados nesta seleção.</p>
-  <p class="tf-bt-interpretation">Isso não garante que ele acertará previsões futuras. Mostra apenas como se comportou nos testes retrospectivos realizados.</p>
-  <?php else: ?>
-  <p>Não há dados suficientes para calcular o erro percentual nesta seleção. Experimente outro conjunto de marcos ou um horizonte menor.</p>
+  <span class="tf-bt-kicker">01 / SEU MÉTODO EM DESTAQUE</span>
+  <h2 id="bt-resultado-titulo">Qual é o seu método e como ele se compara?</h2>
+  <p><strong>Metodologia do índice (sua base):</strong> peso <strong>Impacto quadrático (adotada)</strong> com índice <strong>acumulado sem compressão</strong> (MAT Final). O backtesting abaixo compara <strong>modelos de previsão</strong> do estoque K sobre essa base (seleção atual).</p>
+  <?php if($btRefRow): ?>
+    <p><strong>Seu modelo de referência (previsão):</strong> <?=h($btRefRow['label'])?>.
+    <?php if($btRefRow['stat']['wape']!==null): ?>
+      Erro agregado (WAPE): <strong><?=$btFmt($btRefRow['stat']['wape'])?>%</strong><?php if($btPosRank): ?> — <strong><?=$btPosRank?>º</strong> de <?=count($btRanked)?> entre os calculáveis<?php endif; ?> (<?=$btRefRow['stat']['n']?> testes).
+    <?php else: ?>
+      <strong>Sem WAPE calculável</strong> nesta seleção/horizonte (<?=$btRefRow['stat']['n']?> testes válidos).
+    <?php endif; ?></p>
   <?php endif; ?>
+  <p class="tf-bt-interpretation">Menor WAPE indica menor erro relativo no teste retrospectivo; não garante desempenho futuro nem valida o índice por si só.</p>
  </div>
  <div class="tf-bt-result-number">
-  <span>Menor erro no teste</span>
-  <strong><?=$btBest?$btFmt($btBest['stat']['wape']).'%':'—'?></strong>
-  <small>WAPE: erro absoluto total dividido pelo crescimento observado total. Menor é melhor neste teste, não é porcentagem de acertos.</small>
+  <span>Erro do seu método</span>
+  <strong><?=($btRefRow && $btRefRow['stat']['wape']!==null)?$btFmt($btRefRow['stat']['wape']).'%':'—'?></strong>
+  <small><?=h($btRefRow['label']??'Modelo de referência')?> · horizonte <?=$btHoriz?> anos</small>
  </div>
 </section>
 
 <div class="tf-bt-facts" aria-label="Resumo da avaliação">
- <div><span>Período previsto</span><strong><?=$btHoriz?> anos</strong></div>
+ <div><span>Seu método</span><strong><?=h($btRefRow['label']??'—')?></strong><small><?=($btRefRow && $btRefRow['stat']['wape']!==null)?$btFmt($btRefRow['stat']['wape']).'% WAPE':'WAPE indisponível'?></small></div>
+ <div><span>Melhor no teste</span><strong><?=h($btBest['label']??'—')?></strong><small><?=$btBest?$btFmt($btBest['stat']['wape']).'% WAPE':'—'?></small></div>
+ <div><span>Pior no teste</span><strong><?=h($btWorst['label']??'—')?></strong><small><?=$btWorst?$btFmt($btWorst['stat']['wape']).'% WAPE':'—'?></small></div>
  <div><span>Modelos com resultado</span><strong><?=count($btRanked)?> de <?=count($btRows)?></strong></div>
- <div><span>Testes históricos do destaque</span><strong><?=$btBest?(int)$btBest['stat']['n']:'—'?></strong></div>
 </div>
 
 <section class="paper-panel mat-final-section tf-bt-simple" aria-labelledby="bt-comparacao-titulo">
- <div class="panel-head"><span>02 / COMPARAÇÃO RÁPIDA</span><span>MENOR ERRO = MELHOR AJUSTE NESTE TESTE</span></div>
- <h2 id="bt-comparacao-titulo">Os 3 menores erros</h2>
- <p>Compare os resultados sem precisar ler toda a tabela técnica. O percentual mede a diferença acumulada entre o <strong>crescimento previsto</strong> e o <strong>crescimento observado</strong>.</p>
- <?php if($btTop): ?>
+ <div class="panel-head"><span>02 / COMPARAÇÃO ESSENCIAL</span><span>SEU MÉTODO · MELHOR · PIOR</span></div>
+ <h2 id="bt-comparacao-titulo">Comparação direta</h2>
+ <p>Veja primeiro o seu método e os extremos do teste. Os demais modelos ficam ocultos por padrão para reduzir confusão.</p>
+ <?php
+ $btEssential=[]; $seen=[];
+ foreach([['Meu método (referência)',$btRefRow],['Melhor desempenho',$btBest],['Pior desempenho',$btWorst]] as $pair){
+   [$tag,$row]=$pair; if(!$row) continue; $key=$tag.':'.$row['id']; if(isset($seen[$key])) continue; $seen[$key]=true; $btEssential[]=['tag'=>$tag,'row'=>$row];
+ }
+ ?>
+ <?php if($btEssential): ?>
  <div class="tf-bt-shortlist">
-  <?php foreach($btTop as $i=>$row):$stat=$row['stat'];$reference=max(1.,(float)($btTop[count($btTop)-1]['stat']['wape']??1.));?>
-  <div class="tf-bt-short-row <?=$i===0?'tf-bt-short-first':''?>">
-   <div class="tf-bt-short-title"><span><?=$i+1?>.</span><strong><?=h($row['label'])?></strong><?php if($i===0):?><small>menor erro observado</small><?php endif;?></div>
-   <div class="tf-bt-short-meter" aria-hidden="true"><span style="width:<?=max(3.,min(100.,100.*(float)$stat['wape']/$reference))?>%"></span></div>
-   <div class="tf-bt-short-value"><strong><?=$btFmt($stat['wape'])?>%</strong><small><?=$stat['n']?> testes</small></div>
+  <?php $refWape=max(1.,(float)($btWorst['stat']['wape']??($btBest['stat']['wape']??1))); foreach($btEssential as $i=>$item):$row=$item['row'];$stat=$row['stat'];?>
+  <div class="tf-bt-short-row <?=$row['id']===$btRef?'tf-bt-short-first':''?>">
+   <div class="tf-bt-short-title"><span><?=h($item['tag'])?>:</span><strong><?=h($row['label'])?></strong>
+    <?php if($row['id']===$btRef):?><small>seu método</small><?php endif; ?>
+    <?php if($btBest && $row['id']===$btBest['id']):?><small>menor erro</small><?php endif; ?>
+    <?php if($btWorst && $row['id']===$btWorst['id']):?><small>maior erro (calculável)</small><?php endif; ?>
+   </div>
+   <div class="tf-bt-short-meter" aria-hidden="true"><span style="width:<?=($stat['wape']===null)?3:max(3.,min(100.,100.*(float)$stat['wape']/$refWape))?>%"></span></div>
+   <div class="tf-bt-short-value"><strong><?=$stat['wape']===null?'—':$btFmt($stat['wape']).'%'?></strong><small><?=$stat['n']?> testes</small></div>
   </div>
   <?php endforeach; ?>
  </div>
- <p class="tf-bt-hint">Barras menores indicam menos erro. <?php if($btDifferentSamples):?><strong>Atenção:</strong> os modelos não foram testados no mesmo número de períodos; a comparação precisa de cautela.<?php else:?>Os modelos com percentual calculável usam <?=$btBest?(int)$btBest['stat']['n']:0?> períodos históricos cada nesta seleção.<?php endif;?></p>
- <?php else: ?><p>Nenhum modelo apresentou WAPE calculável. Os testes sem resultado continuam disponíveis abaixo para auditoria.</p><?php endif; ?>
+ <p class="tf-bt-hint">Barras menores indicam menos erro (WAPE). <?php if($btDifferentSamples):?><strong>Atenção:</strong> os modelos podem ter números diferentes de testes válidos; compare com cautela.<?php endif; ?> Para ver todos os <?=count($btRows)?> modelos, marque “Mostrar comparação detalhada de todos os modelos” e aplique o filtro.</p>
+ <?php else: ?><p>Nenhum modelo apresentou WAPE calculável nesta seleção.</p><?php endif; ?>
 </section>
 
 <?php if($btSample): ?>
 <section class="tf-bt-example" aria-labelledby="bt-exemplo-titulo">
  <div><span class="tf-bt-kicker">03 / EXEMPLO CONCRETO</span><h2 id="bt-exemplo-titulo">O que foi previsto × o que aconteceu?</h2>
- <p>Em um dos testes do modelo <strong><?=h($btBest['label'])?></strong>, usamos os dados disponíveis até <strong><?=$btSample['corte']?></strong> para estimar o crescimento acumulado até <strong><?=$btSample['alvo']?></strong>.</p></div>
+ <p>Em um dos testes do modelo <strong><?=h($btSampleBase['label'] ?? ($btBest['label'] ?? '—'))?></strong> (<?=($btSampleBase && $btRefRow && $btSampleBase['id']===$btRefRow['id'])?'seu método de referência':'destaque do teste'?>), usamos os dados disponíveis até <strong><?=$btSample['corte']?></strong> para estimar o crescimento acumulado até <strong><?=$btSample['alvo']?></strong>.</p></div>
  <div class="tf-bt-actual-predicted"><div><span>Previsão de crescimento</span><strong><?=$btFmt($btSample['crescimento_previsto'],2)?></strong><small>unidades do estoque K</small></div><div><span>Crescimento observado</span><strong><?=$btFmt($btSample['crescimento_real'],2)?></strong><small>unidades do estoque K</small></div></div>
  <p class="tf-bt-example-footnote">Diferença neste exemplo: <strong><?=$btFmt(abs($btSample['erro']),2)?> unidades de K</strong> (<?=$btSample['erro']>0?'previsão acima do observado':($btSample['erro']<0?'previsão abaixo do observado':'previsão igual ao observado')?>). K é a soma dos pesos dos marcos, não a quantidade de marcos. Este é apenas um corte histórico, não o erro percentual geral.</p>
 </section>
 <?php endif; ?>
 
-<details class="tf-expander tf-bt-more" id="bt-todos-modelos"><summary><span><strong>Mostrar mais · comparar todos os <?=count($btRows)?> modelos</strong><small>Tabela completa com erro percentual, erro médio, tendência de superestimar ou subestimar e testes válidos</small></span><span class="tf-chevron" aria-hidden="true">⌄</span></summary>
+<?php if($btShowAll): ?>
+<details class="tf-expander tf-bt-more" id="bt-todos-modelos" open><summary><span><strong>Comparação detalhada de todos os <?=count($btRows)?> modelos</strong><small>Tabela completa com erro percentual, erro médio, tendência de superestimar ou subestimar e testes válidos</small></span><span class="tf-chevron" aria-hidden="true">⌄</span></summary>
  <div class="tf-expand-body">
- <p><strong>Como ler:</strong> WAPE é o erro percentual agregado (menor costuma ser melhor). MAE mede o erro médio em unidades de K. Viés positivo significa tendência a prever acima do observado; negativo, abaixo. “—” significa que não foi possível calcular, não que o erro foi zero.</p>
+ <p><strong>Como ler:</strong> WAPE é o erro percentual agregado (menor costuma ser melhor). MAE mede o erro médio em unidades de K. Viés positivo significa tendência a prever acima do observado; negativo, abaixo. “—” significa que não foi possível calcular, não que o erro foi zero. Etiquetas: <em>seu método</em>, <em>melhor</em> e <em>pior</em> (entre os calculáveis).</p>
  <div class="mat-final-table-wrap"><table class="mat-final-table tf-bt-table"><thead><tr><th>Modelo</th><th>Erro (WAPE)</th><th>MAE (K)</th><th>Viés médio (K)</th><th>Testes válidos</th></tr></thead><tbody>
- <?php foreach($btRows as $row):$stat=$row['stat'];?><tr class="<?=$row['id']==='sem_avanco'?'tf-control-row':''?>"><th><?=h($row['label'])?><?=$row['id']==='sem_avanco'?' · controle':''?></th><td><?=$stat['wape']===null?'—':$btFmt($stat['wape']).'%'?></td><td><?=$btFmt($stat['mae'],3)?></td><td><?=$btFmt($stat['bias'],3)?></td><td><?=$stat['n']?></td></tr><?php endforeach;?></tbody></table></div>
+ <?php foreach($btRows as $row):$stat=$row['stat'];?><tr class="<?=$row['id']==='sem_avanco'?'tf-control-row':''?><?=$row['id']===$btRef?' tf-ref-row':''?>"><th><?=h($row['label'])?><?=$row['id']==='sem_avanco'?' · controle':''?><?=$row['id']===$btRef?' · seu método':''?><?=$btBest&&$row['id']===$btBest['id']?' · melhor':''?><?=$btWorst&&$row['id']===$btWorst['id']?' · pior':''?></th><td><?=$stat['wape']===null?'—':$btFmt($stat['wape']).'%'?></td><td><?=$btFmt($stat['mae'],3)?></td><td><?=$btFmt($stat['bias'],3)?></td><td><?=$stat['n']?></td></tr><?php endforeach;?></tbody></table></div>
  <p class="mat-final-disclaimer">A classificação por WAPE não é um ranking universal: pode depender do horizonte, da seleção dos marcos e do número de testes válidos.</p>
  </div>
 </details>
 
-<details class="tf-expander tf-bt-more"><summary><span><strong>Mostrar mais · conferir cada previsão histórica</strong><small>Veja, ano a ano, quanto cada modelo previu e o que foi observado</small></span><span class="tf-chevron" aria-hidden="true">⌄</span></summary>
+<details class="tf-expander tf-bt-more"><summary><span><strong>Conferir cada previsão histórica</strong><small>Veja, ano a ano, quanto cada modelo previu e o que foi observado</small></span><span class="tf-chevron" aria-hidden="true">⌄</span></summary>
  <div class="tf-expand-body">
  <?php foreach($btRows as $row):$folds=$row['stat']['folds'];?><details class="tf-inline-details"><summary><?=h($row['label'])?> · <?=count($folds)?> testes</summary>
  <?php if(!$folds):?><p>Não houve dados históricos suficientes para testar este modelo neste horizonte.</p><?php else:?><div class="mat-final-table-wrap"><table class="mat-final-table"><thead><tr><th>Ano da previsão</th><th>Ano avaliado</th><th>Crescimento observado ΔK</th><th>Crescimento previsto ΔK</th><th>Diferença (com sinal)</th></tr></thead><tbody>
  <?php foreach($folds as $fold):?><tr><td><?=$fold['corte']?></td><td><?=$fold['alvo']?></td><td><?=$btFmt($fold['crescimento_real'],4)?></td><td><?=$btFmt($fold['crescimento_previsto'],4)?></td><td><?=$btFmt($fold['erro'],4)?></td></tr><?php endforeach;?></tbody></table></div><?php endif;?></details><?php endforeach; ?>
  </div>
 </details>
+<?php else: ?>
+<p class="tf-bt-hint" style="margin:1rem 0">Para reduzir confusão, os demais modelos e as tabelas detalhadas estão ocultos. <a href="<?=mat_url('backtesting',['fonte'=>$btSrc,'coorte'=>$btCoorte,'horizonte'=>$btHoriz,'referencia'=>$btRef,'mostrar_todos'=>1])?>#bt-todos-modelos">Mostrar todos os modelos e previsões históricas</a>.</p>
+<?php endif; ?>
 
 <details class="tf-expander tf-bt-more"><summary><span><strong>Mostrar mais · como o teste funciona e quais são os limites?</strong><small>Explicação técnica da metodologia, das fontes e dos cuidados científicos</small></span><span class="tf-chevron" aria-hidden="true">⌄</span></summary>
  <div class="tf-expand-body">

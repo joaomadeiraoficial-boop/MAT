@@ -1,0 +1,32 @@
+/* MAT · Folha editorial do acompanhamento dos marcos. Mantem a identidade existente. */
+.mat-progress-preview{margin:0 0 64px;padding:27px 31px 29px;background:#f7f2e9;border:1px solid #d6c7b2}
+.mat-progress-preview .section-overline{margin-bottom:10px}
+.mat-progress-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:20px}
+.mat-progress-heading h2{font:400 clamp(27px,3vw,40px)/1.1 Georgia,serif;color:#1a3131;margin:0}
+.mat-progress-heading h2 em{color:#a46a4a}
+.mat-progress-heading a{color:#78472f;font:12px/1.5 monospace;text-decoration:none;border-bottom:1px solid #b99b83}
+.mat-progress-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid #dacdbd;background:#fffcf6}
+.mat-progress-grid>div{padding:22px 20px;border-right:1px solid #dacdbd;min-width:0}
+.mat-progress-grid>div:last-child{border-right:0}
+.mat-progress-grid span,.mat-progress-card>span{display:block;font:10px/1.5 monospace;letter-spacing:.11em;color:#845c43;text-transform:uppercase}
+.mat-progress-grid strong{display:block;font:400 38px/1.25 Georgia,serif;color:#19312f;margin:8px 0 5px}
+.mat-progress-grid small{font:11px/1.45 system-ui,sans-serif;color:#626760;display:block}
+.mat-progress-note{margin:16px 0 0;color:#65645d;font:12px/1.65 system-ui,sans-serif}
+.mat-progress-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:0 0 25px}
+.mat-progress-card{min-height:154px;background:#faf6ee;border:1px solid #d8c9b6;padding:25px}
+.mat-progress-card strong{display:block;font:400 48px/1.25 Georgia,serif;color:#15302d;margin:10px 0 5px}
+.mat-progress-card small{font:12px/1.55 system-ui,sans-serif;color:#707066}
+.mat-progress-section{margin:20px 0 25px}
+.mat-progress-section h2{font:400 29px/1.3 Georgia,serif;color:#203a36}
+.mat-progress-section p{max-width:980px;line-height:1.7}
+.mat-progress-steps{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}
+.mat-progress-steps span{border:1px solid #cbb9a5;padding:11px 12px;background:#fffaf0;font:10px/1.4 monospace;color:#795741}
+.mat-worktable{margin-top:20px;border-top:1px solid #d9cbbb}
+.mat-workrow{display:grid;grid-template-columns:65px minmax(160px,1.6fr) 90px minmax(150px,1.2fr) minmax(200px,2fr);align-items:center;gap:15px;padding:14px 8px;border-bottom:1px solid #d9cbbb;color:#263934;font:12px/1.5 system-ui,sans-serif}
+.mat-workrow strong{font-weight:600;overflow-wrap:anywhere}
+.mat-workhead{color:#906749;letter-spacing:.1em;font:10px monospace}
+.mat-progress-section code{overflow-wrap:anywhere;font:12px/1.6 monospace}
+@media(max-width:1000px){.mat-progress-grid{grid-template-columns:repeat(2,1fr)}.mat-progress-grid>div:nth-child(2){border-right:0}.mat-progress-grid>div:nth-child(-n+2){border-bottom:1px solid #dacdbd}.mat-progress-cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.mat-progress-preview{padding:20px 15px}.mat-progress-grid,.mat-progress-cards{grid-template-columns:1fr}.mat-progress-grid>div{border-right:0!important;border-bottom:1px solid #dacdbd}.mat-progress-grid>div:last-child{border-bottom:0}.mat-workrow{grid-template-columns:45px 1fr;gap:4px 10px}.mat-workrow span:nth-child(3){grid-column:1}.mat-workrow span:last-child{grid-column:2}.mat-workrow .mat-workdetail{grid-column:1 / -1}.mat-workhead{display:none}}
+
+.mat-workdetail{font-size:11px;line-height:1.5;color:#78543c;overflow-wrap:anywhere}

@@ -8,6 +8,8 @@ $args=getopt('',['modo:','limite::','modelo::','refazer','ajuda']);
 if(isset($args['ajuda'])){echo "Uso: php cli/pipeline_cientifico.php --modo=diagnostico|api|exportar [--limite=5] [--modelo=gpt-4.1-mini] [--refazer]\n";exit;}
 $mode=(string)($args['modo']??'diagnostico');
 if(!in_array($mode,['diagnostico','api','exportar'],true)){fwrite(STDERR,"Modo invalido\n");exit(2);}
+// Evita acidentalmente consumir creditos pagos da antiga OpenAI API.
+if($mode==='api'){fwrite(STDERR,"Pontuacao OpenAI paga desativada neste fluxo: use laboratorio_cientifico.php --modo=pontuar (Gemini).\n");exit(2);}
 $limit=max(1,min(300,(int)($args['limite']??5)));
 $model=(string)($args['modelo']??'gpt-4.1-mini');
 $pdo=db();if(!$pdo){fwrite(STDERR,"MySQL indisponivel; inicie o MySQL no XAMPP\n");exit(2);}

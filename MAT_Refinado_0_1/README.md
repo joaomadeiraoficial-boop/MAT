@@ -1,3 +1,9 @@
+# MAT REFINADO + FINAL — MÉTODO NOVO ATIVO
+
+**Acesse `index.php?page=temporis` para o método atual**, acumulado sem compressão. O ZIP inclui os dados de 07/11/2026 para exibir gráficos mesmo sem o banco MySQL extra. Compare com as versões anteriores em `index.php?page=metodo`. **Leia `CORRECAO_METODO_PRINCIPAL.md` antes de instalar.**
+
+---
+
 # MAT · Versão Refinada 0.1
 ### Observatório do Tempo | Modelagem da Aceleração Tecnológica
 
@@ -80,3 +86,13 @@ são rejeitadas. Detalhes e regressões: `docs/CORRECOES_0_1_1.md`.
 
 As fórmulas e escalas originais **não foram alteradas**. Não houve migração de
 banco nesta revisão. Esta atualização não constitui validação científica.
+
+
+### Revisão corretiva 0.1.2 (05/11/2026)
+
+Reforço da curadoria humana, integridade de fontes, fila de dossiês incompletos, proteção de aprovação após alteração, datas pré-históricas, verificação de CSV, relatórios, sensibilidade leave-one-out e concordância de avaliadores. **Leia `MELHORIAS_E_LIMITACOES_0_1_2.md` e `GUIA_XAMPP_0_1_2.md` antes de instalar.** Esta revisão ainda requer teste com o banco científico real e não constitui validação histórica.
+
+
+### Revisão corretiva 0.1.2 (05/11/2026)
+
+Reforço da curadoria humana, integridade de fontes, fila de dossiês incompletos, proteção de aprovação após alteração, datas pré-históricas, verificação de CSV, relatórios, sensibilidade leave-one-out e concordância de avaliadores. **Leia `MELHORIAS_E_LIMITACOES_0_1_2.md` e `GUIA_XAMPP_0_1_2.md` antes de instalar.** Esta revisão ainda requer teste com o banco científico real e não constitui validação histórica.

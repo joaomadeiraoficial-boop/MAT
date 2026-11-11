@@ -1,0 +1,27 @@
+<?php
+declare(strict_types=1);
+require_once __DIR__.'/../app/TemporisPotenciaAtual.php';
+require_once __DIR__.'/../app/TemporisGraficos.php';
+$assert=static function(bool $ok,string $message):void{if(!$ok)throw new RuntimeException($message);};
+$p1=['id'=>'TEST-1','year'=>1800,'title'=>'Fato 1','I'=>2.,'C'=>.5,'F'=>1.,'score'=>.02];
+$p2=['id'=>'TEST-2','year'=>2000,'title'=>'Fato 2','I'=>4.,'C'=>1.,'F'=>1.5,'score'=>.24];
+$points=TemporisPotenciaAtual::preparar([$p1,$p2]);
+$assert(count($points)===2,'Perda de registros');
+$assert(abs($points[0]['score']-2.)<1e-12,'Peso original I²*C*F inválido');
+$assert(abs($points[1]['score']-24.)<1e-12,'Peso original segundo marco inválido');
+$calc=TemporisGraficos::curvas($points,1920);
+$assert(abs($calc['k_base']-2.)<1e-12,'Ano-base não respeitado');
+$assert(abs($calc['k_total']-26.)<1e-12,'Acúmulo incorreto');
+$assert(abs($calc['series'][1]['potencia']-100*pow(13,.65))<1e-8,'Expoente 0,65 incorreto');
+$calcNoBase=TemporisGraficos::curvas($points,1700);
+$assert($calcNoBase['normalizavel']===false && $calcNoBase['series'][1]['potencia']===null,'Sem base deve ficar indefinido');
+$assert(TemporisPotenciaAtual::peso(['I'=>10,'C'=>2,'F'=>1])===null,'Confiabilidade inválida não rejeitada');
+$assert(TemporisPotenciaAtual::peso(['I'=>0,'C'=>.5,'F'=>1])===null,'Impacto inválido não rejeitado');
+$svg=TemporisGraficos::svgCronologico($points,1920,'potencia',false);
+$assert(str_contains($svg,'Potência 0,65'),'Legenda de potência incorreta');
+$assert(str_contains($svg,'TEST-1'),'Falta identificação do marco');
+$view=file_get_contents(__DIR__.'/../views/temporis_legado.php');
+$assert(!str_contains($view,'all_markers('),'Página ainda lê acervo legado');
+$assert(str_contains($view,'TemporisCuradoria::consultar'),'Página não lê curadoria atual');
+$assert(str_contains($view,'SELECT COUNT(*) FROM cur_candidatos'),'Total de candidatos não usa a curadoria');
+echo "OK: teste de fonte, fórmula original, ordenação, base, gráfico, nulidade e escopo do banco.\n";

@@ -1,0 +1,17 @@
+/* Cadastro opcional de intervalos; elementos ocultos não ocupam espaço. */
+.mat-date-editor { border:1px solid #cbbd9f; padding:14px; margin:12px 0; border-radius:5px; }
+.mat-date-editor legend { font-weight:700; color:#16403b; padding:0 6px; }
+.mat-date-editor [hidden] { display:none!important; }
+.mat-date-editor label { display:block; margin:10px 0; }
+.mat-date-years { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.mat-date-editor p,.mat-date-editor small { color:#785b45; font-size:.87em; }
+@media (max-width:650px){.mat-date-years{grid-template-columns:1fr}}
+
+.tempo-series-switch{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0;}
+.tempo-series-switch a{padding:10px 14px;border:1px solid #c7b89e;text-decoration:none;color:#17362f;border-radius:5px;}
+.tempo-series-switch a.active{background:#173a37;color:#fff;}
+.tempo-lab h3{font-family:Georgia,serif;font-weight:normal;font-size:1.35rem;margin:22px 0 6px;}
+.mat-lab-table-wrap{width:100%;overflow-x:auto;}
+.mat-lab-table{border-collapse:collapse;width:100%;min-width:580px;font-size:.89rem;}
+.mat-lab-table th,.mat-lab-table td{padding:10px;border-bottom:1px solid #d6c9b5;text-align:left;white-space:nowrap;}
+.mat-lab-table thead{background:#ece6d9;}

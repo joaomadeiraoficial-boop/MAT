@@ -1,0 +1,59 @@
+MAT / Têmporis — Atualização: fila de revisão rápida
+Data: 04/11/2026
+
+O QUE MUDA
+- Página "Pesquisa e curadoria -> Fila de revisão rápida".
+- Lista baseada apenas nos dossiês reais que têm 11 notas de 0 a 3.
+- Filtros: para decidir, sem bloqueios formais, com pendências, aprovados, homologados e todos.
+- Mostra as 11 justificativas e fontes no mesmo lugar, sem abrir 11 painéis.
+- Botão "Aprovar e próximo" após a confirmação humana.
+- Botões "Manter em revisão" e "Rejeitar" levam à próxima ficha da fila.
+- Separação rigorosa entre aprovação e homologação. Sem aprovações em lote.
+- Atalhos: Alt+J próxima e Alt+K anterior, fora de campos de texto.
+- Todas as decisões passam pelo mesmo serviço que já registra usuário/motivo em cur_log.
+
+INSTALAÇÃO — PACOTE DE ATUALIZAÇÃO (RECOMENDADO)
+1. Faça backup da sua pasta MAT_Refinado_0_1 antes de qualquer alteração.
+2. Abra MAT_ATUALIZACAO_FILA_RAPIDA.zip, que contém MAT_Refinado_0_1/.
+3. Copie essa pasta para a pasta-mãe onde o seu MAT_Refinado_0_1 já existe,
+   selecionando "Mesclar" / "Substituir os arquivos de mesmo nome".
+   O objetivo é PRESERVAR todos os outros arquivos e o seu config.local.php.
+4. Abra o MAT e faça login como pesquisador.
+5. No menu esquerdo: Pesquisa e curadoria > Fila de revisão rápida.
+6. Priorize o filtro "Sem bloqueios formais"; confira as notas e as fontes;
+   escreva a justificativa, marque a confirmação e aprove cada ficha.
+7. Para os dossiês bloqueados, abra "Corrigir na ficha completa".
+
+Exemplos de acesso:
+http://localhost/MAT_Refinado_0_1/index.php?page=fila_rapida
+ou
+http://localhost/MAT_Refinado_Git/MAT_Refinado_0_1/index.php?page=fila_rapida
+(adapte ao caminho real em htdocs).
+
+ATENÇÃO
+- É atualização PHP/CSS/JS, NÃO é SQL: não deve ser importada no phpMyAdmin.
+- Não cria nem modifica tabelas, NÃO mexe nas 600 fichas atuais e não reseta notas.
+- Só altera estados quando você pressiona uma decisão; aprovação exige conferência
+  e é bloqueada se houver data ausente, duplicidade/pendência, fontes não vinculadas,
+  justificativa ausente ou notas incompletas.
+- 11 notas preenchidas NÃO significam avaliação científica aprovada.
+- Homologação é separada. O Índice Têmporis oficial não inclui propostas só por terem 11 notas.
+- A contagem real de dossiês elegíveis depende do MySQL. Não pressupõe que os 110
+  com notas completas estejam todos aptos.
+
+TESTE OPCIONAL (PowerShell, na raiz do MAT_Refinado_0_1):
+& "C:\xampp\php\php.exe" ".\tests\test_fila_rapida.php"
+& "C:\xampp\php\php.exe" ".\tests\test_revisao_curadoria.php"
+& "C:\xampp\php\php.exe" ".\tests\test_navegacao_curadoria.php"
+(adapte o caminho php.exe à instalação do XAMPP.)
+
+ARQUIVOS ADICIONADOS/ALTERADOS
+Adicionados: app/CuradoriaFilaRapida.php, views/fila_rapida.php,
+ assets/fila-rapida.css, assets/fila-rapida.js, tests/test_fila_rapida.php.
+Alterados: index.php, actions.php, views/header.php, views/andamento.php,
+ views/rodadas.php, tests/test_navegacao_curadoria.php.
+
+LIMITE DOS TESTES
+Testei a sintaxe PHP e as regras/navegação sem banco. Não tenho acesso à
+sua instalação XAMPP/MySQL, portanto ainda falta fazer um teste completo
+com gravação real de aprovação e homologação no seu ambiente.

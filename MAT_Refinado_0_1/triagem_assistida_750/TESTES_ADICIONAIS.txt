@@ -1,0 +1,37 @@
+PHP lint: 142 arquivos, falhas=0
+Suítes: 32/32 aprovadas
+
+test_assistente_ia.php: OK
+test_auditoria_ambiguidades.php: OK
+test_auditoria_automatica.php: OK
+test_auditoria_material_acervo.php: OK
+test_backtest_temporis.php: OK
+test_concordancia_csv.php: OK
+test_core.php: OK
+test_duplicatas_explicaveis.php: OK
+test_duplicatas_transacao_fake.php: OK
+test_fila_correcoes.php: OK
+test_fila_rapida.php: OK
+test_gemini_mat.php: OK
+test_integracao_pagina_backtest.php: OK
+test_laboratorio_cientifico.php: OK
+test_melhorias_2026.php: OK
+test_menu_inicial.php: OK
+test_modo_real.php: OK
+test_navegacao_curadoria.php: OK
+test_navegacao_mat_proj.php: OK
+test_normalizacao_candidatos.php: OK
+test_pagina_temporis.php: OK
+test_painel_cientifico.php: OK
+test_pendencias_pontuacao.php: OK
+test_pipeline_cientifico.php: OK
+test_pontuacao_acervo.php: OK
+test_pontuacao_compat.php: OK
+test_regressoes_0_1_1.php: OK
+test_revisao_curadoria.php: OK
+test_science.php: OK
+test_selecao_300.php: OK
+test_temporis_intervalos.php: OK
+test_temporis_piloto.php: OK
+
+[]

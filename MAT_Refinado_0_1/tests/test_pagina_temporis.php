@@ -10,13 +10,14 @@ ob_start();
 try {
     require __DIR__.'/../resultado_temporis_piloto.php';
     $html=(string) ob_get_clean();
-    if(!str_contains($html, 'Resultado <em>demonstrativo</em> da Têmporis')) {
+    if(!str_contains($html, 'Entender antes de') || !str_contains($html,'validar.')) {
         throw new RuntimeException('Pagina nao gerou o titulo esperado.');
     }
-    if(!str_contains($html, 'ENSAIO') || !str_contains($html,'118,59')) {
-        throw new RuntimeException('Valores e rotulos didaticos ausentes da pagina.');
+    if(!str_contains($html, 'ENSAIO COM DADOS REAIS') || !str_contains($html,'sem inventar notas')) {
+        throw new RuntimeException('Avisos cientificos ausentes da pagina.');
     }
-    echo "[OK] Pagina web carregou, calculou T=118,59 e preservou rotulo didatico.\n";
+    if(str_contains($html,'118,59')) throw new RuntimeException('Resultado sintético antigo nao pode reaparecer.');
+    echo "[OK] Ensaio didatico separado carregou sem valor inventado.\n";
     echo "[OK] Classe RevisedMethodology disponivel.\n";
     echo "PAGINA TEMPORIS: TESTE DE INTEGRACAO APROVADO.\n";
 } catch(Throwable $e) {

@@ -1,0 +1,33 @@
+MAT — Revisão rápida 2.0 (atualização 04/11/2026)
+=================================================
+
+INSTALE O ARQUIVO ZIP DE ATUALIZAÇÃO (recomendado)
+
+1. Faça uma cópia de segurança da pasta MAT_Refinado_0_1 e um backup de mat_temporis_curadoria no phpMyAdmin.
+2. Extraia o ZIP. Copie a pasta MAT_Refinado_0_1 de dentro dele para a pasta existente do projeto no htdocs do XAMPP.
+3. Mescle os diretórios e permita substituir os arquivos iguais.
+4. Não apague nem substitua seu config.local.php (ele não está incluído no ZIP).
+5. Atualize a página no navegador usando Ctrl+F5.
+6. Em Pesquisa e curadoria > Fila de revisão rápida, clique em "Com pendências".
+7. Use "Quero resolver" para filtrar por data, pendências, duplicatas, fontes e rubricas.
+8. Abra o dossiê, corrija diretamente pela fila e salve seu parecer documental.
+9. Se todos os bloqueios forem resolvidos, você será levado ao filtro "Sem bloqueios formais" para conferir e aprovar aquele candidato.
+10. Após aprovar, use o filtro "Aprovados" para homologar individualmente os registros conferidos.
+
+ATENÇÃO À METODOLOGIA
+- 11 notas NÃO significam que o acontecimento está validado.
+- A aprovação exige conferência das evidências e declaração explícita do pesquisador.
+- A homologação é segunda decisão, também individual.
+- Duplicatas comprovadas NÃO devem ser apagadas para aprovar dois eventos iguais.
+- Toda correção guarda justificativa, usuário, estado anterior e posterior em cur_log.
+- Uma nova fonte não é automaticamente ligada a cada rubrica. Revise esse vínculo separadamente.
+- Não há alteração de fórmula, de pesos, das séries matemáticas ou migração SQL.
+- Não rode scripts de importação para instalar esta interface.
+
+O ZIP COMPLETO também está disponível, mas pode não conter ajustes locais feitos após a versão anteriormente enviada. Por isso prefira o pacote pequeno de atualização.
+
+TESTES OFFLINE
+- Sintaxe PHP em todos os arquivos
+- Testes de revisão e filtros; proteção CSRF e trilha de auditoria
+- Novo suporte a IDs MCD-xxxxx e TEMP-Rxx-xxx
+- Fluxos MySQL reais dependem da sua instalação XAMPP; NÃO foram executados nesta cópia.

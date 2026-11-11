@@ -1,0 +1,69 @@
+MAT — Têmporis 0.2 + Revisão Humana (atualização incremental)
+===========================================================
+
+O QUE ESSA ATUALIZAÇÃO FAZ
+- Separa Têmporis REFORMULADA (logarítmica) e ORIGINAL (legado; potência 0,65) em duas páginas do menu.
+- Conecta a versão reformulada ao banco mat_temporis_curadoria para produzir uma prévia experimental das notas propostas.
+- Calcula série homologada SOMENTE com dossiês homologados, sem alterar o índice legado.
+- Cria decisão humana na ficha de cada candidato: Em revisão, Rejeitar, Aprovar e Homologar.
+- Exige ano validado, 11 critérios com justificativa, fontes vinculadas e resolução das pendências antes de Aprovar.
+- Permite revisão das notas (0, 1, 2, 3 ou SEM_EVIDENCIA) e metadados do acontecimento, com justificativa.
+- Preserva dados rejeitados, mantém histórico de alterações em cur_log e nunca apaga fisicamente candidatos.
+- Atualiza os indicadores de revisão do painel de Progresso científico.
+
+COMO INSTALAR — XAMPP / WINDOWS
+1. Pare edições no MAT e FAÇA BACKUP COMPLETO da pasta MAT_Refinado_0_1 e do banco mat_temporis_curadoria (exportação pelo phpMyAdmin).
+2. Extraia este ZIP para uma pasta temporária.
+3. Copie index.php, actions.php, as pastas app/, views/, assets/, tests/ da atualização para D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git\MAT_Refinado_0_1\, permitindo mesclar pastas e substituir os arquivos de mesmo nome.
+4. Não substitua config.local.php e não execute SQL: este pacote não modifica esquema nem importa dados.
+5. Abra o XAMPP, inicie Apache e MySQL e recarregue com Ctrl+F5.
+
+ABRIR
+- Versão reformulada: http://localhost/MAT_Refinado_Git/MAT_Refinado_0_1/index.php?page=temporis
+- Versão original: http://localhost/MAT_Refinado_Git/MAT_Refinado_0_1/index.php?page=temporis_legado
+- Revisão e rodadas: http://localhost/MAT_Refinado_Git/MAT_Refinado_0_1/index.php?page=rodadas
+- Progresso: http://localhost/MAT_Refinado_Git/MAT_Refinado_0_1/index.php?page=andamento
+
+EXEMPLO DE FLUXO
+1. Abrir um candidato, conferir fontes, justificativas e pendências.
+2. Marcar Em revisão e registrar justificativa humana (não homologa).
+3. Corrigir ano, resolver pendências após investigação e revisar notas, quando necessário.
+4. Aprovar o dossiê: exige conferência humana marcada e requisitos completos.
+5. Homologar em ato separado: passa a permitir cálculo oficial (sem validação científica externa implícita).
+6. Se surgirem novas informações, reabrir com justificativa; volta ao estado Em revisão e sai da série homologada.
+
+REGRAS CIENTÍFICAS
+- Método original: P_i = I_i^2 (C_i/100) F_i; T = 100 (K/K_base)^0,65.
+  A versão legada implementada inclui conversões experimentais das antigas notas 1..5.
+- Método reformulado: S_I (4 critérios), S_C (4), S_F (3), cada rubrica 0..3 mediante comprovação.
+  I = 1 + 9 S_I/12 ; C = S_C/12 ; F = 1 + 0,5 S_F/9.
+  w_i = (I_i/10)^2 C_i F_i ; K(t)=somatório dos pesos até t.
+  T(t)=100 ln(1+K(t))/ln(1+K(t0)), com t0=1920 nesta versão, ajustável em config.local.php sob a chave temporis_reformulada_ano_base.
+- SEM_EVIDENCIA NÃO é zero; zero é uma avaliação explícita de não atendimento, com justificativa e fonte.
+- A prévia experimental depende de notas completas e ANO VALIDADO. Não usa datas extraídas que possam estar erradas.
+- Se não houver peso acumulado homologado antes do ano-base, NÃO aparece um índice oficial inventado.
+- Aprovação interna pelo pesquisador não equivale a validação independente nem a comprovação de aceleração.
+
+SEGURANÇA E TESTES
+- Ações POST exigem sessão de administrador, token CSRF e justificativa (>=15 caracteres).
+- Usa transações PDO e consultas parametrizadas para decisões e alterações.
+- O histórico com autor, motivo e antes/depois é gravado em cur_log.
+- Não há DROP, DELETE, TRUNCATE nem alterações no esquema da base.
+- Testes locais: php tests/test_revisao_curadoria.php
+- Testes PHP foram realizados fora do XAMPP. É necessário testar a conexão real no seu computador.
+
+ARQUIVOS DO PACOTE (somente os desta atualização)
+index.php
+actions.php
+app/CuradoriaRodadas.php
+app/CuradoriaRevisao.php
+app/TemporisCuradoria.php
+views/header.php
+views/rodadas.php
+views/temporis.php
+views/temporis_legado.php
+views/andamento.php
+assets/revisao-temporis.css
+tests/test_revisao_curadoria.php
+
+Observação: o conteúdo-base foi montado a partir das atualizações anteriormente compartilhadas. Se você tiver alterações locais adicionais nesses arquivos, compare/guarde cópia antes de substituir.

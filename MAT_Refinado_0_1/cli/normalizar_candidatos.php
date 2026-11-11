@@ -6,6 +6,8 @@ foreach(['TriagemLoteReal','AuditoriaAmbiguidade','NormalizacaoCandidatos'] as $
 $args=getopt('',['modo:','limite:','modelo:','provedor:','refazer']);
 $mode=(string)($args['modo']??'diagnostico');
 if(!in_array($mode,['diagnostico','api'],true)){fwrite(STDERR,"Modo use: diagnostico|api\n");exit(2);}
+// MAT 2.0: Gemini reservado a pontuacao; diagnostico legado permanece disponivel.
+if($mode==='api'){fwrite(STDERR,"Identificacao por Gemini desativada: use laboratorio_cientifico.php --modo=pontuar. A identificacao anterior permanece preservada.\n");exit(2);}
 $limit=max(1,min(300,(int)($args['limite']??3)));
 $model=(string)($args['modelo']??'gemini-2.5-flash-lite');
 $provider=(string)($args['provedor']??'gemini');

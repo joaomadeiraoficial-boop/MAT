@@ -8,11 +8,149 @@ if($action==='login') {
     if(!db()){flash('error','Configure o banco antes de acessar a administração.');redirect_to('login');}
     $email=trim((string)($_POST['email']??''));$password=(string)($_POST['senha']??'');
     $q=db()->prepare('SELECT id,nome,email,senha_hash FROM usuarios WHERE email=? LIMIT 1');$q->execute([$email]);$u=$q->fetch();
-    if($u && password_verify($password,$u['senha_hash'])) {session_regenerate_id(true);$_SESSION['mat_user']=['id'=>$u['id'],'nome'=>$u['nome'],'email'=>$u['email']];flash('success','Sessão iniciada.');redirect_to('acervo');}
+    if($u && password_verify($password,$u['senha_hash'])) {session_regenerate_id(true);$_SESSION['mat_user']=['id'=>$u['id'],'nome'=>$u['nome'],'email'=>$u['email']];flash('success','Sessão iniciada.');$after=(string)($_POST['return_page']??'acervo');redirect_to(in_array($after,['rodadas','andamento','fila_rapida'],true)?$after:'acervo');}
     flash('error','Credenciais inválidas.');redirect_to('login');
 }
 if($action==='logout'){$_SESSION=[];session_regenerate_id(true);flash('success','Sessão encerrada.');redirect_to('observatorio');}
 require_admin();
+if($action==='curadoria_modo'){
+    require_once __DIR__.'/app/CuradoriaPolitica.php';
+    try{
+        CuradoriaPolitica::selecionar((string)($_POST['modo']??''));
+        flash('success','Modo de curadoria alterado para '.CuradoriaPolitica::modo().'. Nenhum dado foi alterado.');
+    }catch(Throwable $e){flash('error',$e->getMessage());}
+    redirect_to('fila_rapida');
+}
+if($action==='curadoria_minimos_lote'){
+    require_once __DIR__.'/app/CuradoriaNormalizacaoMinima.php';
+    try{
+        if(CuradoriaPolitica::modo()!==CuradoriaPolitica::SIMPLIFICADO)throw new InvalidArgumentException('Ative o modo simplificado antes do lote.');
+        if(empty($_POST['confirmacao_provisoria']))throw new InvalidArgumentException('Confirme a natureza provisória de todas as notas.');
+        $pdo=CuradoriaRodadas::connect();
+        if(!$pdo)throw new RuntimeException('Banco de curadoria indisponível.');
+        $r=CuradoriaNormalizacaoMinima::proximoLote($pdo,current_user()??[],(string)($_POST['motivo']??''));
+        flash($r['falhas']?'error':'success',$r['marcos'].' dossiê(s) processado(s), '.$r['notas'].' nota(s) 1 provisória(s). Falhas: '.count($r['falhas']).'. Nenhum candidato homologado.');
+    }catch(Throwable $e){flash('error',$e instanceof InvalidArgumentException?$e->getMessage():'Não foi possível processar o lote.');}
+    redirect_to('fila_rapida',['filtro'=>'todos']);
+}
+if($action==='curadoria_minimos'){
+    require_once __DIR__.'/app/CuradoriaNormalizacaoMinima.php';
+    $id=strtoupper(trim((string)($_POST['id_extracao']??'')));
+    try{
+        if(CuradoriaPolitica::modo()!==CuradoriaPolitica::SIMPLIFICADO)throw new InvalidArgumentException('Ative o modo simplificado antes de usar o preenchimento mínimo.');
+        if(empty($_POST['confirmacao_provisoria']))throw new InvalidArgumentException('Confirme que a nota 1 é provisória e não representa evidência histórica.');
+        $pdo=CuradoriaRodadas::connect();
+        if(!$pdo)throw new RuntimeException('Banco de curadoria desconectado.');
+        $res=CuradoriaNormalizacaoMinima::aplicar($pdo,$id,current_user()??[],(string)($_POST['motivo']??''));
+        if((int)$res['total']===0){
+            flash('error','Nenhuma nota foi alterada: as rubricas já estão preenchidas ou não há critério elegível.');
+        } else {
+            flash('success',$res['total'].' nota(s) 1 provisória(s) confirmada(s) no banco; nenhuma homologação realizada.');
+        }
+    }catch(Throwable $e){flash('error',$e instanceof InvalidArgumentException?$e->getMessage():'A operação falhou sem alterar parcialmente o dossiê.');}
+    redirect_to('fila_rapida',['filtro'=>'todos','id'=>$id,'foco'=>'mat-fast-criteria']);
+}
+// O banco cientifico da curadoria e separado do acervo legado. Acoes auditiveis.
+if(in_array($action,['curadoria_decisao','curadoria_metadados','curadoria_criterio','curadoria_fonte'],true)){
+    require_once __DIR__.'/app/CuradoriaRevisao.php';
+    $id=strtoupper(trim((string)($_POST['id_extracao']??'')));
+    $op=match($action){
+        'curadoria_decisao'=>(string)($_POST['decisao']??''),
+        'curadoria_metadados'=>'metadados',
+        'curadoria_fonte'=>'fonte',
+        default=>'criterio',
+    };
+    $msg=null;
+    try{
+        $pdo=CuradoriaRodadas::connect();
+        if(!$pdo)throw new RuntimeException('Banco de curadoria desconectado.');
+        $msg=CuradoriaRevisao::executar($pdo,$id,$op,$_POST,current_user()??[]);
+        flash('success',$msg);
+        if(($_POST['origem']??'')==='fila_rapida'){
+            unset($_SESSION['mat_fast_draft'],$_SESSION['mat_fast_criterion_draft']);
+        }
+    } catch (Throwable $e){
+        error_log('MAT decisao de curadoria: '.$e->getMessage());
+        flash('error',$e instanceof InvalidArgumentException ? $e->getMessage() : 'Erro ao gravar no MySQL. Nenhuma alteracao desta tentativa foi aplicada. Confira o log do PHP/Apache.');
+        if(($_POST['origem']??'')==='fila_rapida' && $action==='curadoria_metadados'){
+            // Retem os rascunhos apenas nesta sessao, para nao obrigar o pesquisador a digitar novamente.
+            $campos=[];
+            foreach(['modo_datacao','ano_validado','intervalo_tipo','intervalo_inicio','intervalo_fim','intervalo_fonte_id','intervalo_justificativa',
+                      'pendencias_resolvidas','parecer_pendencias','fonte_pendencias','duplicatas_resolvidas','parecer_duplicatas','fonte_duplicatas',
+                      'criterios_complementares','motivo','confirmacao_documental'] as $key){
+                if(array_key_exists($key,$_POST))$campos[$key]=$_POST[$key];
+            }
+            if(strlen(json_encode($campos,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE))<26000)
+                $_SESSION['mat_fast_draft']=['id'=>$id,'fields'=>$campos];
+        }
+        if(($_POST['origem']??'')==='fila_rapida' && $action==='curadoria_criterio'){
+            $campos=[];
+            foreach(['nota','justificativa','fontes_ids','motivo'] as $key){
+                if(isset($_POST[$key]) && is_string($_POST[$key]))$campos[$key]=substr($_POST[$key],0,8500);
+            }
+            $codigo=(string)($_POST['codigo']??'');
+            if(isset(CuradoriaRodadas::CRITERIOS[$codigo]))
+                $_SESSION['mat_fast_criterion_draft']=['id'=>$id,'codigo'=>$codigo,'fields'=>$campos];
+        }
+    }
+    // Na fila rápida o retorno é interno e a próxima ficha foi escolhida na lista do servidor.
+    // Não aceitar URLs arbitrárias nem automatizar outras decisões.
+    if(($_POST['origem']??'')==='fila_rapida'){
+        $filtro=(string)($_POST['retorno_filtro']??'pendentes');
+        $validos=['pendentes','incompletos','aptos','bloqueados','aprovados','homologados','todos'];
+        if(!in_array($filtro,$validos,true))$filtro='pendentes';
+        $busca=substr(trim((string)($_POST['retorno_busca']??'')),0,100);
+        $sucesso=isset($msg) && is_string($msg);
+        $problema=(string)($_POST['retorno_problema']??'');
+        if(!in_array($problema,['','ano','pendencias','duplicatas','fontes','rubricas'],true))$problema='';
+        // Ao resolver o último bloqueio, leva o mesmo registro à fila de aprovação.
+        if($sucesso && $action!=='curadoria_decisao' && $filtro==='bloqueados'){
+            try{
+                $updated=CuradoriaRodadas::record($pdo,$id);
+                if($updated && !CuradoriaRevisao::impedimentos($updated)){$filtro='aptos';$problema='';}
+            }catch(Throwable $e){error_log('MAT conferência de retorno rápido: '.$e->getMessage());}
+        }
+        $proximo= $action==='curadoria_decisao' ? strtoupper(trim((string)($_POST['proximo_id']??''))) : $id;
+        if(!$sucesso || !CuradoriaRodadas::validId($proximo))$proximo=$sucesso?'':$id;
+        $params=['filtro'=>$filtro];
+        if($busca!=='')$params['busca']=$busca;
+        if($problema!=='' && $filtro==='bloqueados')$params['problema']=$problema;
+        if($proximo!=='')$params['id']=$proximo;
+        if(!$sucesso && $action!=='curadoria_decisao'){
+            $foco=match($action){
+                'curadoria_metadados'=>'mat-fast-edit-meta',
+                'curadoria_fonte'=>'mat-fast-add-source',
+                'curadoria_criterio'=>'mat-fast-criterion-'.(string)($_POST['codigo']??''),
+                default=>'',
+            };
+            if(preg_match('/^(mat-fast-edit-meta|mat-fast-add-source|mat-fast-criterion-[a-z_]+)$/D',$foco))$params['foco']=$foco;
+        }
+        if($sucesso && $action!=='curadoria_decisao'){
+            $foco=match($action){
+                'curadoria_metadados'=>$filtro==='aptos'?'decisao-rapida':'mat-fast-edit-meta',
+                'curadoria_fonte'=>'mat-fast-add-source',
+                'curadoria_criterio'=>'mat-fast-criterion-'.(string)($_POST['codigo']??''),
+                default=>'',
+            };
+            if(preg_match('/^(mat-fast-edit-meta|mat-fast-add-source|mat-fast-criterion-[a-z_]+|decisao-rapida)$/D',$foco))$params['foco']=$foco;
+        }
+        redirect_to('fila_rapida',$params);
+    }
+    redirect_to('rodadas',CuradoriaRodadas::validId($id)?['id'=>$id]:[]);
+}
+// Parecer de duplicatas da curadoria cientifica (banco separado).
+if($action==='curadoria_par_decisao'){
+    require_once __DIR__.'/app/CuradoriaDuplicatas.php';
+    try{
+        $pdo=CuradoriaRodadas::connect();
+        if(!$pdo)throw new RuntimeException('Banco de curadoria indisponível.');
+        flash('success',CuradoriaDuplicatas::registrar($pdo,$_POST,current_user()??[]));
+    }catch(Throwable $e){
+        error_log('MAT parecer de par: '.$e->getMessage());
+        flash('error',$e instanceof InvalidArgumentException?$e->getMessage():'Não foi possível registrar o parecer.');
+    }
+    redirect_to('duplicatas',['origem'=>'curadoria']);
+}
 if(!db()){http_response_code(503);exit('Banco de dados indisponivel.');}
 
 // Modulo cientifico importado de forma nativa na estrutura do Observatorio.
@@ -63,6 +201,10 @@ if($action==='source_link'){
     db()->beginTransaction();try{
         $q=db()->prepare('INSERT INTO marco_fontes(marco_id,fonte_id,papel,pagina,trecho) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE pagina=VALUES(pagina),trecho=VALUES(trecho)');
         $q->execute([$id,$source,$role,$page,$excerpt]);
+        if(($m=find_marker($id)) && ($m['status']??'')==='aprovado') {
+            db()->prepare("UPDATE marcos SET status='pendente',incluir_temporis=0 WHERE id=?")->execute([$id]);
+            science_log($id,'reabertura_por_evidencia',['status'=>'aprovado'],['status'=>'pendente','motivo'=>'Fonte/vínculo documental alterado']);
+        }
         science_log($id,'vinculo_fonte',[],['fonte_id'=>$source,'papel'=>$role,'pagina'=>$page]);
         db()->commit();flash('success','Fonte vinculada ao dossiê.');
     }catch(Throwable $e){db()->rollBack();error_log($e->getMessage());flash('error','Não foi possível vincular a fonte.');}
@@ -74,13 +216,57 @@ if($action==='duplicates_scan'){
     redirect_to('duplicatas');
 }
 if($action==='duplicate_decision'){
-    $id=(int)($_POST['id']??0);$decision=(string)($_POST['decision']??'');
-    if(!in_array($decision,['nao_duplicado','revisao_manual'],true)){flash('error','Decisão inválida.');redirect_to('duplicatas');}
-    $q=db()->prepare("UPDATE duplicate_candidates SET status=?,revisado_em=NOW() WHERE id=? AND status='pendente'");$q->execute([$decision,$id]);
-    flash('success',$q->rowCount()?'Parecer registrado. Nenhum marco foi apagado.':'O par não está pendente.');redirect_to('duplicatas');
+    $id=(int)($_POST['id']??0);
+    $decision=(string)($_POST['decision']??'');
+    $allowed=['manter_a','manter_b','nao_duplicado','revisao_manual'];
+    if($id<1||!in_array($decision,$allowed,true)){
+        flash('error','Decisão inválida.');redirect_to('duplicatas');
+    }
+    $motivo=trim((string)($_POST['motivo']??''));
+    if(function_exists('mb_substr'))$motivo=mb_substr($motivo,0,1000,'UTF-8');
+    else $motivo=substr($motivo,0,1000);
+    $pdo=db();
+    try{
+        $pdo->beginTransaction();
+        $q=$pdo->prepare("SELECT d.id,d.status,d.marco_a,d.marco_b,
+            a.titulo AS titulo_a,b.titulo AS titulo_b
+            FROM duplicate_candidates d
+            JOIN marcos a ON a.id=d.marco_a JOIN marcos b ON b.id=d.marco_b
+            WHERE d.id=? FOR UPDATE");
+        $q->execute([$id]);$pair=$q->fetch(PDO::FETCH_ASSOC);
+        if(!$pair)throw new InvalidArgumentException('Par de registros não encontrado.');
+        $status=(string)$pair['status'];
+        if(!in_array($status,['pendente','revisao_manual'],true))
+            throw new InvalidArgumentException('Este par já tem uma decisão final; não será alterado automaticamente.');
+        $principal=$decision==='manter_a'?(int)$pair['marco_a']:($decision==='manter_b'?(int)$pair['marco_b']:null);
+        $secundario=$decision==='manter_a'?(int)$pair['marco_b']:($decision==='manter_b'?(int)$pair['marco_a']:null);
+        $novoStatus=$decision==='nao_duplicado'?'nao_duplicado':'revisao_manual';
+        $upd=$pdo->prepare('UPDATE duplicate_candidates SET status=?,revisado_em=NOW() WHERE id=?');
+        $upd->execute([$novoStatus,$id]);
+        // Usar o mesmo log de auditoria já presente no MAT.
+        // Nenhum marco é excluído, mesclado, rejeitado ou homologado aqui.
+        science_log((int)$pair['marco_a'],'duplicata_'.$decision,
+           ['par_id'=>$id,'status_anterior'=>$status],
+           ['par_id'=>$id,'principal_id'=>$principal,'secundario_id'=>$secundario,
+            'marco_a'=>(int)$pair['marco_a'],'marco_b'=>(int)$pair['marco_b'],
+            'motivo'=>$motivo,'status_novo'=>$novoStatus,
+            'nota'=>'Escolha humana de referencia no par; nao exclui nem altera elegibilidade de marcos.']);
+        $pdo->commit();
+        $mensagens=['manter_a'=>'Registro A definido como referência principal do par.',
+            'manter_b'=>'Registro B definido como referência principal do par.',
+            'nao_duplicado'=>'Os assuntos foram marcados como distintos.',
+            'revisao_manual'=>'O par ficou marcado para investigação posterior.'];
+        flash('success',$mensagens[$decision].' Ambos os originais foram preservados.');
+    }catch(Throwable $e){
+        if($pdo->inTransaction())$pdo->rollBack();
+        error_log('MAT duplicatas: '.$e->getMessage());
+        flash('error',$e instanceof InvalidArgumentException?$e->getMessage():'Não foi possível registrar a decisão.');
+    }
+    redirect_to('duplicatas');
 }
 
 if($action==='save'){
+    require_once __DIR__.'/app/MarcoRevisao.php';
     $id=(int)($_POST['id']??0);$existing=$id?find_marker($id):null;
     $title=trim((string)($_POST['titulo']??''));$yearText=trim((string)($_POST['ano']??''));
     if($title==='' || strlen($title)>250 || !preg_match('/^-?\d{1,7}$/',$yearText)) {flash('error','Informe título e ano válido.');redirect_to('editar',$id?['id'=>$id]:[]);}
@@ -110,13 +296,15 @@ if($action==='save'){
         'imagem_url'=>$img, 'impacto'=>$impact,'confiabilidade'=>$conf,'fator_fundacional'=>$foundation,'status'=>$status,'incluir_temporis'=>$status==='aprovado'?($existing['incluir_temporis']??0):0
     ];
     if($fields['descricao']===''){flash('error','A descrição é obrigatória.');redirect_to('editar',$id?['id'=>$id]:[]);}
+    $camposAlterados=$existing?MarcoRevisao::invalidarAprovacao($existing,$fields):[];
+    $reabriu=($existing['status']??'')==='aprovado' && $camposAlterados!==[];
     try {
       db()->beginTransaction();
       if($existing){$set=implode(', ',array_map(fn($k)=>"`$k`=:$k",array_keys($fields)));$stmt=db()->prepare("UPDATE marcos SET $set WHERE id=:id");$stmt->execute($fields+['id'=>$id]);}
       else{$keys=array_keys($fields);$cols=implode(',',array_map(fn($k)=>"`$k`",$keys));$holders=implode(',',array_map(fn($k)=>':'.$k,$keys));$stmt=db()->prepare("INSERT INTO marcos($cols) VALUES($holders)");$stmt->execute($fields);$id=(int)db()->lastInsertId();}
       $log=db()->prepare('INSERT INTO revisoes(marco_id,usuario_id,operacao,dados_anteriores,dados_novos) VALUES(?,?,?,?,?)');
-      $log->execute([$id,current_user()['id'],$existing?'atualizacao':'criacao',json_encode($existing,JSON_UNESCAPED_UNICODE),json_encode($fields,JSON_UNESCAPED_UNICODE)]);
-      db()->commit();flash('success','Marco registrado e alteração documentada.');redirect_to('marco',['id'=>$id]);
+      $log->execute([$id,current_user()['id'],$reabriu?'reabertura_por_edicao':($existing?'atualizacao':'criacao'),json_encode($existing,JSON_UNESCAPED_UNICODE),json_encode($fields+['campos_alterados'=>$camposAlterados],JSON_UNESCAPED_UNICODE)]);
+      db()->commit();flash('success',$reabriu?'Alterações científicas salvas. Aprovação e inclusão na Têmporis reabertas para nova conferência.':'Marco registrado e alteração documentada.');redirect_to('marco',['id'=>$id]);
     }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();error_log($e->getMessage());flash('error','Não foi possível salvar. Verifique se já existe um marco com o mesmo nome e ano.');redirect_to('editar',$id?['id'=>$id]:[]);}
 }
 if($action==='delete'){
@@ -135,16 +323,19 @@ if($action==='import_csv'){
     $first=fgets($f);rewind($f);$delimiter=substr_count((string)$first,';')>substr_count((string)$first,',')?';':',';
     $header=fgetcsv($f,0,$delimiter,'"','');if(!$header){fclose($f);flash('error','CSV vazio.');redirect_to('importar');}
     $header=array_map(static function($key){$key=preg_replace('/^\xEF\xBB\xBF/','',trim((string)$key));return strtolower($key);},$header);
+    if(count(array_unique($header))!==count($header)){fclose($f);flash('error','Cabeçalho contém colunas repetidas; não é possível preservar dados sem ambiguidades.');redirect_to('importar');}
     if((!in_array('titulo',$header,true)&&!in_array('nome',$header,true))||!in_array('ano',$header,true)){fclose($f);flash('error','Cabeçalho obrigatório: titulo (ou nome) e ano.');redirect_to('importar');}
     try{
        db()->beginTransaction();$stmt=db()->prepare('INSERT INTO import_lotes(arquivo_nome,arquivo_sha256) VALUES(?,?)');$stmt->execute([substr($name,0,255),$digest]);$batch=(int)db()->lastInsertId();
        $stmt=db()->prepare('INSERT INTO import_itens(lote_id,numero_linha,bruto_json,titulo,ano,categoria,descricao,fonte,status,erro) VALUES(?,?,?,?,?,?,?,?,?,?)');
        $num=1;$count=0;
        while(($row=fgetcsv($f,0,$delimiter,'"',''))!==false){$num++;if(!array_filter($row,fn($x)=>trim((string)$x)!==''))continue;
-          if(count($row)!==count($header)){$row=array_slice(array_pad($row,count($header),''),0,count($header));}
-          $assoc=array_combine($header,$row);$title=trim((string)($assoc['titulo']??$assoc['nome']??''));$year=trim((string)($assoc['ano']??''));
-          $valid=$title!==''&&strlen($title)<=250&&preg_match('/^-?\d{1,7}$/',$year);
-          $stmt->execute([$batch,$num,json_encode($assoc,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE),substr($title,0,250),$valid?(int)$year:null,substr((string)($assoc['categoria']??'Outros'),0,90),$assoc['descricao']??'',substr((string)($assoc['fonte']??''),0,350),$valid?'pendente':'invalido',$valid?null:'Título/ano inválidos']);
+          $malformada=count($row)!==count($header);
+          $assoc=$malformada ? ['_colunas_esperadas'=>count($header),'_colunas_recebidas'=>count($row),'_campos_originais'=>$row]
+              : array_combine($header,$row);
+          $title=trim((string)($assoc['titulo']??$assoc['nome']??''));$year=trim((string)($assoc['ano']??''));
+          $valid=!$malformada&&$title!==''&&strlen($title)<=250&&preg_match('/^-?\d{1,7}$/',$year)&&((int)$year!==0);
+          $stmt->execute([$batch,$num,json_encode($assoc,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE),substr($title,0,250),$valid?(int)$year:null,substr((string)($assoc['categoria']??'Outros'),0,90),$assoc['descricao']??'',substr((string)($assoc['fonte']??''),0,350),$valid?'pendente':'invalido',$valid?null:($malformada?'Quantidade de colunas diferente do cabeçalho; confira o dado bruto.':'Título/ano inválidos')]);
           $count++;if($count>=5000)break;
        }
        fclose($f);$up=db()->prepare('UPDATE import_lotes SET total_itens=? WHERE id=?');$up->execute([$count,$batch]);db()->commit();

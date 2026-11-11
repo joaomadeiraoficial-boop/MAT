@@ -1,27 +1,42 @@
-MAT — OBSERVATÓRIO DO TEMPO | V6.2 INTEGRADA
+MAT — REMOVER “TRIAGEM ASSISTIDA · 750” E ENRIQUECER O BANCO
+==============================================================
+O pacote NAO substitui a Fila de revisao rapida, NAO restaura um banco antigo
+com 750 candidatos e NAO altera arquivos PHP alem do menu (se voce executar o script).
 
-O NOVO MAT MANTEVE A IDENTIDADE VISUAL DO OBSERVATÓRIO.
-O LABORATÓRIO CIENTÍFICO DO MAT v6 FOI INTEGRADO EM MÓDULOS.
+PASSO 1 — MENU
+Seu MAT esta em:
+D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git\MAT_Refinado_0_1
 
-1. PARA CONHECER O VISUAL AGORA:
-   Abra ABRIR_PREVIA.html. É uma prévia offline, somente visual.
+1) Faca uma copia de seguranca da pasta do MAT.
+2) Copie CORRIGIR_APENAS_MENU.ps1 para a pasta MAT_Refinado_0_1.
+3) No terminal do VS Code ja aberto nessa pasta, rode:
+   powershell -ExecutionPolicy Bypass -File .\CORRIGIR_APENAS_MENU.ps1
+4) Pressione Ctrl+F5 na pagina do MAT. Apenas a linha “Triagem assistida · 750”
+   desaparece; a Fila de revisao rapida permanece.
 
-2. PARA INSTALAR EM UM XAMPP NOVO:
-   Copie MAT_Observatorio_v6_2_Integrado para C:\xampp\htdocs\.
-   Importe database/schema.sql no phpMyAdmin para criar o banco independente mat_observatorio.
-   Copie config.example.php para config.local.php e crie o usuário administrador conforme README.md.
-   Acesse http://localhost/MAT_Observatorio_v6_2_Integrado/
+ALTERNATIVA: se voce preferir nao executar PowerShell, substitua SOMENTE
+views/header.php pelo header.php fornecido (guarde copia do arquivo antigo).
+O header entregue e idêntico ao do MAT 0.1.2. Se voce editou o header depois,
+use o PowerShell acima para preservar suas outras alteracoes.
 
-3. SE VOCÊ JÁ INSTALOU O OBSERVATÓRIO 6.1:
-   Faça BACKUP antes. Substitua arquivos de aplicação e execute database/update_v6_2.sql UMA VEZ.
+PASSO 2 — BANCO (RECOMENDAMOS COPIA PARA TESTE)
+1) Em http://localhost/phpmyadmin clique no banco mat_temporis_curadoria.
+2) Antes de tudo: Exportar > Rapido > SQL > Exportar. Salve o backup ATUAL,
+   que tem 800 candidatos na sua captura, e nao o antigo arquivo de 750.
+3) Se puder, teste em uma copia desse banco; depois passe ao atual.
+4) No banco selecionado: Importar > Escolher arquivo >
+   01_ENRIQUECER_BASE_SEM_APROVAR.sql > Importar.
+5) Rode 00_CONFERIR_ANTES.sql (ou suas consultas) e confira o total: deve
+   continuar com 800 candidatos, e nenhuma pontuacao, aprovacao ou
+   homologacao deve mudar. O numero de fontes PODE aumentar em ate 5.
+6) Atualize a Fila de revisao rapida: veja as instrucoes de pesquisa nas
+   justificativas dos criterios sem nota.
 
-4. PARA MIGRAR O MAT TÊMPORIS LAB ANTIGO:
-   Leia README.md e docs/PARIDADE_E_MIGRACAO.md.
-   O importador copia registros APENAS PARA PREPARAÇÃO, sem aprovar notas ou alterar o banco antigo.
+O SQL so adiciona instrucoes e algumas fontes documentais em campos existentes.
+NAO atribui notas, nao aprova, nao homologa e nao resolve pendencias.
+Ele foi preparado com base no dump anterior de 750 e a importacao ainda
+precisa de teste com seu banco atualizado de 800. Nao execute em banco sem backup.
 
-5. PARA O GIT:
-   A branch sugerida é feature/observatorio-v6-2-integrado.
-   Inclua docs/ROADMAP_MAT_GIT.md no commit.
-
-ATENÇÃO: os dados de demonstração não constituem evidência científica validada.
-O banco real do MAT Lab NÃO estava dentro do ZIP enviado; apenas seu código, estrutura e exemplos.
+NAO IMPORTE: mat_temporis_curadoria.sql antigo ou INSTALAR_TRIAGEM_ASSISTIDA.sql.
+NAO APAGUE TABELAS sem backup. As tabelas auxiliares, se existentes, podem
+permanecer inativas: nenhuma delas altera a fila original.

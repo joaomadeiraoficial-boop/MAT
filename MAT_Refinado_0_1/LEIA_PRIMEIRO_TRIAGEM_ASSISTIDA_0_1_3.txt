@@ -1,0 +1,18 @@
+MAT — Versao 0.1.3 (triagem assistida)
+
+IMPORTANTE: nao importe novamente o dump mat_temporis_curadoria.sql no seu banco em uso.
+
+1. Faca backup de mat_temporis_curadoria e mat_observatorio, e guarde config.local.php.
+2. Extraia o projeto em uma NOVA pasta para testes em C:\xampp\htdocs.
+3. No phpMyAdmin escolha mat_temporis_curadoria e importe APENAS:
+   triagem_assistida_750/INSTALAR_TRIAGEM_ASSISTIDA.sql
+   Isso cria cur_triagem_assistida e cur_triagem_assistida_log. Nao reescreve as cinco tabelas de origem.
+4. Abra http://localhost/MAT_Refinado_0_1/fila_triagem_assistida.php
+   (substitua MAT_Refinado_0_1 pelo nome da pasta extraida).
+5. Teste uma ficha: registre um parecer de 40+ caracteres, salve e confira o historico.
+6. Veja a planilha triagem_assistida_750/MAT_FILA_CURADORIA_750.xlsx.
+
+NOTA: A triagem assistida NÃO aprova, rejeita ou homologa marcos cientificamente.
+Seu status oficial so muda no fluxo original apos conferencias e decisao humana.
+O SQL nao foi testado contra a sua instancia MariaDB real: use banco clonado.
+Veja triagem_assistida_750/RELATORIO_DA_TRIAGEM_750.md.

@@ -2,46 +2,131 @@
 declare(strict_types=1);
 require_once __DIR__.'/app/bootstrap.php';
 require_once __DIR__.'/app/TemporisBacktest.php';
-if(!is_admin()){header('Location: index.php?page=login');exit;}
+require_once __DIR__.'/app/TemporisCuradoria.php';
+require_once __DIR__.'/app/TemporisGraficos.php';
+if (!is_admin()) {header('Location: index.php?page=login');exit;}
+
 $origin=filter_input(INPUT_GET,'corte',FILTER_VALIDATE_INT) ?: 1920;
 $target=filter_input(INPUT_GET,'alvo',FILTER_VALIDATE_INT) ?: 2020;
-// Pagina publica de pesquisa: SEM modo demonstrativo.
+$allowed=['previa'=>'Curadoria: prévia documentada','ensaio'=>'Curadoria: datas extraídas (não auditadas)','homologada'=>'Curadoria: exclusivamente homologados','legado'=>'Banco legado: avaliações confirmadas'];
+$mode=(string)($_GET['conjunto']??'previa');
+if(!isset($allowed[$mode]))$mode='previa';
+$origin=max(-10000,min(2099,$origin));$target=max(-9999,min(2100,$target));
+$error=null;$notes=[];$excluded=[];$points=[];$num=0;$eligible=0;$summary=[];$folds=[];$result=null;$selected=[];$decisoes=[];
 try {
-     if (!db()) throw new RuntimeException('MySQL nao disponivel. Nenhum dado ficticio sera exibido.');
-     if (!function_exists('revised_all_evaluations')) require_once __DIR__.'/app/revised_repository.php';
-     $data=TemporisBacktest::approvedPoints(all_markers(),revised_all_evaluations(),$target);
-     $points=$data['points'];$num=$data['total_before_target'];$eligible=$data['included'];$excluded=$data['excluded'];
- $result=TemporisBacktest::experiment($points,$origin,$target);
- $folds=TemporisBacktest::historicalBacktests($points,$origin,$target-$origin,20);
- $summary=TemporisBacktest::summarize($folds);
- if(($_GET['export']??'')==='json'){
-     header('Content-Type: application/json; charset=utf-8');
-     header('Content-Disposition: attachment; filename="mat_backtest_temporis.json"');
-     echo json_encode(['AVISO'=>'RESULTADO CONDICIONAL A MARCOS E RUBRICAS REALMENTE APROVADOS','dados_elegiveis'=>$eligible,'resultado'=>$result,'backtests_anteriores'=>$folds,'resumo'=>$summary],JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
-     exit;
- }
- $error=null;
-} catch(Throwable $e){$error=$e->getMessage();$result=null;$summary=[];$folds=[];$eligible=0;$num=0;$excluded=[];}
+    if ($target<=$origin)throw new InvalidArgumentException('O ano observado deve ser posterior ao corte de treinamento.');
+    if($mode==='legado'){
+        if(!db())throw new RuntimeException('Banco legado não disponível. Confira a configuração de conexão.');
+        require_once __DIR__.'/app/revised_repository.php';
+        $data=TemporisBacktest::approvedPoints(all_markers(),revised_all_evaluations(),$target);
+        $points=$data['points'];$num=$data['total_before_target'];$eligible=$data['included'];$excluded=$data['excluded'];
+    }else{
+        $pdo=CuradoriaRodadas::connect();
+        if(!$pdo)throw new RuntimeException('Banco mat_temporis_curadoria indisponível; nenhuma série fictícia foi utilizada.');
+        $dataset=TemporisCuradoria::consultar($pdo,$origin);
+        $selected=$dataset[$mode]??[];
+        $decisoes=$dataset['decisoes_humanas']??[];
+        $points=array_map(static fn(array $x):array=>['year'=>(int)$x['year'],'weight'=>(float)$x['score'],
+            'id'=>(string)$x['id']], $selected['series']??[]);
+        $num=(int)$pdo->query('SELECT COUNT(*) FROM cur_candidatos')->fetchColumn();
+        $eligible=count($points);
+        $excluded=['com_notas_pendentes'=>(int)($dataset['incompletos']??0),
+            'com_notas_mas_sem_data_validada'=>(int)($dataset['sem_data']??0),
+            'pendentes_de_homologacao'=>(int)($dataset['ainda_nao_homologados']??0)];
+        if($mode==='ensaio')$notes[]='Série exploratória: datas extraídas não são datas validadas; podem ocorrer duplicidades e notas ainda não confirmadas.';
+        if($mode==='previa')$notes[]='Prévia exploratória: as 11 notas podem ser propostas, sem homologação; não é uma previsão científica validada.';
+    }
+    $result=TemporisBacktest::experiment($points,$origin,$target);
+    $folds=TemporisBacktest::historicalBacktests($points,$origin,$target-$origin,20);
+    $summary=TemporisBacktest::summarize($folds);
+    if(($_GET['export']??'')==='json'){
+        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Disposition: attachment; filename="mat_backtest_temporis.json"');
+        echo json_encode(['ALERTA'=>'Os dados de prévia/ensaio não representam marcos homologados.',
+            'conjunto'=>$mode,'total_acervo'=>$num,'elegiveis_conjunto'=>$eligible,'exclusoes'=>$excluded,
+            'resultado'=>$result,'backtests_anteriores'=>$folds,'resumo'=>$summary],
+            JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+        exit;
+    }
+}catch(Throwable $e){$error=$e->getMessage();}
 $fmt=static fn($v,$digits=2)=>$v===null?'—':number_format((float)$v,$digits,',','.');
-?><!doctype html><html lang="pt-BR"><head><link rel="icon" href="assets/insignia.svg" type="image/svg+xml"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MAT | Backtesting Têmporis</title><link rel="stylesheet" href="assets/style.css"><style>
-.main-exp{max-width:1100px;margin:auto;padding:35px 18px 70px;font-family:Georgia,serif;color:#193032}h1{font-size:clamp(32px,4vw,58px);font-weight:400}h2{font-size:24px}p{line-height:1.6}.exp-warning{border-left:4px solid #ad704c;background:#fff0dc;padding:16px;margin:12px 0}.exp-good{border-left:4px solid #557665;background:#e9f3eb;padding:16px;margin:12px 0}.exp-boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px}.exp-box{background:#fffdf7;border:1px solid #dccdbf;padding:14px}.exp-box strong{font-size:27px;display:block;margin-top:8px}.exp-table{width:100%;border-collapse:collapse;background:#fffdf7}.exp-table td,.exp-table th{padding:12px 9px;text-align:left;border-bottom:1px solid #ded3c7}.exp-overflow{overflow-x:auto}.exp-small{font:12px monospace;color:#666}.exp-form{display:flex;gap:14px;align-items:end;flex-wrap:wrap}.exp-form label{display:grid;gap:4px}.exp-form input{max-width:100px;padding:10px}.exp-btn{background:#172b2d;color:#fff;padding:11px 13px;border:0;cursor:pointer;text-decoration:none}.main-exp a:not(.exp-btn){color:#995b37}
-</style></head><body style="background:#f6f1e9"><main class="main-exp">
-<a href="index.php?page=temporis">← Índice Têmporis</a>
-<p class="exp-small">MAT / METODOLOGIA REVISADA / EXPERIMENTO DE PREVISÃO HISTÓRICA</p>
-<h1>Backtesting da <em>Têmporis</em></h1><p>Dados observados somente após aprovação científica. A ausência de números significa que o acervo ainda não permite uma comparação histórica.</p>
-<div class="exp-warning"><strong>DADOS DO BANCO — REGRAS ESTRITAS</strong><p>Somente entram no cálculo marcos aprovados, incluídos, com fonte e os 11 critérios confirmados com justificativas. Propostas da IA e candidatos em preparação NÃO entram automaticamente.</p></div>
-<form class="exp-form" method="get"><label>Corte do treinamento<input type="number" name="corte" value="<?=h((string)$origin)?>" min="1500" max="2100"></label><label>Ano observado<input type="number" name="alvo" value="<?=h((string)$target)?>" min="1600" max="2100"></label><button class="exp-btn" type="submit">Calcular previsão e erro</button></form>
-<?php if($error): ?><div class="exp-warning"><?=h($error)?></div><?php else: ?>
-<div class="exp-boxes"><div class="exp-box">Registros considerados<strong><?=$num?></strong></div><div class="exp-box">Com nota elegível<strong><?=$eligible?></strong></div><div class="exp-box">Marcos até <?=$origin?><strong><?=$result['n_train']?></strong></div><div class="exp-box">Marcos depois de <?=$origin?><strong><?=$result['n_after_origin']?></strong></div></div>
-<h2>Valores do experimento</h2><div class="exp-boxes"><div class="exp-box">T(<?=$origin?>) — base<strong><?=$result['k_origin']>0?'100,00':'—'?></strong></div><div class="exp-box">K(<?=$origin?>) confirmado<strong><?=$fmt($result['k_origin'],3)?></strong></div><div class="exp-box">K(<?=$target?>) observado<strong><?=$fmt($result['k_observed'],3)?></strong></div><div class="exp-box">T(<?=$target?>) observado<strong><?=$fmt($result['t_observed'])?></strong></div></div>
-<?php foreach($result['notes'] as $note): ?><div class="exp-warning"><?=h($note)?></div><?php endforeach; ?>
-<h2>Previsão a partir de <?=$origin?> → <?=$target?></h2>
-<div class="exp-overflow"><table class="exp-table"><thead><tr><th>Modelo</th><th>T previsto</th><th>T observado</th><th>Erro absoluto</th><th>Erro %</th></tr></thead><tbody>
-<?php foreach(TemporisBacktest::MODEL_NAMES as $key=>$label): $m=$result['models'][$key]??[];?><tr><td><?=h($label)?></td><td><?=$fmt($m['t_predicted']??null)?></td><td><?=$fmt($result['t_observed'])?></td><td><?=$fmt($m['absolute_error']??null)?></td><td><?=isset($m['relative_error_percent'])?$fmt($m['relative_error_percent']).'%':'—'?></td></tr><?php endforeach;?></tbody></table></div>
-<h2>Validação histórica anterior ao corte (mesmo horizonte)</h2><p>Nesses ensaios adicionais, nenhum alvo posterior a <?=$origin?> foi utilizado. Modelos podem ser comparados por MAE e RMSE quando houver quantidade suficiente de testes.</p>
-<div class="exp-overflow"><table class="exp-table"><thead><tr><th>Modelo</th><th>Testes válidos</th><th>MAE</th><th>RMSE</th><th>MAPE</th></tr></thead><tbody><?php foreach($summary as $m):?><tr><td><?=h($m['label'])?></td><td><?=$m['n_folds']?></td><td><?=$fmt($m['mae'])?></td><td><?=$fmt($m['rmse'])?></td><td><?=isset($m['mape_percent'])?$fmt($m['mape_percent']).'%':'—'?></td></tr><?php endforeach;?></tbody></table></div>
-<p><a class="exp-btn" href="?<?=h(http_build_query(['corte'=>$origin,'alvo'=>$target,'export'=>'json']))?>">Exportar resultados em JSON</a></p>
+$warn=($mode!=='homologada'&&$mode!=='legado');
+$baseReady=$result && ($result['k_origin']??0)>0;
+?>
+<?php
+$page='backtesting';$navPage='backtesting';
+$pageLabels=['backtesting'=>'Backtesting · Têmporis 0.2'];
+$stats=app_stats();$flash=take_flash();
+require __DIR__.'/views/header.php';
+?>
+<section class="mat-experimento">
+<a class="text-link" href="index.php?page=temporis">← Voltar ao índice</a>
+<p class="exp-tag">MAT / METODOLOGIA / TEMPO HISTÓRICO / ERRO DE PREVISÃO</p>
+<header class="page-heading"><div class="section-overline">03 / ÍNDICE TÊMPORIS / TESTES DE VALIDAÇÃO</div><h1>O passado como <em>teste.</em></h1><p>Backtesting da Têmporis 0.2 com corte histórico, previsão e confronto com o resultado observado.</p></header>
+<p>A curva usa os <strong>anos efetivos dos marcos</strong>. A margem de erro só é calculada quando existem resultados observados e previsões suficientes; dados faltantes nunca são substituídos por valores fictícios.</p>
+<div class="exp-warning"><strong>DADOS DO BANCO — REGRAS ESTRITAS</strong><p><strong>Homologada:</strong> apenas marcos com revisão científica completa. <strong>Prévia/ensaio:</strong> exibidos separadamente, com notas e anos reais do banco de curadoria, mas sujeitos à revisão; esses resultados não constituem evidência confirmada. O banco legado possui critérios próprios e não é convertido automaticamente.</p></div>
+<form class="exp-form" method="get">
+ <label>Conjunto de dados
+  <select name="conjunto"><?php foreach($allowed as $key=>$label):?><option value="<?=h($key)?>" <?=$mode===$key?'selected':''?>><?=h($label)?></option><?php endforeach;?></select>
+ </label>
+ <label>Corte do treinamento<input type="number" name="corte" value="<?=h((string)$origin)?>" min="-10000" max="2099"></label>
+ <label>Ano observado<input type="number" name="alvo" value="<?=h((string)$target)?>" min="-9999" max="2100"></label>
+ <button class="exp-btn" type="submit">Calcular previsão e erro</button>
+</form>
+<?php if($error):?><div class="exp-warning"><strong>Não foi possível calcular:</strong> <?=h($error)?></div>
+<?php else:?>
+<div class="exp-boxes">
+ <div class="exp-box">Registros no acervo consultado<strong><?=$num?></strong></div>
+ <div class="exp-box">Marcos com nota elegível nesta seleção<strong><?=$eligible?></strong></div>
+ <div class="exp-box">Marcos até <?=$origin?><strong><?=$result['n_train']?></strong></div>
+ <div class="exp-box">Marcos depois de <?=$origin?> até <?=$target?><strong><?=$result['n_after_origin']?></strong></div>
+</div>
+<?php if($warn):?><div class="mat-grafo-crit"><strong>SÉRIE PROVISÓRIA.</strong> As notas ainda podem depender de confirmação humana. Erros e projeções são exercícios retrospectivos sobre os valores registrados, não validações externas da aceleração tecnológica.</div><?php endif; ?>
+<?php foreach($notes as $note):?><p class="exp-small"><?=h($note)?></p><?php endforeach;?>
+<h2>01 / Cronologia — marcos na posição histórica correta</h2>
+<div class="mat-grafo-bloco">
+<?php if($mode!=='legado'):?>
+ <?=TemporisGraficos::svgCronologico($selected['series']??[],$origin,'log',true)?>
+<?php else:?>
+ <p class="mat-grafo-nota">O banco legado segue os próprios filtros de aprovação. Para ver os 800 dossiês atuais e as duas curvas na mesma escala, selecione a prévia documentada acima.</p>
+<?php endif;?>
+</div>
+<?php if($mode!=='legado'): ?>
+<h3>Marcos com decisão humana, inclusive fora do cálculo</h3>
+<div class="mat-grafo-bloco"><?=TemporisGraficos::svgDecisoes($decisoes)?></div>
 <?php endif; ?>
-<h2>As fórmulas</h2><p class="exp-small">I = 1 + 9Σ(4 impactos)/12; C = Σ(4 confianças)/12; F = 1 + 0,5Σ(3 fatores)/9<br>w = (I/10)² × C × F; K(t) = Σw, para ano ≤ t<br>T(t) = 100 × ln(1 + K(t)) / ln(1 + K(corte))<br>Erro% = 100 × |T previsto − T observado| / |T observado|</p>
-<p class="exp-small">A amostra aprovada pode ter viés documental ou avaliações retrospectivas que conheceram efeitos posteriores ao corte; isso precisa ser auditado. Mesmo com dados reais, o experimento valida uma previsão do índice construído, não sua correspondência a uma verdade tecnológica externa.</p>
-</main></body></html>
+<p class="mat-grafo-nota">As barras laranja são <strong>faixas de datação</strong>, não desvios-padrão. Pontos de aprovação e homologação usam cores distintas. Cada evento é plotado pelo próprio ano, sem comprimir arbitrariamente os espaços entre acontecimentos.</p>
+<h2>02 / Índice e observação</h2>
+<div class="exp-boxes">
+ <div class="exp-box">T(<?=$origin?>) — base<strong><?=$baseReady?'100,00':'—'?></strong></div>
+ <div class="exp-box">K(<?=$origin?>) calculado nesta seleção<strong><?=$fmt($result['k_origin'],3)?></strong></div>
+ <div class="exp-box">K(<?=$target?>) observado<strong><?=$fmt($result['k_observed'],3)?></strong></div>
+ <div class="exp-box">T(<?=$target?>) observado<strong><?=$fmt($result['t_observed'])?></strong></div>
+</div>
+<?php foreach($result['notes'] as $note):?><div class="exp-warning"><?=h((string)$note)?></div><?php endforeach;?>
+<h2>03 / Erro da previsão — <?=$origin?> → <?=$target?></h2>
+<p>O segmento entre o valor previsto e o observado representa o <strong>erro absoluto em pontos do índice</strong>. Não é uma faixa de confiança estatística.</p>
+<div class="mat-grafo-bloco"><?=TemporisGraficos::svgPrevisao($result,$summary)?></div>
+<div class="exp-overflow"><table class="exp-table"><thead><tr><th>Modelo</th><th>Previsto</th><th>Observado</th><th>Resíduo (previsto − observado)</th><th>Erro absoluto</th><th>Erro %</th></tr></thead><tbody>
+<?php foreach(TemporisBacktest::MODEL_NAMES as $key=>$label):$m=$result['models'][$key]??[]; ?>
+<tr><td><?=h($label)?></td><td><?=$fmt($m['t_predicted']??null)?></td><td><?=$fmt($result['t_observed'])?></td><td><?=$fmt($m['error_points']??null)?></td><td><?=$fmt($m['absolute_error']??null)?></td><td><?=$fmt($m['relative_error_percent']??null)?><?=($m['relative_error_percent']??null)!==null?'%':''?></td></tr>
+<?php endforeach;?></tbody></table></div>
+<h2>04 / Erro histórico em múltiplos cortes</h2>
+<p>O cálculo testa cortes históricos que terminam antes ou no corte selecionado, respeitando o mesmo horizonte de previsão. MAE e RMSE são calculados apenas quando existem comparações reais; nenhuma margem de erro é inferida a partir de zero testes.</p>
+<div class="exp-overflow"><table class="exp-table"><thead><tr><th>Modelo</th><th>Testes válidos</th><th>MAE (pontos)</th><th>RMSE (pontos)</th><th>MAPE (%)</th></tr></thead><tbody>
+<?php foreach($summary as $m):?><tr><td><?=h((string)$m['label'])?></td><td><?=h((string)$m['n_folds'])?></td><td><?=$fmt($m['mae'])?></td><td><?=$fmt($m['rmse'])?></td><td><?=$fmt($m['mape_percent'])?></td></tr><?php endforeach; ?></tbody></table></div>
+<?php
+$quantas=array_sum(array_map(static fn($s)=>(int)($s['n_folds']??0),$summary));
+?>
+<?php if($quantas===0):?><div class="mat-grafo-crit">Margem de erro estatística <strong>não estimável</strong> com os cortes históricos disponíveis. O sistema exibe erros pontuais apenas quando há previsão e observação comparáveis.</div>
+<?php else: ?><div class="mat-grafo-crit"><strong>Como ler o RMSE:</strong> resume a magnitude dos erros históricos do modelo, na unidade do índice. Não é automaticamente um intervalo de confiança de 95% nem garante a incerteza futura. Os cortes podem se sobrepor temporalmente.</div><?php endif; ?>
+<p><a class="exp-btn" href="?<?=h(http_build_query(['conjunto'=>$mode,'corte'=>$origin,'alvo'=>$target,'export'=>'json']))?>">Exportar dados e métricas em JSON</a></p>
+<?php endif;?>
+<h2>Fórmulas e limites</h2><p class="exp-small">I = 1 + 9Σ(4 impactos)/12; C = Σ(4 confianças)/12; F = 1 + 0,5Σ(3 fatores)/9<br>
+w = (I/10)² × C × F; K(t) = Σw, para ano ≤ t<br>
+T(t) = 100 × ln(1 + K(t)) / ln(1 + K(corte))<br>
+Erro absoluto = |T previsto − T observado|; erro relativo = 100 × erro absoluto / |T observado|<br>
+MAE = média dos erros absolutos; RMSE = raiz da média dos erros ao quadrado.</p>
+<p class="exp-small">O índice observado depende da própria metodologia e das notas da curadoria, não de uma verdade tecnológica independente. A publicação científica exige análise de sensibilidade, validação externa e auditoria contra viés retrospectivo.</p>
+</section>
+<?php require __DIR__.'/views/footer.php'; ?>

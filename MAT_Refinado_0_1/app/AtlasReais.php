@@ -21,7 +21,7 @@ final class AtlasReais {
     }
     public static function blank(): array {
         $data=[];
-        foreach(self::ERAS as $key=>$era) $data[$key]=$era+['acervo'=>0,'aprovados'=>0,'preparacao'=>0];
+        foreach(self::ERAS as $key=>$era) $data[$key]=$era+['acervo'=>0,'aprovados'=>0,'preparacao'=>0,'cur_aprovados'=>0,'cur_homologados'=>0];
         return $data;
     }
     public static function counts(array $markers, array $imports): array {
@@ -40,16 +40,71 @@ final class AtlasReais {
         }
         return $data;
     }
-    public static function fetchCounts(PDO $pdo): array {
-        $markers=$pdo->query("SELECT ano,status FROM marcos WHERE status <> 'demonstracao'")->fetchAll(PDO::FETCH_ASSOC);
-        $imports=$pdo->query("SELECT ano,status FROM import_itens WHERE status='pendente'")->fetchAll(PDO::FETCH_ASSOC);
-        return self::counts($markers,$imports);
+    /**
+     * As duas fontes são entidades DIFERENTES. A curadoria é a fonte de verdade
+     * para candidatos/aprovações; o acervo legado permanece identificado.
+     * Contar por ano não reduz a quantidade de candidatos: sem ano ficam em
+     * categoria separada, nunca desaparecem do painel.
+     */
+    public static function fromSources(array $legacy, array $curCandidates): array {
+        $data=self::blank();
+        $summary=['cur_total'=>0,'cur_com_ano'=>0,'cur_sem_ano'=>0,
+            'cur_aprovados'=>0,'cur_homologados'=>0,'cur_ano_validado'=>0,'cur_ano_extraido'=>0,'legado_total'=>0,'legado_aprovados'=>0];
+        foreach($legacy as $m){
+            if(($m['status']??'')==='demonstracao')continue;
+            $summary['legado_total']++;
+            if(($m['status']??'')==='aprovado')$summary['legado_aprovados']++;
+            $key=self::keyForYear($m['ano']??null);
+            if($key!==null){$data[$key]['acervo']++;
+                if(($m['status']??'')==='aprovado')$data[$key]['aprovados']++;}
+        }
+        foreach($curCandidates as $c){
+            $summary['cur_total']++;
+            $state=(string)($c['estado_revisao_humana']??'');
+            $isApproved=in_array($state,['APROVADO','HOMOLOGADO'],true);
+            $isHomologated=($state==='HOMOLOGADO' && (int)($c['homologado']??0)===1);
+            if($isApproved)$summary['cur_aprovados']++;
+            if($isHomologated)$summary['cur_homologados']++;
+            $ano=$c['ano_validado']??$c['ano_original']??null;
+            $key=self::keyForYear($ano);
+            if($key===null){$summary['cur_sem_ano']++;continue;}
+            $summary['cur_com_ano']++;
+            if(self::keyForYear($c['ano_validado']??null)!==null)$summary['cur_ano_validado']++;
+            else $summary['cur_ano_extraido']++;
+            $data[$key]['preparacao']++;
+            if($isApproved)$data[$key]['cur_aprovados']++;
+            if($isHomologated)$data[$key]['cur_homologados']++;
+        }
+        return ['eras'=>$data,'resumo'=>$summary];
     }
-    /** Detalhes só sob login para não expor trechos/candidatos privados. */
-    public static function rows(PDO $pdo, string $era, bool $import=false, int $limit=45): array {
+    public static function fetchOverview(?PDO $pdo): array {
+        require_once __DIR__.'/CuradoriaRodadas.php';
+        $cur=CuradoriaRodadas::connect();
+        if(!$cur)throw new RuntimeException('Banco científico da curadoria indisponível.');
+        $legacy=$pdo?$pdo->query("SELECT ano,status FROM marcos WHERE status <> 'demonstracao'")->fetchAll(PDO::FETCH_ASSOC):[];
+        $candidates=$cur->query('SELECT ano_validado,ano_original,estado_revisao_humana,homologado FROM cur_candidatos')->fetchAll(PDO::FETCH_ASSOC);
+        return self::fromSources($legacy,$candidates);
+    }
+    public static function fetchCounts(PDO $pdo): array {
+        return self::fetchOverview($pdo)['eras'];
+    }
+    /** Apenas investigadores logados podem abrir detalhes individuais dos candidatos. */
+    public static function rows(?PDO $pdo, string $era, bool $import=false, int $limit=45): array {
         if(!isset(self::ERAS[$era]))return [];
         $range=self::ERAS[$era];$from=$range['de'];$to=$range['ate'];
-        $sql=$import ? 'SELECT id,titulo,ano,status FROM import_itens WHERE status=\'pendente\'' : "SELECT id,titulo,ano,status FROM marcos WHERE status<>'demonstracao'";
+        if($import){
+            require_once __DIR__.'/CuradoriaRodadas.php';
+            $cur=CuradoriaRodadas::connect();
+            if(!$cur)return [];
+            $sql="SELECT id_extracao,titulo_proposto AS titulo,COALESCE(ano_validado,ano_original) AS ano, estado_revisao_humana AS status FROM cur_candidatos WHERE 1=1";
+            $params=[];
+            if($from!==null){$sql.=' AND COALESCE(ano_validado,ano_original)>=?';$params[]=$from;}
+            if($to!==null){$sql.=' AND COALESCE(ano_validado,ano_original)<=?';$params[]=$to;}
+            $sql.=' ORDER BY ano ASC,id_extracao ASC LIMIT '.max(1,min(200,$limit));
+            $s=$cur->prepare($sql);$s->execute($params);return $s->fetchAll(PDO::FETCH_ASSOC);
+        }
+        if(!$pdo)return [];
+        $sql="SELECT id,titulo,ano,status FROM marcos WHERE status<>'demonstracao'";
         $params=[];
         if($from!==null){$sql.=' AND ano>=?';$params[]=$from;}
         if($to!==null){$sql.=' AND ano<=?';$params[]=$to;}

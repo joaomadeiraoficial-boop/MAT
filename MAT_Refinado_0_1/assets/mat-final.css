@@ -1,0 +1,44 @@
+/* MAT Final: extensão visual independente; preserva design original. */
+.mat-final-heading p{max-width:950px}
+.mat-final-principio,.mat-final-legacy-note{border-left:4px solid #2f7666;background:#f5f2e9;padding:16px 20px;margin:18px 0 25px;color:#234e43;font:14px/1.7 system-ui,sans-serif}
+.mat-final-principio code{padding:3px 5px;white-space:normal;background:#e6e6d9}
+.mat-final-legacy-note{border-color:#b88c55;background:#f9ecdb}
+.mat-final-legacy-note a{color:#155b50;font-weight:700}
+.mat-final-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));align-items:end;gap:12px;background:#f4f0e7;border:1px solid #d8cdbb;padding:18px;margin:19px 0}
+.mat-final-filters label{display:flex;flex-direction:column;gap:6px;font:700 12px/1.5 system-ui,sans-serif;color:#365249}
+.mat-final-filters input,.mat-final-filters select{width:100%;height:42px;border:1px solid #cbbdaa;padding:6px 8px;background:#fffdf8;color:#284439;font:13px system-ui,sans-serif}
+.mat-final-filters button{height:42px;margin:0;white-space:normal}
+.mat-final-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin:22px 0}
+.mat-final-metrics>div{border:1px solid #ddcfbb;padding:18px;background:#fffbf4;display:flex;flex-direction:column;min-height:130px}
+.mat-final-metrics span{font:700 11px/1.35 monospace;color:#5c6e63;text-transform:uppercase}
+.mat-final-metrics strong{font:normal 32px/1.1 Georgia,serif;color:#145449;padding:12px 0}
+.mat-final-metrics small{font:12px/1.5 system-ui,sans-serif;color:#677065}
+.mat-final-section{padding:25px;margin:25px 0;overflow:hidden}
+.mat-final-section h2{font:normal clamp(24px,3vw,34px)/1.2 Georgia,serif;color:#244b42;margin:17px 0}
+.mat-final-section>p{color:#58665e;font:14px/1.7 system-ui,sans-serif;max-width:1000px}
+.mat-final-chart{width:100%;border:1px solid #dfd6c9;background:#fffdf8;padding:10px;margin:18px 0;overflow-x:auto}
+.mat-final-chart svg{display:block;width:100%;height:auto;min-width:640px}
+.mat-final-legend{display:flex;gap:16px;flex-wrap:wrap;margin:11px 0 20px;font:12px system-ui,sans-serif;color:#3d5b50}
+.mat-final-legend span{display:inline-flex;align-items:center;gap:7px}
+.mat-final-legend i{display:inline-block;width:22px;height:3px}
+.mat-final-table-wrap{width:100%;overflow-x:auto;margin:19px 0}
+.mat-final-table{border-collapse:collapse;width:100%;min-width:640px;font:13px/1.5 system-ui,sans-serif;color:#36544b}
+.mat-final-table th{background:#e9e5dc;color:#23473c;text-align:left;padding:11px 12px;white-space:nowrap;border-bottom:2px solid #c4b8a5}
+.mat-final-table td{padding:10px 12px;border-bottom:1px solid #e2d7c8;white-space:nowrap}
+.mat-final-table th:not(:first-child),.mat-final-table td:not(:first-child){text-align:right}
+.mat-final-table tbody tr:hover{background:#faf6ed}
+.mat-final-table tr.mat-final-adotada{background:#e7f1ea;font-weight:700}
+.mat-final-table td small{font-size:11px;color:#6d7f76}
+.mat-final-disclaimer{font:12px/1.7 system-ui,sans-serif!important;color:#806a51!important;border-top:1px solid #ded7cb;padding-top:12px;margin-top:14px}
+.mat-final-warning{border:1px solid #c58b72;background:#fff0e4;color:#783f28;padding:16px;margin:18px 0}
+.mat-final-bars{display:flex;flex-direction:column;gap:13px;padding:10px 0}
+.mat-final-barrow{display:grid;grid-template-columns:125px minmax(70px,1fr) 72px 75px;gap:12px;align-items:center;font:12px system-ui,sans-serif;color:#445f52}
+.mat-final-barrow strong{font-variant-numeric:tabular-nums;text-align:right;color:#20554b}
+.mat-final-barrow small{text-align:right;color:#778377}
+.mat-final-track{height:17px;background:#e5ded0}
+.mat-final-track span{display:block;height:100%;background:linear-gradient(90deg,#194e41,#89af93)}
+.mat-final-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.mat-final-cards>div{border:1px solid #ded3c3;padding:17px;background:#fbf8f0}
+.mat-final-cards strong{color:#20594a;font:700 15px system-ui,sans-serif}
+.mat-final-cards p{color:#68776e;font:13px/1.6 system-ui,sans-serif;margin:7px 0 0}
+@media(max-width:700px){.mat-final-section{padding:15px}.mat-final-barrow{grid-template-columns:86px minmax(55px,1fr) 65px;gap:7px}.mat-final-barrow small{display:none}.mat-final-cards{grid-template-columns:1fr}}

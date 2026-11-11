@@ -4,17 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101c1e">
-<title><?=h($pageLabels[$page]??'MAT')?> · MAT — Versão Refinada 0.1</title>
+<title><?=h($pageLabels[$page]??'MAT')?> · MAT Refinado + Final</title>
 <meta name="description" content="MAT: acervo histórico e laboratório para estudar a evolução tecnológica e o Índice Têmporis.">
 <link rel="icon" href="assets/insignia.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css?v=1.2">
+<link rel="stylesheet" href="assets/mat-final.css?v=1">
+<?php if($page==='metodo'): ?><link rel="stylesheet" href="assets/metodo-tres-versoes.css?v=1"><?php endif; ?>
 <?php if(is_file(MAT_ROOT . '/assets/temporis-0-2.css')): ?><link rel="stylesheet" href="assets/temporis-0-2.css?v=1"><?php endif; ?>
 <link rel="stylesheet" href="assets/progresso-marcos.css?v=1">
 <link rel="stylesheet" href="assets/navegacao-grupos.css?v=1">
 <link rel="stylesheet" href="assets/rodadas.css?v=1">
 <link rel="stylesheet" href="assets/revisao-temporis.css?v=1">
 <link rel="stylesheet" href="assets/datacao-intervalo.css?v=1">
-<link rel="stylesheet" href="assets/fila-rapida.css?v=2">
+<link rel="stylesheet" href="assets/fila-rapida.css?v=3">
+<link rel="stylesheet" href="assets/temporis-integracao.css?v=3">
+<link rel="stylesheet" href="assets/temporis-reorganizacao.css?v=2">
 <link rel="stylesheet" href="assets/duplicatas-comparacao.css?v=3">
 <script defer src="assets/app.js?v=1.6"></script>
 <?php if(in_array($page,['rodadas','fila_rapida'],true)): ?><script defer src="assets/datacao-intervalo.js?v=1"></script><?php endif; ?>
@@ -27,7 +31,7 @@
  <div class="rail-top">
   <a class="brand" href="index.php" aria-label="MAT — início">
    <span class="brand-sigil"><img src="assets/insignia.svg" alt="" width="40" height="40"></span>
-   <span class="brand-wordmark"><strong>MAT<span class="brand-period">.</span></strong><small>OBSERVATÓRIO DO TEMPO</small></span>
+   <span class="brand-wordmark"><strong>MAT<span class="brand-period">.</span></strong><small>OBSERVATÓRIO DO TEMPO · MÉTODO FINAL</small></span>
   </a>
   <button class="mobile-close" id="navClose" type="button" aria-label="Fechar menu">×</button>
  </div>
@@ -45,9 +49,9 @@
  // A página ativa abre automaticamente o seu grupo (inclusive sem JavaScript).
  $matScript = basename((string)($_SERVER['SCRIPT_NAME'] ?? ''));
  $grupoHistoria = in_array($navPage, ['linha','atlas','acervo','galeria'], true);
- $grupoTemporis = in_array($navPage, ['temporis','temporis_legado','metodo','laboratorio'], true)
+ $grupoTemporis = in_array($navPage, ['temporis','temporis_final','temporis_reformulado','temporis_legado','demonstracao_formulas','metodo','backtesting','projecoes','ensaio_didatico'], true)
      || in_array($matScript, ['experimento_temporis.php','resultado_temporis_piloto.php'], true);
- $grupoPesquisa = in_array($navPage, ['rodadas','fila_rapida','andamento','importar','triagem','fontes','duplicatas','auditoria','editar'], true)
+ $grupoPesquisa = in_array($navPage, ['laboratorio','laboratorio','rodadas','fila_rapida','andamento','importar','triagem','fontes','duplicatas','auditoria','editar'], true)
      || in_array($matScript, ['assistente_ia.php','triagem_300_reais.php'], true);
  ?>
  <nav class="mat-nav" aria-label="Menu principal">
@@ -66,22 +70,24 @@
   <details class="mat-nav-group" data-nav-group="temporis" <?=$grupoTemporis?'open':''?>>
    <summary><span class="nav-number">03</span><span>Índice Têmporis</span><span class="mat-nav-chevron" aria-hidden="true">⌄</span></summary>
    <div class="mat-nav-submenu">
-    <a href="<?=mat_url('temporis')?>" class="nav-item <?=$navPage==='temporis'?'active':''?>" <?=$navPage==='temporis'?'aria-current="page"':''?>><span class="nav-number">03.1</span><span>Têmporis · reformulada</span></a>
-    <a href="<?=mat_url('temporis_legado')?>" class="nav-item <?=$navPage==='temporis_legado'?'active':''?>" <?=$navPage==='temporis_legado'?'aria-current="page"':''?>><span class="nav-number">03.2</span><span>Têmporis · original (legado)</span></a>
-    <a href="<?=mat_url('metodo')?>" class="nav-item <?=$navPage==='metodo'?'active':''?>" <?=$navPage==='metodo'?'aria-current="page"':''?>><span class="nav-number">03.2</span><span>Caderno de método</span></a>
-    <a href="<?=mat_url('laboratorio')?>" class="nav-item <?=$navPage==='laboratorio'?'active':''?>" <?=$navPage==='laboratorio'?'aria-current="page"':''?>><span class="nav-number">03.3</span><span>Laboratório científico</span></a>
-    <a href="mat_proj/" class="nav-item"><span class="nav-number">03.4</span><span>MAT-Proj · Projeções</span></a>
-    <?php if (is_admin() && is_file(MAT_ROOT . '/experimento_temporis.php')): ?>
-     <a href="experimento_temporis.php" class="nav-item"><span class="nav-number">03.5</span><span>Backtesting · Têmporis 0.2</span></a>
-    <?php endif; ?>
-    <?php if (is_admin() && is_file(MAT_ROOT . '/resultado_temporis_piloto.php')): ?>
-     <a href="resultado_temporis_piloto.php" class="nav-item"><span class="nav-number">03.6</span><span>Ensaio didático · 0.2</span></a>
-    <?php endif; ?>
+    <a href="<?=mat_url('temporis')?>" class="nav-item <?=in_array($navPage,['temporis','temporis_final'],true)?'active':''?>"><span class="nav-number">03.1</span><span>★ Têmporis · resultado atual</span></a>
+    <a href="<?=mat_url('demonstracao_formulas')?>" class="nav-item <?=$navPage==='demonstracao_formulas'?'active':''?>" <?=$navPage==='demonstracao_formulas'?'aria-current=\"page\"':''?>><span class="nav-number">03.2</span><span>Demonstrativo simples</span></a>
+    <a href="<?=mat_url('metodo')?>" class="nav-item <?=$navPage==='metodo'?'active':''?>"><span class="nav-number">03.3</span><span>Caderno de fórmulas</span></a>
+    <a href="<?=mat_url('backtesting')?>" class="nav-item <?=$navPage==='backtesting'?'active':''?>"><span class="nav-number">03.4</span><span>Backtesting · teste de previsões</span></a>
+    <details class="mat-nav-subgroup" <?=in_array($navPage,['temporis_reformulado','temporis_legado'],true)?'open':''?>>
+     <summary><span class="nav-number">03.5</span><span>Formulações anteriores</span><span aria-hidden="true">⌄</span></summary>
+     <div class="mat-nav-subgroup-content">
+      <a href="<?=mat_url('temporis_reformulado')?>" class="nav-item <?=$navPage==='temporis_reformulado'?'active':''?>"><span class="nav-number">↳</span><span>Reformulada · logaritmo</span></a>
+      <a href="<?=mat_url('temporis_legado')?>" class="nav-item <?=$navPage==='temporis_legado'?'active':''?>"><span class="nav-number">↳</span><span>Legada · potência 0,65</span></a>
+     </div>
+    </details>
+    <a href="mat_proj/" class="nav-item"><span class="nav-number">03.6</span><span>MAT-Proj · projeções</span></a>
    </div>
   </details>
   <details class="mat-nav-group" data-nav-group="pesquisa" <?=$grupoPesquisa?'open':''?>>
    <summary><span class="nav-number">04</span><span>Pesquisa e curadoria</span><span class="mat-nav-chevron" aria-hidden="true">⌄</span></summary>
    <div class="mat-nav-submenu">
+    <a href="<?=mat_url('laboratorio')?>" class="nav-item <?=$navPage==='laboratorio'?'active':''?>"><span class="nav-glyph">⌬</span><span>Laboratório de evidências</span></a>
     <span class="mat-nav-subheading">ACOMPANHAMENTO</span>
     <a href="<?=mat_url('andamento')?>" class="nav-item <?=$navPage==='andamento'?'active':''?>" <?=$navPage==='andamento'?'aria-current="page"':''?>><span class="nav-glyph">◈</span><span>Progresso científico</span></a>
     <?php if(is_admin()): ?>
@@ -118,7 +124,7 @@
  </div>
 <div class="rail-bottom">
     <div class="rail-quote">“A história da humanidade é também a história das ferramentas que inventa.”</div>
-    <div class="rail-foot"><span class="live-dot"></span> <?=site_mode()==='mysql'?'ACERVO CONECTADO':'BANCO DESCONECTADO'?><span>Refinada 0.1 · núcleo 6.2.1</span></div>
+    <div class="rail-foot"><span class="live-dot"></span> <?=site_mode()==='mysql'?'ACERVO CONECTADO':'BANCO DESCONECTADO'?><span>Refinada 0.1 + MAT Final</span></div>
  </div>
 </aside>
 <div class="main-column">
@@ -127,8 +133,8 @@
   <?php
     $matBreadcrumbGroup = match($navPage) {
         'linha','atlas','acervo','galeria' => 'Exploração histórica',
-        'temporis','temporis_legado','metodo','laboratorio' => 'Índice Têmporis',
-        'rodadas','fila_rapida','andamento','importar','triagem','fontes','duplicatas','auditoria','editar','login' => 'Pesquisa e curadoria',
+        'temporis','temporis_final','temporis_reformulado','temporis_legado','demonstracao_formulas','metodo','backtesting','projecoes','ensaio_didatico' => 'Índice Têmporis',
+        'laboratorio','laboratorio','rodadas','fila_rapida','andamento','importar','triagem','fontes','duplicatas','auditoria','editar','login' => 'Pesquisa e curadoria',
         default => null,
     };
   ?>
@@ -137,4 +143,4 @@
 </header>
 <main id="conteudo" class="main-content">
 <?php if($flash):?><div class="flash <?=h($flash['type'])?>" role="status"><?=h($flash['message'])?></div><?php endif;?>
-<?php if(site_mode()==='demonstracao'):?><div class="data-notice"><span class="data-notice-dot">!</span><span><strong>Banco MySQL desconectado.</strong> O MAT não exibirá exemplos fictícios como registros reais. Inicie o MySQL para consultar o acervo.</span><a href="<?=mat_url('metodo')?>">Entenda o estado do projeto ↗</a></div><?php endif;?>
+<?php if(site_mode()==='demonstracao' && !in_array($page,['temporis','temporis_final','backtesting'],true)):?><div class="data-notice"><span class="data-notice-dot">!</span><span><strong>Banco MySQL desconectado.</strong> O MAT não exibirá exemplos fictícios como registros reais. Inicie o MySQL para consultar o acervo.</span><a href="<?=mat_url('metodo')?>">Entenda o estado do projeto ↗</a></div><?php endif;?>

@@ -1,0 +1,47 @@
+<?php
+declare(strict_types=1);
+require_once dirname(__DIR__).'/app/CuradoriaRodadas.php';
+require_once dirname(__DIR__).'/app/CuradoriaRevisao.php';
+require_once dirname(__DIR__).'/app/TemporisCuradoria.php';
+
+function check(bool $valid, string $text): void {if(!$valid)throw new RuntimeException('FALHOU: '.$text);echo "[OK] $text\n";}
+$notes=[];
+foreach(CuradoriaRodadas::CRITERIOS as $code=>$label) $notes[$code]=['codigo'=>$code,'nota'=>2,'justificativa'=>'Justificativa documental satisfatória e fonte conferível.','fontes_ids_json'=>'["LIVRO","MUSEU"]'];
+$sources=[['fonte_id'=>'LIVRO'],['fonte_id'=>'MUSEU']];
+$base=['id_extracao'=>'MCD-10001','titulo_proposto'=>'Registro de teste A','ano_original'=>1790,'ano_validado'=>1800,'estado_revisao_humana'=>'NAO_REVISADO','homologado'=>0,'pendencias_json'=>'[]','duplicatas_json'=>'[]'];
+$r=$base+['criterios'=>$notes,'fontes'=>$sources,'pendencias'=>[],'duplicatas'=>[]];
+check(CuradoriaRevisao::impedimentos($r)===[], '11 critérios, fontes, data, sem bloqueios');
+check(CuradoriaRodadas::memory($notes,$sources)['completa'], 'Memória de cálculo completa');
+$zero=$notes;$zero['impacto_difusao']['nota']=0;
+check(CuradoriaRodadas::memory($zero,$sources)['completa'], 'Zero justificado é nota, ausência não é zero');
+$miss=$notes;$miss['impacto_difusao']['nota']=null;
+check(!CuradoriaRodadas::memory($miss,$sources)['completa'], 'Sem evidência não recebe nota automaticamente');
+$rInvalid=$r;$rInvalid['ano_validado']=null;
+check(count(CuradoriaRevisao::impedimentos($rInvalid))>=1, 'Data sem validação bloqueia aprovação');
+$rInvalid=$r;$rInvalid['pendencias']=['Conferir atribuição'];
+check(count(CuradoriaRevisao::impedimentos($rInvalid))>=1, 'Pendências documentais bloqueiam aprovação');
+$rInvalid=$r;$rInvalid['duplicatas']=['MCD-10003'];
+check(count(CuradoriaRevisao::impedimentos($rInvalid))>=1, 'Possíveis duplicatas bloqueiam aprovação');
+$rInvalid=$r;$rInvalid['criterios']['impacto_difusao']['fontes_ids_json']='["FONTE_FANTASMA"]';
+check(count(CuradoriaRevisao::impedimentos($rInvalid))>=1, 'Fonte inexistente bloqueia aprovação');
+$rInvalid=$r;$rInvalid['criterios']['impacto_difusao']['nota']=null;
+check(count(CuradoriaRevisao::impedimentos($rInvalid))>=1, 'Critério sem nota bloqueia aprovação');
+$second=$base;$second['id_extracao']='MCD-10002';$second['titulo_proposto']='Registro de teste B';$second['ano_validado']=1950;
+$allC=['MCD-10001'=>$notes,'MCD-10002'=>$notes];
+$allS=['MCD-10001'=>$sources,'MCD-10002'=>$sources];
+$calc=TemporisCuradoria::calcular([$base,$second],$allC,$allS,1920);
+check($calc['previa']['included']===2,'Prévia com dois marcos completos');
+check($calc['homologada']['included']===0,'Propostas não entram automaticamente na série oficial');
+check(abs(($calc['previa']['series'][0]['t']??0)-100)<1e-9,'Ano-base 1920 normaliza a referência em 100');
+check(($calc['previa']['t_latest']??0)>100,'Acúmulo posterior eleva o índice exploratório');
+$one=$base;$one['estado_revisao_humana']='HOMOLOGADO';$one['homologado']=1;
+$calc=TemporisCuradoria::calcular([$one,$second],$allC,$allS,1920);
+check($calc['homologada']['included']===1,'Somente homologado com dados completos entra na série oficial');
+$invalid=$second;$invalid['ano_validado']=null;
+$calc=TemporisCuradoria::calcular([$one,$invalid],$allC,$allS,1920);
+check($calc['previa']['included']===1 && $calc['sem_data']===1,'Ano bruto não substitui data validada na prévia');
+$rej=$second;$rej['estado_revisao_humana']='REJEITADO';
+$calc=TemporisCuradoria::calcular([$one,$rej],$allC,$allS,1920);
+check($calc['previa']['included']===1, 'Registro rejeitado preservado, porém não entra em séries');
+check(TemporisCuradoria::serie([],1920)['t_latest']===null,'Sem base histórica não inventa índice');
+echo "SUCESSO: 17 testes da revisão e metodologia logarítmica.\n";

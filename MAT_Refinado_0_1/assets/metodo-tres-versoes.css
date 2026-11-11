@@ -1,0 +1,64 @@
+/* MAT Final — única extensão visual da página ?page=metodo. Sem alterar o design global. */
+.page-metodo .metodo-heading{max-width:950px}
+.page-metodo .metodo-manifesto{margin-bottom:18px}
+.page-metodo .metodo-manifesto blockquote{font-size:clamp(20px,2.1vw,30px);line-height:1.45}
+.metodo-jumps{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:34px}
+.metodo-jumps a{font:600 11px/1.4 var(--ui),sans-serif;color:#34574c;text-decoration:none;padding:11px 13px;background:#f5f0e6;border:1px solid #d4c7b6}
+.metodo-jumps a:hover,.metodo-jumps a:focus-visible{background:#e7eee7;outline-color:#326554}
+.metodo-section{margin:27px 0 40px;scroll-margin-top:22px}
+.paper-panel.metodo-section{padding:28px 30px}
+.metodo-section h2{font:normal clamp(26px,3vw,36px)/1.2 var(--serif);margin:17px 0 12px;color:#243f38}
+.metodo-section h3{font:normal 23px/1.2 var(--serif);margin:7px 0 5px;color:#2c4c43}
+.metodo-section p,.metodo-section-top p{font:13px/1.7 var(--ui),sans-serif;color:#5e7065;margin:10px 0 14px;max-width:990px}
+.metodo-dimensoes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:21px 0 16px}
+.metodo-dimensoes>div{background:#f7f2e9;border:1px solid #ddd3c5;padding:16px 17px;min-width:0}
+.metodo-dimensoes span,.metodo-equacao-principal>span,.metodo-formula-label,.metodo-result>div:first-child>span,.metodo-steps>div>span{display:block;font:600 10px/1.5 var(--mono),monospace;letter-spacing:.35px;color:#7e6e56}
+.metodo-dimensoes strong{display:block;font:600 clamp(15px,1.6vw,20px)/1.5 var(--ui),sans-serif;color:#2e574c;margin:10px 0;overflow-wrap:anywhere}
+.metodo-dimensoes small{display:block;font:12px/1.6 var(--ui),sans-serif;color:#5f6f65}
+.metodo-equacao-principal{background:#eaf0e9;border-left:3px solid #386b5e;padding:17px 19px}
+.metodo-equacao{font:normal clamp(19px,2.4vw,27px)/1.5 Georgia,serif;letter-spacing:-.3px;color:#24584a;overflow-wrap:anywhere;margin:7px 0}
+.metodo-equacao-principal p{margin:7px 0 0}
+.metodo-section-top{margin-bottom:19px}
+.metodo-section-top h2{margin:11px 0}
+.metodo-version-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.metodo-version{display:flex;flex-direction:column;background:#faf6ef;border:1px solid #dacdb9;padding:0 18px 17px;min-width:0}
+.metodo-version-head{padding:19px 0 14px;border-bottom:1px solid #ddcfba;min-height:126px}
+.metodo-version-head>span{display:block;font:700 10px var(--mono),monospace;letter-spacing:.65px;color:#896d50}
+.metodo-version-head>strong{display:block;font:normal 25px/1.16 var(--serif),serif;color:#243f39;margin:10px 0}
+.metodo-version-head>small{display:block;font:12px var(--ui),sans-serif;color:#7a796e}
+.metodo-formula-label{margin-top:20px}
+.metodo-formula-small{font:normal 17px/1.5 Georgia,serif;color:#4b6457;margin:8px 0 2px;overflow-wrap:anywhere}
+.metodo-formula{font:normal clamp(17px,1.72vw,21px)/1.6 Georgia,serif;color:#235549;margin:7px 0 12px;overflow-wrap:anywhere;word-break:normal}
+.metodo-version p{margin:10px 0 6px}
+.metodo-version .metodo-mini-note{padding-top:11px;border-top:1px solid #e4d8ca;font-size:12px;color:#6c6f64}
+.metodo-version>a{font:600 12px/1.4 var(--ui),sans-serif;margin-top:auto;padding-top:16px;color:#1d5e50;text-decoration:underline;text-underline-offset:4px}
+.metodo-version-final{background:#eaf1e8;border-color:#91aa95;box-shadow:inset 0 4px 0 #316c58}
+.metodo-version-final .metodo-version-head>span{color:#2b6756}
+.metodo-rodape{font:12px/1.65 var(--ui),sans-serif!important;color:#6f776c!important;margin:17px 0 0!important}
+.metodo-table-wrap{overflow-x:auto;width:100%;margin:20px 0}
+.metodo-table{border-collapse:collapse;min-width:650px;width:100%;font:12px/1.55 var(--ui),sans-serif;color:#42584e}
+.metodo-table th,.metodo-table td{text-align:left;padding:12px 12px;border-bottom:1px solid #dfd6c8}
+.metodo-table thead th{font-weight:700;color:#274e43;background:#ede9e0}
+.metodo-table tbody th{font-weight:700}
+.metodo-table-destaque{background:#eaf2e9}
+.metodo-result{border:1px solid #d6cfbd;background:#f6f2e9;display:grid;grid-template-columns:250px minmax(0,1fr);gap:15px;padding:19px}
+.metodo-result>div:first-child>strong{display:block;font:20px/1.25 var(--serif),serif;color:#265343;margin-top:9px}
+.metodo-result-bars{display:grid;gap:12px}
+.metodo-result-bars>div{display:grid;grid-template-columns:92px minmax(0,1fr) 70px;align-items:center;gap:10px}
+.metodo-result-bars span{font:12px var(--ui),sans-serif;color:#53685e}
+.metodo-result-bars b{font:600 14px var(--mono),monospace;text-align:right;color:#305a4c}
+.metodo-bar-track{height:12px;background:#e0d7c9;overflow:hidden}
+.metodo-bar-track i{display:block;height:100%;background:#b79875}
+.metodo-result-bars .metodo-result-final i{background:#316c58}
+.metodo-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:21px 0}
+.metodo-steps>div{background:#f8f3eb;border:1px solid #e2d7c8;padding:16px}
+.metodo-steps h3{font-size:22px}
+.metodo-steps p{font-size:12px;margin:10px 0 0}
+.metodo-aviso{border-left:3px solid #c0905c;background:#f8eee1;padding:17px 20px;color:#5d5448;font:13px/1.75 var(--ui),sans-serif}
+.metodo-aviso code{background:#ede5d9;padding:2px 5px}
+.metodo-referencias{margin-bottom:38px}
+.metodo-referencias .reference-card{min-height:184px}
+.metodo-referencias .reference-card a{color:#245e50;text-underline-offset:3px}
+@media(max-width:1150px){.metodo-version-grid{grid-template-columns:1fr}.metodo-version{padding:0 20px 18px}.metodo-version-head{min-height:0}.metodo-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:740px){.paper-panel.metodo-section{padding:20px 16px}.metodo-dimensoes{grid-template-columns:1fr}.metodo-result{grid-template-columns:1fr;padding:14px}.metodo-result-bars>div{grid-template-columns:85px minmax(0,1fr) 60px;gap:7px}.metodo-steps{grid-template-columns:1fr}.metodo-jumps a{flex:1 1 42%}.metodo-version-head>strong{font-size:23px}.metodo-equacao{font-size:21px}}
+@media print{.metodo-jumps{display:none}.metodo-version-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.metodo-version{break-inside:avoid}.metodo-section{break-inside:avoid}.metodo-version>a{display:none}}

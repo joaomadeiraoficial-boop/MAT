@@ -1,0 +1,27 @@
+/* MAT · Navegação editorial agrupada — mantém a paleta e a tipografia do Observatório. */
+.mat-nav{display:flex;flex-direction:column;gap:5px;padding:0 16px}
+.mat-nav-home{margin-bottom:3px}
+.mat-nav-group{border:1px solid transparent;min-width:0}
+.mat-nav-group[open]{background:rgba(224,210,182,.035);border-color:rgba(213,189,151,.13)}
+.mat-nav-group>summary{min-height:48px;display:flex;gap:13px;align-items:center;padding:11px 13px;cursor:pointer;list-style:none;color:#c3cdbf;font:13px var(--ui);letter-spacing:.05px;user-select:none;transition:background .2s,color .2s}
+.mat-nav-group>summary::-webkit-details-marker{display:none}
+.mat-nav-group>summary::marker{content:''}
+.mat-nav-group>summary:hover,.mat-nav-group[open]>summary{background:#253737;color:#f1e6d5}
+.mat-nav-group[open]>summary{color:#e6d0ae}
+.mat-nav-chevron{margin-left:auto;font:21px/1 var(--serif);color:#c5a47b;transform:rotate(0deg);transition:transform .2s}
+.mat-nav-group[open] .mat-nav-chevron{transform:rotate(180deg)}
+.mat-nav-submenu{padding:5px 6px 11px 17px;margin-left:19px;border-left:1px solid #44524d;display:flex;flex-direction:column;gap:2px}
+.mat-nav-submenu .nav-item{min-height:37px;padding:9px 10px;gap:11px;font-size:12px;line-height:1.45}
+.mat-nav-submenu .nav-number{min-width:27px;font-size:9px;color:#c9ae8e}
+.mat-nav-submenu .nav-glyph{font-size:17px;min-width:19px}
+.mat-nav-submenu .nav-item.active{border-left:2px solid #c6a17b;background:#34413e;color:#f4e6d2;padding-left:8px}
+.mat-nav-subheading{font:9px var(--mono);color:#919b90;letter-spacing:1.3px;padding:15px 8px 7px;display:block}
+.mat-nav-subheading:first-child{padding-top:8px}
+.mat-rail-account-divider{margin-top:20px;margin-bottom:17px}
+.mat-account-nav{margin-bottom:11px}
+.mat-account-nav .nav-item{font-size:12px;min-height:38px}
+.mat-nav-group summary:focus-visible,.mat-nav-group a:focus-visible{outline:2px solid #d7a87d;outline-offset:2px}
+.mat-nav-group .nav-item span:last-child,.mat-nav-home span:nth-child(2){min-width:0}
+@media(max-width:1080px){.mat-nav{padding:0 11px}.mat-nav-group>summary{gap:8px;padding:10px 8px}.mat-nav-submenu{margin-left:13px;padding-left:10px}.mat-nav-submenu .nav-item{gap:8px}}
+@media(max-width:760px){.mat-nav{padding:0 16px}.mat-nav-group>summary{min-height:50px;padding:12px 11px}.mat-nav-submenu .nav-item{min-height:42px}.rail{overscroll-behavior:contain}body.nav-open{overflow:hidden}}
+@media(prefers-reduced-motion:reduce){.mat-nav-chevron,.mat-nav-group>summary{transition:none}}

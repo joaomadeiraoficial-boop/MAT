@@ -1,0 +1,48 @@
+MAT — ATUALIZACAO DE DATACAO OPCIONAL E ENSAIO EXPERIMENTAL
+Data: 04/11/2026
+Base para instalacao: projeto MAT_Refinado_0_1 com revisao rapida V2 e duplicatas V3.
+
+OBJETIVO
+- Continuar usando um ANO UNICO para marcos com data documentada.
+- Permitir intervalo de datas apenas para candidatos em que houver incerteza historica ou processo continuo.
+- Produzir ensaio matematico com as 11 notas e anos originais extraidos (nao auditados), sem aprovar/homologar automaticamente.
+- Testar sensibilidade do indice em tres posicionamentos do intervalo (inicio, medio, fim) e tres valores beta (1,2,3).
+
+INSTALACAO NO WINDOWS (XAMPP)
+1. Faça backup da pasta MAT_Refinado_0_1 e exporte o banco mat_temporis_curadoria no phpMyAdmin.
+2. Extraia MAT_ATUALIZACAO_INTERVALOS_E_TESTES.zip.
+3. Copie a pasta MAT_Refinado_0_1 extraida para a mesma pasta-pai do projeto, mesclando as pastas e substituindo os arquivos indicados.
+4. NAO apague o config.php local, NAO apague pastas de uploads e NAO importe SQL.
+5. Abra o site e atualize com Ctrl+F5.
+
+ONDE CADASTRAR UM INTERVALO
+- Pesquisa e curadoria > Fila de revisao rapida > selecione o dossie.
+- No painel 'Corrigir data, pendencias e duplicatas', escolha 'Intervalo documentado (opcional)'.
+- Selecione 'Incerteza sobre a data do marco' OU 'Processo tecnologico ...'.
+- Informe inicio e fim, vincule a fonte ja cadastrada e explique documentalmente.
+- Salve justificando a alteracao. O sistema grava o intervalo no JSON historico do candidato.
+- O campo ano_validado fica NULL para esse registro, NAO recebe o ponto medio.
+- Para data pontual, mantenha 'Ano unico' e continue trabalhando como antes.
+- Na ficha detalhada, o mesmo editor fica em 'Editar data e registrar resolucao de pendencias'.
+
+ONDE TESTAR A FORMULA
+- Indice Temporis > Reformulada.
+- Alternar: 'Curva provisoria revisada' ou 'Ensaio com datas extraidas'.
+- Em 'Teste rapido da formula Temporis', comparar tres cenarios temporais, beta=1, beta=2 e beta=3.
+- Usar os links de exportacao CSV (somente logado como pesquisador).
+
+IMPORTANTE PARA O TCC
+- O 'Ensaio com datas extraidas' pode incluir anos errados, aproximacoes ou marcos duplicados; serve para depuracao da formula, NAO para uma afirmacao empirica definitiva.
+- A curva provisoria revisada usa apenas dados com ano revisado ou intervalo documentado.
+- A curva homologada continua exigindo aprovacao humana e depois homologacao.
+- O indice e normalizado pelo ano-base configurado (padrao 1920). Se nao houver peso ate esse ano, o denominador log(1+K(t0)) e zero e T(t) nao pode ser calculado. Nesse caso o grafico alternativo mostra K(t), o acumulado sem normalizacao.
+- O ponto medio serve apenas de convencao para comparacao, NAO e data exata. A simulacao nao distribui peso de maneira continua, e nao cria duplicatas no indice.
+
+BANCO DE DADOS
+Nenhum ALTER TABLE, CREATE TABLE ou importacao SQL novos. As informacoes opcionais sao armazenadas sob a chave datacao_intervalar em analise_historica_json da tabela cur_candidatos. Os demais candidatos sao preservados. Decisoes e correcoes continuam registradas na cur_log.
+
+TESTES
+- Sintaxe de todos os 11 arquivos PHP novos ou editados: OK.
+- 30 scripts de testes automatizados do projeto: OK (0 falhas).
+- Testes novos cobrem: intervalos, anulacao do ano pontual para data incerta, fonte obrigatoria, cenarios, sensibilidade beta, ensaio isolado, bloqueio contra homologacao automatica e denominador zero.
+- Sem teste em MySQL real ou navegador da instalacao do usuario (esta disponivel somente na maquina local do XAMPP).

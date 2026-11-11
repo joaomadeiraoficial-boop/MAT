@@ -1,10 +1,16 @@
-<?php $last=array_slice(all_markers(),-4);$recent=array_reverse($last);$categoryEntries=array_slice($stats['categories'],0,4,true);$maxCat=max(1,...array_values($stats['categories'])); ?>
+<?php
+require_once MAT_ROOT.'/app/CuradoriaRodadas.php';
+$matCurDb=CuradoriaRodadas::connect();
+$matProgress=null;
+if($matCurDb){try{$matProgress=CuradoriaRodadas::overview($matCurDb);}catch(Throwable $e){error_log('MAT: leitura da origem no Observatório: '.$e->getMessage());}}
+$matPanelOk=$matProgress!==null;
+?>
 <div class="opening-grid">
  <section class="hero-intro">
    <div class="section-overline"><span class="overline-square"></span> PROJETO MAT <span class="overline-sep">/</span> UM INVENTÁRIO DA MUDANÇA</div>
    <h1>O tempo deixa<br><em>vestígios.</em><span class="hero-caret">_</span></h1>
    <p class="hero-lead">E se pudéssemos ler a história da tecnologia não apenas como uma sequência de invenções, mas como um fenômeno passível de investigação?</p>
-   <div class="hero-actions"><a class="btn btn-dark" href="<?=mat_url('linha')?>">Percorrer a história <span>↗</span></a><a class="btn btn-ghost" href="<?=mat_url('metodo')?>">Conheça a pesquisa <span>↗</span></a><a class="btn btn-ghost" href="mat_proj/">MAT-Proj · Projeções <span>↗</span></a></div>
+   <div class="hero-actions"><a class="btn btn-dark" href="<?=mat_url('linha')?>">Percorrer a história <span>↗</span></a><a class="btn btn-ghost" href="<?=mat_url('metodo')?>">Conheça a pesquisa <span>↗</span></a><a class="btn btn-ghost" href="<?=mat_url('temporis')?>">★ Têmporis · método novo <span>↗</span></a><a class="btn btn-ghost" href="mat_proj/">MAT-Proj · Projeções <span>↗</span></a></div>
    <div class="hero-footnote"><span class="ornament-line"></span> ENTRE A CRONOLOGIA E A MATEMÁTICA <span class="roman">I</span></div>
  </section>
  <section class="hero-art" aria-label="Ilustração abstrata da evolução temporal">
@@ -22,25 +28,27 @@
  </section>
 </div>
 <?php require __DIR__ . '/mat_acessos_inicio.php'; ?>
-<section class="metric-band" aria-label="Indicadores do acervo">
- <div class="metric-cell"><span class="metric-label">01 / MARCOS DOCUMENTADOS</span><strong><?=short_num($stats['total'])?></strong><small>Registros no acervo <?=site_mode()==='demonstracao'?'ilustrativo':'local'?></small></div>
- <div class="metric-cell"><span class="metric-label">02 / AMPLITUDE HISTÓRICA</span><strong class="metric-date"><?=$stats['min_year']===null?'—':yfmt((int)$stats['min_year'])?></strong><small>Primeiro ponto da cronologia</small></div>
- <div class="metric-cell"><span class="metric-label">03 / EVIDÊNCIAS VALIDADAS</span><strong><?=short_num($stats['states']['aprovado'])?></strong><small>Status aprovado; inclusão no índice exige mais critérios</small></div>
- <div class="metric-cell"><span class="metric-label">04 / CAMPOS DE ESTUDO</span><strong><?=count($stats['categories'])?></strong><small>Áreas com registros</small></div>
+<section class="metric-band" aria-label="Indicadores do lote importado no MySQL">
+ <div class="metric-cell"><span class="metric-label">01 / CANDIDATOS DO ESTUDO</span><strong><?=$matPanelOk?short_num($matProgress['total']):'—'?></strong><small>Fragmentos historicos para triagem, nao marcos aprovados</small></div>
+ <div class="metric-cell"><span class="metric-label">02 / PESQUISADOS</span><strong><?=$matPanelOk?short_num($matProgress['pesquisados']):'—'?></strong><small>Dossiês documentais da rodada atual</small></div>
+ <div class="metric-cell"><span class="metric-label">03 / PRÓXIMA RODADA</span><strong><?=$matPanelOk?short_num($matProgress['planejados']):'—'?></strong><small>Registros ainda não pesquisados, reservados na fila</small></div>
+ <div class="metric-cell"><span class="metric-label">04 / 11 NOTAS PROPOSTAS</span><strong><?=$matPanelOk?short_num($matProgress['propostas_11']):'—'?></strong><small>11 criterios, ainda sem aprovacao</small></div>
 </section>
-<div class="editorial-head"><div><div class="section-overline">LEITURA DE ACERVO <span class="overline-sep">/</span> 02</div><h2>Uma história em <em>camadas.</em></h2></div><a class="text-link" href="<?=mat_url('atlas')?>">Ver atlas completo <span>↗</span></a></div>
-<div class="two-column">
- <section class="paper-panel cat-panel"><div class="panel-head"><span>MAPA DE ÁREAS</span><span class="index-sign">FIG. 01 — A</span></div>
-    <p class="panel-description">Distribuição dos registros segundo o campo tecnológico. Uma visão do <strong>acervo disponível</strong>, não uma medição da aceleração.</p>
-    <div class="cat-bars">
-    <?php foreach($categoryEntries as $name=>$num):?><a class="cat-bar-item" href="<?=mat_url('acervo',['categoria'=>$name])?>"><span><?=h($name)?></span><div class="cat-track"><i style="width:<?=max(6,round(100*$num/$maxCat))?>%"></i></div><strong><?=$num?></strong></a><?php endforeach;?>
-    </div>
-    <div class="panel-foot">FONTE: BASE MAT <span><?=site_mode()==='demonstracao'?'● EXEMPLOS NÃO AUDITADOS':'● BASE LOCAL'?></span></div>
- </section>
- <section class="quote-panel"><div class="quote-mark">“</div><p>Não procuramos provar que a tecnologia acelera. Procuramos reunir evidências para descobrir <em>como ela se comporta.</em></p><div class="quote-author"><span class="ornament-line"></span> PREMISSA METODOLÓGICA · MAT</div><span class="quote-number">02</span></section>
-</div>
-<div class="editorial-head editorial-head-late"><div><div class="section-overline">REGISTROS EM DESTAQUE <span class="overline-sep">/</span> 03</div><h2>Fragmentos do <em>amanhã.</em></h2></div><a class="text-link" href="<?=mat_url('acervo')?>">Abrir o acervo <span>↗</span></a></div>
-<div class="record-grid">
- <?php foreach($recent as $i=>$m):?><a class="record-card" href="<?=mat_url('marco',['id'=>$m['id']])?>"><div class="record-card-head"><span class="record-numeral">REG. <?=str_pad((string)$m['id'],3,'0',STR_PAD_LEFT)?></span><span class="record-arrow">↗</span></div><div class="record-card-year"><?=yfmt((int)$m['ano'])?></div><h3><?=h($m['titulo'])?></h3><p><?=h($m['descricao'])?></p><div class="record-card-tail"><span class="category-dot <?=cat_tone((string)$m['categoria'])?>"></span><?=h($m['categoria'])?><span class="tiny-tag"><?=status_text($m['status'])?></span></div></a><?php endforeach;?>
-</div>
-<section class="method-ribbon"><div><span>O PRÓXIMO CAPÍTULO</span><h3>Têmporis: quando a história encontra uma hipótese matemática.</h3></div><p>O cálculo é experimental, os dados precisam de crítica e a previsão ainda será construída. Nosso compromisso é tornar cada etapa visível.</p><a class="btn btn-outline-light" href="<?=mat_url('temporis')?>">Abrir laboratório ↗</a></section>
+<section class="mat-progress-preview" aria-label="Andamento científico do MAT">
+ <div class="section-overline">ESTAÇÃO DE PESQUISA / ESTADO DAS FONTES</div>
+ <div class="mat-progress-heading"><h2>Da coleta à <em>Têmporis.</em></h2><?php if(is_admin()):?><a href="<?=mat_url('andamento')?>">Abrir acompanhamento completo ↗</a><?php else:?><a href="<?=mat_url('laboratorio')?>">Conhecer o laboratório ↗</a><?php endif;?></div>
+ <div class="mat-progress-grid">
+  <div><span>Candidatos pesquisados</span><strong><?=$matPanelOk?short_num($matProgress['pesquisados']):'—'?></strong><small>Dossiês da rodada de pesquisa; sujeitos à auditoria.</small></div>
+  <div><span>Candidatos na triagem</span><strong><?=$matPanelOk?short_num($matProgress['total']):'—'?></strong><small>Importados, ainda sem aprovação científica.</small></div>
+  <div><span>Critérios com notas propostas</span><strong><?=$matPanelOk?short_num($matProgress['notas_propostas']):'—'?></strong><small>Notas com justificativas armazenadas no MySQL.</small></div>
+  <div><span>Próxima rodada</span><strong><?=$matPanelOk?short_num($matProgress['planejados']):'—'?></strong><small>Fila registrada no banco, ainda sem pesquisa documental.</small></div>
+ </div>
+ <p class="mat-progress-note"><?php if($matPanelOk):?><?=short_num(($matProgress['total']-$matProgress['pesquisados']))?> candidatos ainda não foram pesquisados; <?=short_num($matProgress['propostas_11'])?> dossiês com 11 notas propostas aguardam auditoria.<?php else:?>A fila não está disponível. Confira MySQL e lote importado; não exibimos estimativas como dados reais.<?php endif;?> Nenhuma proposta de IA entra automaticamente na Têmporis oficial.</p>
+</section>
+<section class="paper-panel" style="margin-top:2rem;padding:2rem">
+ <div class="section-overline">O OBJETIVO / CURADORIA DOCUMENTAL</div>
+ <h2>Do fragmento a <em>uma nota explicável.</em></h2>
+ <p>O lote documental registrado neste banco é a base de trabalho desta etapa. Os candidatos são documentados com onze rubricas, notas de 1 a 3 e indicação explícita de lacunas, sem pontuação automática por falta de evidência. O acervo anterior não participa desta fila.</p>
+ <?php if(is_admin()): ?><a class="btn btn-dark" href="<?=mat_url('andamento')?>">Ver fila dos candidatos ↗</a><?php else: ?><a class="btn btn-dark" href="<?=mat_url('laboratorio')?>">Conhecer as rubricas ↗</a><?php endif; ?>
+</section>
+<section class="method-ribbon"><div><span>PESQUISA CIENTÍFICA</span><h3>Índice Têmporis · método final.</h3></div><p>Novo método: w = (I/10)² × C × F; K(t) soma os pesos até o ano e T(t) = 100 × K(t)/K(1900). A curadoria e as limitações científicas continuam explícitas.</p><a class="btn btn-outline-light" href="<?=mat_url('temporis')?>">Abrir método atual ↗</a></section>

@@ -1,0 +1,25 @@
+MAT — Auditoria por prioridades V2, corrigindo tudo em "Exige revisão"
+
+REQUISITO: MAT com o pacote anterior de auditoria automática instalado e funcionando.
+
+1. Backup da pasta MAT_Refinado_0_1 e exportação do banco mat_temporis_curadoria.
+2. Extraia este ZIP e copie APENAS os arquivos listados para dentro de
+   D:\Faculdade nero\xampp\htdocs\MAT_Refinado_Git\MAT_Refinado_0_1
+   substituindo os homônimos:
+   app/CuradoriaAuditoriaAutomatica.php
+   views/auditoria_automatica.php
+   assets/auditoria-automatica.css
+   tests/test_auditoria_automatica.php (opcional).
+3. Abra http://localhost/MAT_Refinado_Git/MAT_Refinado_0_1/auditoria_automatica.php
+4. Ctrl+F5. Confira filtros Contextos, Duplicatas, Dados, Fontes, Alertas e Aptos.
+
+IMPORTANTE: a classificação é SUGESTÃO por regra, não decisão científica automática.
+A revisão de escopo pode ser feita em lote. O botão Rejeitar em lote exige
+justificativa, seleção e CONFIRMO REJEICAO. Tudo fica no banco e no histórico.
+
+A ação "Gerar plano de prioridades" apenas registra um diagnóstico, e NÃO mais
+marca todo o banco como EM_REVISAO. Estados gravados pela versão antiga não
+são revertidos automaticamente (para preservar decisões e histórico).
+
+NÃO exige novo SQL, NÃO apaga dados, NÃO altera a fórmula Têmporis.
+Não substitui o arquivo de menu header.php; preserva customizações anteriores.

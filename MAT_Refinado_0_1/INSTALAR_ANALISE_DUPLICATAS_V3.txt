@@ -1,0 +1,55 @@
+MAT — ATUALIZACAO ANALISE EXPLICAVEL DE DUPLICATAS (V3)
+====================================================
+
+PROBLEMA CORRIGIDO
+A tela 'Conferir duplicatas' exibida na captura de 04/11/2026 lista
+referencias armazenadas em cur_candidatos.duplicatas_json. Esse dado
+era exibido como 'possivel duplicata' sem demonstrar justificativa do
+importador nem verificar se os titulos se referiam ao mesmo evento.
+Exemplo exibido: MCD-00002 (debate Stonehenge) x MCD-00473
+(roda de oleiro na Mesopotamia). Sao eventos sem semelhanca aparente.
+
+NOVO COMPORTAMENTO
+- Um bloco destacado POR QUE O SISTEMA MARCOU? mostra a origem do
+  vinculo em duplicatas_json (A->B, B->A ou bilateral).
+- Se nao houver justificativa importada, mostra JUSTIFICATIVA NAO INFORMADA.
+- Analisa indicadores superficiais do par: termos dos titulos, categorias
+  e distancia cronologica, distinguindo datas validadas das extraidas.
+- Marca ALERTA para associacoes sem semelhanca historica aparente.
+- Apresenta filtro Sem semelhanca aparente, com alertas primeiro.
+- Motivo importado, caso exista no JSON, e mostrado como nao verificado.
+- Nenhum diagnostico automatico exclui, rejeita, aprova ou homologa.
+- O botao 'Marcos distintos' agora retira apenas as referencias cruzadas
+  ENTRE os dois registros apos parecer escrito e confirmacao humana.
+  A operacao ocorre em transacao e fica registrada em cur_log. O parecer
+  continua visivel na aba Decididos, mesmo depois da retirada do vinculo.
+- Manter A / Manter B significa principal de referencia; nao elimina
+  automaticamente os vinculos nem normaliza notas.
+
+INSTALAR NO XAMPP
+1) Faca backup de toda a pasta MAT_Refinado_0_1 e exporte seu MySQL.
+2) Extraia MAT_ATUALIZACAO_DUPLICATAS_EXPLICADAS_V3.zip.
+3) Copie a pasta MAT_Refinado_0_1 por cima da sua, mesclando arquivos.
+4) Abra o MAT e pressione Ctrl+F5; entre em Pesquisa e curadoria >
+   Conferir duplicatas > Sem semelhanca aparente.
+5) Confira a justificativa e as fontes de cada par antes de decidir.
+
+BANCO E SEGURANCA
+- NAO executar SQL. Nenhuma migracao de banco e necessaria.
+- Nenhum vinculo antigo e removido apenas por instalar a atualizacao.
+- Somente uma decisao explicita 'Marcos distintos' pode retirar o
+  vinculo do par, depois de verificacao humana.
+- Pendencias bibliograficas adicionais podem continuar bloqueando
+  aprovacao; esse recurso nao serve para contornar revisao cientifica.
+- O sistema nao acessou o MySQL local do usuario nesta execucao:
+  a origem exata dos vinculos nos SQLs antigos ainda requer consultar
+  os arquivos originais de importacao.
+
+ARQUIVOS ALTERADOS
+app/CuradoriaDuplicatas.php
+views/duplicatas.php
+assets/duplicatas-comparacao.css
+assets/app.js
+views/header.php
+
+tests/test_duplicatas_explicaveis.php — teste adicional

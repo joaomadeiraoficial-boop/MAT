@@ -69,9 +69,49 @@ function rescan_duplicates(int $maxRows=1500,int $yearWindow=5,float $threshold=
     return ['checked'=>count($rows),'pending'=>(int)$pdo->query("SELECT COUNT(*) FROM duplicate_candidates WHERE status='pendente'")->fetchColumn(),'limited'=>$limited];
 }
 function duplicate_rows(): array {
-    if(!db())return [];
-    return db()->query("SELECT d.*, a.titulo AS nome_a,b.titulo AS nome_b,a.ano AS ano_a,b.ano AS ano_b FROM duplicate_candidates d JOIN marcos a ON a.id=d.marco_a JOIN marcos b ON b.id=d.marco_b ORDER BY CASE WHEN d.status='pendente' THEN 0 ELSE 1 END, d.similarity DESC, d.id DESC LIMIT 120")->fetchAll();
+    if (!db()) return [];
+    $rows = db()->query("SELECT d.*, a.titulo AS nome_a, b.titulo AS nome_b,
+         a.ano AS ano_a, b.ano AS ano_b,
+         a.descricao AS descricao_a, b.descricao AS descricao_b,
+         a.categoria AS categoria_a, b.categoria AS categoria_b,
+         a.precisao_data AS precisao_a, b.precisao_data AS precisao_b,
+         a.fonte AS fonte_a, b.fonte AS fonte_b,
+         a.fonte_pagina AS pagina_a, b.fonte_pagina AS pagina_b,
+         a.criador AS criador_a, b.criador AS criador_b,
+         a.local AS local_a, b.local AS local_b,
+         a.status AS status_a, b.status AS status_b
+         FROM duplicate_candidates d
+         JOIN marcos a ON a.id=d.marco_a
+         JOIN marcos b ON b.id=d.marco_b
+         ORDER BY CASE WHEN d.status='pendente' THEN 0 ELSE 1 END,
+           d.similarity DESC, d.id DESC LIMIT 120")->fetchAll();
+    // A tabela existente possui ENUM restrito. Guardamos a decisao detalhada
+    // na trilha de revisoes, sem ALTER TABLE nem apagar os registros originais.
+    $decisions=[];
+    $stmt=db()->query("SELECT operacao,dados_novos FROM revisoes
+         WHERE operacao IN ('duplicata_manter_a','duplicata_manter_b',
+                            'duplicata_distintos','duplicata_revisao')
+         ORDER BY id DESC LIMIT 3000");
+    foreach($stmt as $revisao){
+        $dados=json_decode((string)($revisao['dados_novos']??''),true);
+        if(!is_array($dados))continue;
+        $pairId=(int)($dados['par_id']??0);
+        if($pairId>0 && !isset($decisions[$pairId]))$decisions[$pairId]=[
+             'operacao'=>(string)$revisao['operacao'],
+             'principal_id'=>$dados['principal_id']??null,
+             'motivo'=>$dados['motivo']??''
+        ];
+    }
+    foreach($rows as &$row){
+        $dec=$decisions[(int)$row['id']]??null;
+        $row['decisao_explicita']=$dec['operacao']??null;
+        $row['principal_id']=$dec['principal_id']??null;
+        $row['motivo_decisao']=$dec['motivo']??'';
+    }
+    unset($row);
+    return $rows;
 }
+
 function audit_rows(): array {
     if(!db())return [];
     return db()->query('SELECT r.*,m.titulo,u.nome AS revisor FROM revisoes r LEFT JOIN marcos m ON m.id=r.marco_id LEFT JOIN usuarios u ON u.id=r.usuario_id ORDER BY r.id DESC LIMIT 100')->fetchAll();

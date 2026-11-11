@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Pesquisa histórica do MAT — consulta exclusivamente o banco mat_temporis_curadoria.
+ * Pesquisa histórica do MAT Refinado — curadoria original, configurável sem migração implícita.
  * Não altera a conexão principal do MAT; não cria tabelas ou preenche registros.
  * As contagens são obtidas por SELECT no MySQL, sem JSON, CSV ou valores simulados.
  */
@@ -27,8 +27,8 @@ final class CuradoriaRodadas
         'Relevância fundacional' => ['fund_pervasividade','fund_aprimoramento','fund_complementaridade'],
     ];
 
-    /** Nome do banco de pesquisa: nunca aponta automaticamente para o banco de marcos do MAT. */
-    public static function databaseName(): string { return 'mat_temporis_curadoria'; }
+    /** Nome do banco de pesquisa original; independente da cópia exploratória do MAT Final. */
+    public static function databaseName(): string { return (string)cfg('curadoria_db_name','mat_temporis_curadoria'); }
     /** IDs do livro e dos lotes externos importados mantêm formatos distintos. */
     public static function validId(string $id): bool {
         return (bool)preg_match('/^(?:MCD-[0-9]{5}|TEMP-R[0-9]{2}-[0-9]{3})$/D',$id);
@@ -200,7 +200,7 @@ final class CuradoriaRodadas
 
     /** Cálculo individual demonstrativo segundo a rubrica existente, jamais homologação. */
     public static function memory(array $criteria,array $sources): array {
-        $scores=[];$sums=[];$used=0;$complete=true;
+        $scores=[];$sums=[];$used=0;$complete=true;$provisorias=0;
         $idsDisponiveis=[];
         foreach($sources as $fonte) {
             $id=trim((string)($fonte['fonte_id']??''));
@@ -213,14 +213,16 @@ final class CuradoriaRodadas
                 if($v===null||!preg_match('/^[0-3]$/D',(string)$v)){$complete=false;$scores[$key]=null;continue;}
                 $scores[$key]=(int)$v;$sum+=(int)$v;$used++;
                 $ligadas=self::decodeArray((string)($c['fontes_ids_json']??''));
-                if(trim((string)($c['justificativa']??''))==='' || !$ligadas)$complete=false;
+                $provisoria=($c['situacao']??'')==='PROVISORIA_SEM_EVIDENCIA';
+                if($provisoria)$provisorias++;
+                if(trim((string)($c['justificativa']??''))==='' || (!$ligadas && !$provisoria))$complete=false;
                 foreach($ligadas as $fid) {
                     if(!is_string($fid) || trim($fid)==='' || !isset($idsDisponiveis[$fid]))$complete=false;
                 }
             }
             $sums[$group]=$sum;
         }
-        $result=['scores'=>$scores,'sums'=>$sums,'avaliadas'=>$used,'completa'=>$complete && $used===11 && count($idsDisponiveis)>0,'I'=>null,'C'=>null,'F'=>null,'peso'=>null];
+        $result=['scores'=>$scores,'sums'=>$sums,'avaliadas'=>$used,'completa'=>$complete && $used===11 && count($idsDisponiveis)>0,'notas_provisorias'=>$provisorias,'I'=>null,'C'=>null,'F'=>null,'peso'=>null];
         if($result['completa']){
             $result['I']=1+9*$sums['Impacto']/12;
             $result['C']=$sums['Confiabilidade histórica']/12;

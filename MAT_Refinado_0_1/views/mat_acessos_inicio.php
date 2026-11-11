@@ -1,13 +1,11 @@
 <?php
 /** Atalhos de navegação na home. Não consulta o banco e não altera registros. */
 $matHomeActions = [
-    ['index.php?page=temporis', 'Índice Têmporis', 'Curva oficial e metodologia vigente'],
+    ['index.php?page=metodo', 'Caderno: 3 métodos', 'Compare potência, logaritmo e índice acumulado do MAT Final'],
 ];
 if (is_admin()) {
-    if (is_file(MAT_ROOT . '/triagem_300_reais.php')) $matHomeActions[] = ['triagem_300_reais.php', 'Triagem real dos 300', 'Propostas de notas e progresso auditavel'];
-    if (is_file(MAT_ROOT . '/assistente_ia.php')) {
-        $matHomeActions[] = ['assistente_ia.php', 'Assistente de IA', 'Triagem e propostas dos 11 critérios'];
-    }
+    $matHomeActions[] = ['index.php?page=andamento', 'Andamento dos marcos', 'Números do MySQL, notas provisórias e pendências documentais'];
+    $matHomeActions[] = [mat_url('rodadas'), 'Curadoria dos candidatos', 'Notas, fontes e rodadas do banco mat_temporis_curadoria'];
     if (is_file(MAT_ROOT . '/experimento_temporis.php')) $matHomeActions[] = ['experimento_temporis.php', 'Teste histórico Têmporis', 'Previsão 1920 → 2020, comparação e erros'];
     $matHomeActions[] = ['index.php?page=importar', 'Importar cronologias', 'Preparação e revisão de candidatos'];
     if (is_dir(MAT_ROOT . '/mat_proj')) {
@@ -32,10 +30,14 @@ if (is_admin()) {
 <section class="mat-home-access" aria-label="Atalhos das funcionalidades MAT">
   <div class="mat-home-access-eyebrow">ESTAÇÃO DE TRABALHO / ATALHOS</div>
   <h2>Acesse suas ferramentas de pesquisa.</h2>
+  <a class="tempo-home-feature" href="<?=mat_url('temporis')?>" aria-label="Abrir Índice Têmporis — método atual do MAT Final">
+   <div class="tempo-home-copy"><small>MÉTODO ATUAL DO MAT · MAT FINAL 2026</small><strong>Têmporis <em>final.</em></strong><p>11 rubricas, peso quadrático e índice acumulado sem compressão · gráficos e análise de sensibilidade.</p><span>EXPLORAR O ÍNDICE ↗</span></div>
+   <div class="tempo-home-mark" aria-hidden="true"><span>∑</span><small>β = 2</small></div>
+  </a>
   <div class="mat-home-access-grid">
     <?php foreach ($matHomeActions as [$matTarget,$matLabel,$matHelp]): ?>
       <a class="mat-home-access-link" href="<?=h($matTarget)?>"><strong><?=h($matLabel)?> ↗</strong><small><?=h($matHelp)?></small></a>
     <?php endforeach; ?>
   </div>
-  <p class="mat-home-access-warning">Candidatos e notas de IA permanecem pendentes de revisão científica.</p>
+  <p class="mat-home-access-warning">Todas as notas propostas e os candidatos permanecem sujeitos à revisão científica.</p>
 </section>

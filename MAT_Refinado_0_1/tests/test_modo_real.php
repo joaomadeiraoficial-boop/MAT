@@ -26,5 +26,5 @@ check(count($ids)===11 && (!class_exists('RevisedMethodology') || count(RevisedM
 $backtest=file_get_contents(dirname(__DIR__).'/experimento_temporis.php');
 check(!str_contains($backtest,'simulatedPoints(') && !str_contains($backtest,'Demonstração fictícia'),'Backtest publico sem simulacoes');
 $pilot=file_get_contents(dirname(__DIR__).'/resultado_temporis_piloto.php');
-check(str_contains($pilot,'Location: experimento_temporis.php'),'Ensaio antigo redirecionado');
+check(str_contains($pilot,'svgCronologico(') && !str_contains($pilot,'Location: experimento_temporis.php'),'Ensaio didatico independente, sem redirecionamento ao backtesting');
 echo "MAT REAL: TESTES DE CODIGO APROVADOS (SEM OLLAMA OU MYSQL).\n";

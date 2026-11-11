@@ -20,14 +20,20 @@ foreach(['Candidatos na fonte','Elegíveis para cálculo','Sem data utilizável'
 $assert(substr_count($html,'<div class="mat-final-chart"')===2,'Curva principal e comparativo separados');
 $_GET=['fonte'=>'snapshot','coorte'=>'ampla','horizonte'=>'25'];$page='backtesting';
 ob_start();require dirname(__DIR__).'/views/backtesting.php';$bt=(string)ob_get_clean();
-foreach(['Backtesting','WAPE','Testes válidos','Mostrar mais · comparar todos os','Mostrar mais · conferir cada previsão histórica','Exponencial','Logístico','Linear','candidatos','Previsão de crescimento','Crescimento observado'] as $needle){
+foreach(['Backtesting','WAPE','Seu método','Melhor no teste','Pior no teste','Exponencial','Logístico','Linear','candidatos','Previsão de crescimento','Crescimento observado','Mostrar comparação detalhada de todos os modelos'] as $needle){
     $assert(str_contains($bt,$needle),'Backtesting exibe '.$needle);
 }
-$assert(substr_count($bt,'<tr')>=12,'Backtesting mantém os 11 modelos na tabela expandida');
-$assert(substr_count($bt,'class="tf-bt-short-row')===3,'Resumo apresenta só os 3 menores erros');
+$assert(substr_count($bt,'class="tf-bt-short-row')===3,'Resumo apresenta só os 3 essenciais (seu método, melhor e pior)');
 $assert(str_contains($bt,'<strong>29,3%</strong>') && str_contains($bt,'Aceleração local (experimental)'), 'Destaque correto para horizonte de 25 anos no snapshot');
-$assert(str_contains($bt,'<details class="tf-expander tf-bt-more"') && substr_count($bt,'<details class="tf-expander tf-bt-more"')===3,'Detalhes científicos são recolhidos por padrão');
+$assert(substr_count($bt,'<details class="tf-expander tf-bt-more"')===1,'Detalhes técnicos completos ficam ocultos por padrão');
 $assert(str_contains($bt,'<details class="tf-bt-options"'), 'Fonte e coorte ficam nas opções avançadas');
+$_GET=['fonte'=>'snapshot','coorte'=>'ampla','horizonte'=>'25','mostrar_todos'=>'1'];
+ob_start();require dirname(__DIR__).'/views/backtesting.php';$btAll=(string)ob_get_clean();
+foreach(['Testes válidos','Comparação detalhada de todos os','Conferir cada previsão histórica'] as $needle){
+    $assert(str_contains($btAll,$needle),'Backtesting expandido exibe '.$needle);
+}
+$assert(substr_count($btAll,'<tr')>=12,'Backtesting mantém os 11 modelos na tabela expandida');
+$assert(substr_count($btAll,'<details class="tf-expander tf-bt-more"')===3,'Detalhes científicos completos aparecem quando solicitados');
 $assert(str_contains($bt,'exportação histórica (não atualiza com o MySQL)'), 'A origem estática permanece identificada');
 if(!extension_loaded('pdo_mysql')){
     try{TemporisFinal::obterDados('curadoria',2026);throw new RuntimeException('Não avisou sobre origem indisponível');}

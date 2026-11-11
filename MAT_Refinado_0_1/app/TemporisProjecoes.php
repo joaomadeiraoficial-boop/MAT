@@ -19,10 +19,15 @@ final class TemporisProjecoes
         'potencia' => 'Original adaptada · potência 0,65',
     ];
     public const MODELOS = [
+        'exponencial' => 'Exponencial · K(t+h)=K(t)·e^(g·h) · PRINCIPAL',
         'media50' => 'Média dos 50 anos anteriores',
         'media100' => 'Média dos 100 anos anteriores',
         'tendencia100' => 'Tendência entre duas janelas de 50 anos',
     ];
+    /** Modelo exibido por padrão (projeção principal do Têmporis). */
+    public const MODELO_PRINCIPAL = 'exponencial';
+    /** Janela (anos) usada para estimar a taxa exponencial g a partir do histórico. */
+    public const JANELA_G = 50;
 
     public static function indice(float $k, float $kBase, string $formula): ?float
     {
@@ -69,11 +74,32 @@ final class TemporisProjecoes
 
     private static function taxa(array $train, int $cut, string $modelo, int $passo): float
     {
+        if ($modelo === 'exponencial') {
+            $g = self::taxaExponencial($train, $cut, self::JANELA_G);
+            // Exponencial pura acumulada passo a passo: K(corte+p) = K(corte)·e^(g·p).
+            $kPrev = self::acumular($train, $cut);
+            return max(0.0, $kPrev * (exp($g * (float)$passo) - exp($g * (float)($passo - 1))));
+        }
         if ($modelo === 'media50') return self::janela($train, $cut-49, $cut) / 50.0;
         if ($modelo === 'media100') return self::janela($train, $cut-99, $cut) / 100.0;
         $old = self::janela($train, $cut-99, $cut-50) / 50.0;
         $now = self::janela($train, $cut-49, $cut) / 50.0;
         return max(0.0, $now + (($now-$old)/50.0)*$passo);
+    }
+
+    /**
+     * Taxa exponencial de crescimento estimada SOMENTE do histórico disponível:
+     *   g = ln( K(corte) / K(corte − janela) ) / janela
+     * Sem constantes arbitrárias; retorna 0 quando os dados não sustentam o cálculo.
+     */
+    public static function taxaExponencial(array $train, int $cut, int $janela = self::JANELA_G): float
+    {
+        if ($janela <= 0) return 0.0;
+        $kCut = self::acumular($train, $cut);
+        $kOld = self::acumular($train, $cut - $janela);
+        if ($kCut <= 0.0 || $kOld <= 0.0) return 0.0;
+        $g = log($kCut / $kOld) / (float)$janela;
+        return is_finite($g) ? $g : 0.0;
     }
 
     /**
@@ -96,7 +122,7 @@ final class TemporisProjecoes
         $kCut = self::acumular($train, $cut);
         $kBase = self::acumular($train, $anoBase);
         $earliest = $train ? (int)$train[0]['year'] : null;
-        $rateWindow = $modelo === 'media50' ? 50 : 100;
+        $rateWindow = match ($modelo) { 'media50' => 50, 'exponencial' => self::JANELA_G, default => 100 };
         $base = [
             'status'=>'insuficiente', 'origin'=>$cut, 'target'=>$target,
             'as_of'=>$asOf, 'formula'=>$formula, 'modelo'=>$modelo, 'reference_year'=>$anoBase,
@@ -169,7 +195,7 @@ final class TemporisProjecoes
     {
         if ($horizon < 1 || $horizon > 800 || $step < 1) throw new InvalidArgumentException('Horizonte inválido.');
         $all=self::preparar($points,$asOf);
-        if ($all===[]) return ['n'=>0,'mae'=>null,'rmse'=>null,'bias'=>null,'folds'=>[]];
+        if ($all===[]) return ['n'=>0,'mae'=>null,'rmse'=>null,'bias'=>null,'r2'=>null,'folds'=>[]];
         $first=(int)$all[0]['year'];
         $end=min($cut,$asOf,(int)end($all)['year']);
         $start=max(-10000, $first+100, $anoBase??-10000);
@@ -183,10 +209,15 @@ final class TemporisProjecoes
             if (count($folds)>=1000) break;
         }
         $n=count($folds);
-        if (!$n) return ['n'=>0,'mae'=>null,'rmse'=>null,'bias'=>null,'folds'=>[]];
+        if (!$n) return ['n'=>0,'mae'=>null,'rmse'=>null,'bias'=>null,'r2'=>null,'folds'=>[]];
         $sum=0.0;$abs=0.0;$sq=0.0;
+        $obsMean=0.0; foreach ($folds as $f) $obsMean+=(float)$f['observado'];
+        $obsMean/=$n;
+        $ssTot=0.0; foreach ($folds as $f) $ssTot+=pow((float)$f['observado']-$obsMean,2);
+        $ssRes=0.0; foreach ($folds as $f) $ssRes+=pow((float)$f['erro'],2);
         foreach ($folds as $f) {$err=(float)$f['erro'];$sum+=$err;$abs+=abs($err);$sq+=$err*$err;}
-        return ['n'=>$n,'mae'=>$abs/$n,'rmse'=>sqrt($sq/$n),'bias'=>$sum/$n,'folds'=>$folds];
+        $r2=$ssTot>1e-12?1.0-$ssRes/$ssTot:null;
+        return ['n'=>$n,'mae'=>$abs/$n,'rmse'=>sqrt($sq/$n),'bias'=>$sum/$n,'r2'=>$r2,'folds'=>$folds];
     }
 
     /** Gráfico em escala de ano real: histórico, treino e projeção, com erro no alvo. */

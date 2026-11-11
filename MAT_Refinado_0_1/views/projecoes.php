@@ -15,8 +15,8 @@ $projSerie=(string)($_GET['serie']??'previa');
 if(!isset($projSeriesLabels[$projSerie]))$projSerie='previa';
 $projFormula=(string)($_GET['formula']??'log');
 if(!isset($projFormulas[$projFormula]))$projFormula='log';
-$projModelo=(string)($_GET['modelo']??'media50');
-if(!isset($projModelos[$projModelo]))$projModelo='media50';
+$projModelo=(string)($_GET['modelo']??TemporisProjecoes::MODELO_PRINCIPAL);
+if(!isset($projModelos[$projModelo]))$projModelo=TemporisProjecoes::MODELO_PRINCIPAL;
 $projCorte=filter_var($_GET['corte']??1926,FILTER_VALIDATE_INT);
 $projAlvo=filter_var($_GET['alvo']??2026,FILTER_VALIDATE_INT);
 $projCorte=$projCorte===false?1926:max(-10000,min(3000,$projCorte));
@@ -95,7 +95,7 @@ $projAtalhos=[['titulo'=>'1900 → 2000','corte'=>1900,'alvo'=>2000],
 </select></label>
 <label>Modelo de crescimento dos pesos
 <select name="modelo">
-<?php foreach($projModelos as $k=>$label):?><option value="<?=h($k)?>" <?=$k===$projModelo?'selected':''?>><?=h($label)?></option><?php endforeach; ?>
+<?php foreach($projModelos as $k=>$label):?><option value="<?=h($k)?>" <?=$k===$projModelo?'selected':''?>><?=h($k===TemporisProjecoes::MODELO_PRINCIPAL?$label.' · principal':$label)?></option><?php endforeach; ?>
 </select></label>
 <label>Conjunto documental
 <select name="serie">
@@ -111,13 +111,23 @@ $projAtalhos=[['titulo'=>'1900 → 2000','corte'=>1900,'alvo'=>2000],
 <?php elseif($projResultado):
     $r=$projResultado;$met=$projMetricas;
     $modo=$r['target']>$projAsOf?'Projeção para o futuro':'Retroprevisão confrontada';
+    $projG=null;
+    if($projModelo===TemporisProjecoes::MODELO_PRINCIPAL){
+        $projAll=TemporisProjecoes::preparar($projPontos,$projAsOf);
+        $projTrain=array_values(array_filter($projAll,static fn($p)=>$p['year']<=$projCorte));
+        $projG=TemporisProjecoes::taxaExponencial($projTrain,$projCorte,TemporisProjecoes::JANELA_G);
+    }
+    $projPrincipalLabel=$projModelos[TemporisProjecoes::MODELO_PRINCIPAL];
 ?>
 <div class="mat-proj-formula">
 <?php if($projFormula==='log'):?>T(t) = 100 × ln(1 + K(t)) / ln(1 + K(<?=$projBase?>))
 <?php else:?>T(t) = 100 × (K(t) / K(<?=$projBase?>))<sup>0,65</sup><?php endif;?>
 </div>
+<?php if($projModelo===TemporisProjecoes::MODELO_PRINCIPAL):?>
+<div class="mat-proj-info" style="border-color:#194a40;background:#eef4ee;margin-top:14px"><h3>Modelo principal: Exponencial</h3><p>A projeção exibida é a exponencial <strong>T(t+h) = T(t)·e^(g·h)</strong>, com taxa estimada do histórico <strong>g = ln(K(corte)/K(corte−<?=TemporisProjecoes::JANELA_G?>))/<?=TemporisProjecoes::JANELA_G?></strong> sem constantes arbitrárias. <strong>g estimado neste corte: <?=$fmtProj($projG,5)?>/ano</strong> (<?=$fmtProj($projG*100,3)?>% ao ano). Os demais modelos continuam disponíveis para comparação científica; superioridade comprovada depende dos testes retrospectivos.</p></div>
+<?php endif; ?>
 <div class="mat-proj-metrics">
-<div class="mat-proj-metric"><span class="tag">Modo</span><strong style="font-size:23px"><?=h($modo)?></strong><small>Horizonte: <?=$r['horizon']?> anos</small></div>
+<div class="mat-proj-metric"><span class="tag">Modo · <?=h($projModelo===TemporisProjecoes::MODELO_PRINCIPAL?'modelo principal: exponencial':'modelo '.$projModelo)?></span><strong style="font-size:23px"><?=h($modo)?></strong><small>Horizonte: <?=$r['horizon']?> anos</small></div>
 <div class="mat-proj-metric"><span class="tag">Treino até <?=$projCorte?></span><strong><?=$r['n_train']?></strong><small>Marcos ponderados do conjunto <?=h($projSerie)?></small></div>
 <div class="mat-proj-metric primary"><span class="tag">T(<?=$projAlvo?>) previsto</span><strong><?=$fmtProj($r['t_predicted'])?></strong><small>T(<?=$projBase?>) = 100 · T(<?=$projCorte?>) = <?=$fmtProj($r['t_origin'])?></small></div>
 <div class="mat-proj-metric"><span class="tag">T(<?=$projAlvo?>) observado</span><strong><?=$fmtProj($r['t_observed'])?></strong><small><?= $r['t_observed']===null?'Ainda não há observação futura':'Calculado com o acervo disponível até '.$projAsOf?></small></div>
@@ -130,7 +140,7 @@ $projAtalhos=[['titulo'=>'1900 → 2000','corte'=>1900,'alvo'=>2000],
   <div class="panel-head"><span>01 / SÉRIE HISTÓRICA E CENÁRIO</span><span>ANO REAL · SEM ANOS ARTIFICIAIS</span></div>
   <h2>O que o modelo conhecia e o que projetou</h2>
   <div class="mat-proj-grafico"><?=TemporisProjecoes::grafico($r,$met)?></div>
-  <p class="mat-proj-notes">A linha verde mostra o índice resultante dos marcos já registrados, com a mesma base <?=$projBase?> em todos os cenários;  a linha tracejada mostra a extrapolação das taxas estimadas <strong>somente até <?=$projCorte?></strong>. O traço vermelho no destino representa a diferença entre previsto e observado, quando existe. A escala X mantém o espaçamento proporcional aos anos históricos.</p>
+  <p class="mat-proj-notes">A linha verde mostra o índice resultante dos marcos já registrados, com a mesma base <?=$projBase?> em todos os cenários; a linha tracejada mostra a <strong>projeção principal (exponencial)</strong> estimada <strong>somente até <?=$projCorte?></strong> (T(t+h)=T(t)·e^(g·h), g do histórico,<?=$projG!==null?' g='.number_format($projG*100,3,',','.').'% ao ano':''?>). O traço vermelho no destino representa a diferença entre previsto e observado, quando existe. A escala X mantém o espaçamento proporcional aos anos históricos.</p>
 </section>
 <?php if($r['t_observed']!==null && $r['year_last']!==null && (int)$r['year_last']<$projAlvo): ?>
 <div class="mat-proj-warn"><strong>Atenção à cobertura documental:</strong> o último marco datado neste recorte é de <strong><?=$r['year_last']?></strong>, embora o alvo seja <?=$projAlvo?>. O valor indicado como “observado” corresponde ao acúmulo disponível no banco, que pode estar incompleto. Não o interprete como uma medição histórica externa definitiva.</div>
@@ -144,13 +154,19 @@ $projAtalhos=[['titulo'=>'1900 → 2000','corte'=>1900,'alvo'=>2000],
 <div class="panel-head"><span>02 / CENÁRIOS DE EXTRAPOLAÇÃO</span><span>MESMA FÓRMULA · MODELOS DIFERENTES</span></div>
 <h2>E se a taxa de crescimento for outra?</h2>
 <div class="exp-overflow"><table class="exp-table"><thead><tr><th>Modelo de extrapolação</th><th>Previsto em <?=$projAlvo?></th><th>Observado</th><th>Diferença com sinal</th><th>Erro % com sinal</th><th>Situação</th></tr></thead><tbody>
-<?php foreach($projModelos as $nome=>$rotulo):$v=$projVariacoes[$nome]??[];?><tr><td><strong><?=h($rotulo)?></strong><?=$projModelo===$nome?' · selecionado':''?></td><td><?=$fmtProj($v['t_predicted']??null)?></td><td><?=$fmtProj($v['t_observed']??null)?></td><td><?=$fmtSinal($v['error_signed']??null)?></td><td><?=$fmtSinal($v['error_percent']??null)?><?=isset($v['error_percent'])?'%':''?></td><td><?=h((string)($v['status']??'indisponível'))?></td></tr><?php endforeach; ?>
+<?php foreach($projModelos as $nome=>$rotulo):$v=$projVariacoes[$nome]??[];?><tr <?=$nome===TemporisProjecoes::MODELO_PRINCIPAL?'style="background:#eef4ee"':''?>><td><strong><?=h($rotulo)?></strong><?=$projModelo===$nome?' · selecionado':''?><?=$nome===TemporisProjecoes::MODELO_PRINCIPAL?' · modelo principal: Exponencial':''?></td><td><?=$fmtProj($v['t_predicted']??null)?></td><td><?=$fmtProj($v['t_observed']??null)?></td><td><?=$fmtSinal($v['error_signed']??null)?></td><td><?=$fmtSinal($v['error_percent']??null)?><?=isset($v['error_percent'])?'%':''?></td><td><?=h((string)($v['status']??'indisponível'))?></td></tr><?php endforeach; ?>
 </tbody></table></div>
 <p class="mat-proj-notes">A formulação escolhida transforma K(t) em T(t); o modelo de extrapolação estima o crescimento futuro de K(t). São escolhas matemáticas diferentes. A hipótese de tendência pode crescer ou desacelerar muito em horizontes longos: compare sempre com as médias de 50 e 100 anos.</p>
 </section>
 <section class="paper-panel mat-panel-spaced mat-proj-section">
 <div class="panel-head"><span>03 / VALIDAÇÃO RETROSPECTIVA</span><span>ERRO HISTÓRICO OBSERVADO</span></div><h2>Quão longe nossas previsões erraram no passado?</h2>
 <div class="mat-proj-grid"><div class="mat-proj-info"><h3><?= (int)($met['n']??0) ?> confrontos retrospectivos</h3><p>Janelas históricas com o mesmo horizonte (<?=$r['horizon']?> anos), base <?=$projBase?> e que terminam <strong>até o ano de corte <?=$projCorte?></strong>. Os marcos posteriores a cada corte não entram no ajuste daquela previsão.</p></div><div class="mat-proj-info"><h3>MAE <?=$fmtProj($met['mae']??null)?> · RMSE <?=$fmtProj($met['rmse']??null)?></h3><p>MAE é a média dos erros absolutos; RMSE penaliza mais os erros grandes; viés médio = <?=$fmtSinal($met['bias']??null)?> pontos. Essas medidas exigem testes históricos suficientes e <strong>não são intervalos de confiança</strong>.</p></div></div>
+<span>Erros por modelo · mesmos cortes e horizonte</span><span>N · MAE · RMSE · VIÉS</span></div>
+<div class="mat-proj-grid" style="margin-top:6px"><div class="mat-proj-info"><h3>Comparação retrospectiva entre modelos</h3><div class="exp-overflow"><table class="exp-table"><thead><tr><th>Modelo</th><th>Testes (n)</th><th>MAE</th><th>RMSE</th><th>Viés médio</th></tr></thead><tbody>
+<?php foreach($projModelos as $nome=>$rotulo): $mNome=TemporisProjecoes::metricasHistoricas($projPontos,$projCorte,$projAlvo-$projCorte,$projFormula,$nome,$projAsOf,20,$projBase); ?>
+<tr <?=$nome===TemporisProjecoes::MODELO_PRINCIPAL?'style="background:#eef4ee"':''?>><td><strong><?=h($rotulo)?></strong><?=$nome===TemporisProjecoes::MODELO_PRINCIPAL?' · modelo principal: Exponencial':''?></td><td><?= (int)($mNome['n']??0) ?></td><td><?=$fmtProj($mNome['mae']??null,3)?></td><td><?=$fmtProj($mNome['rmse']??null,3)?></td><td><?=$fmtSinal($mNome['bias']??null,3)?></td></tr>
+<?php endforeach; ?>
+</tbody></table></div><p> Mesma métrica (erro em T com a mesma base), mesmo conjunto de validação (cortes de 20 em 20 anos encerrados no corte <?=$projCorte?>) e mesmo horizonte para todos os modelos. “—” indica dados insuficientes para o ajuste naquele modelo; não significa erro nulo. Menor MAE/RMSE indica menor erro retrospectivo, sem garantir desempenho futuro nem superioridade comprovada do modelo principal.</p></div></div>
 <?php if(($met['n']??0)>0):?><details><summary>Conferir os cortes e erros dos testes históricos</summary><div class="exp-overflow"><table class="exp-table"><thead><tr><th>Corte</th><th>Alvo</th><th>Previsto</th><th>Observado</th><th>Erro com sinal</th></tr></thead><tbody><?php foreach($met['folds'] as $f):?><tr><td><?=$f['corte']?></td><td><?=$f['alvo']?></td><td><?=$fmtProj($f['previsto'])?></td><td><?=$fmtProj($f['observado'])?></td><td><?=$fmtSinal($f['erro'])?></td></tr><?php endforeach;?></tbody></table></div></details><?php endif; ?>
 <p class="mat-proj-notes">Aviso metodológico: as notas da curadoria foram atribuídas retrospectivamente. O modelo não vê eventos posteriores ao corte, porém o próprio trabalho de selecionar e pontuar os marcos pode ter sido influenciado por conhecimento posterior. Isso produz um teste retrospectivo exploratório, <strong>não uma previsão prospectiva historicamente independente</strong>.</p>
 </section>

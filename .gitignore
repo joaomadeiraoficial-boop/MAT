@@ -1,0 +1,8 @@
+﻿# Artefatos locais / backups (não versionar)
+*_backup*/
+MAT_Laboratorio_Atualizacao_*/
+MAT_Laboratorio_Temporis*/
+MAT_Laboratorio_backup_*/
+MAT_Temporis_Impeto_v*/
+*.zip
+science_and_technology_in_world_history.pdf

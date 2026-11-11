@@ -1,6 +1,8 @@
 # MAT REFINADO + FINAL — MÉTODO NOVO ATIVO
 
-**Acesse `index.php?page=temporis` para o método atual**, acumulado sem compressão. O ZIP inclui os dados de 07/11/2026 para exibir gráficos mesmo sem o banco MySQL extra. Compare com as versões anteriores em `index.php?page=metodo`. **Leia `CORRECAO_METODO_PRINCIPAL.md` antes de instalar.**
+**Acesse `index.php?page=temporis` para o método atual**, acumulado sem compressão. O ZIP inclui os dados de 07/11/2026 para exibir gráficos mesmo sem o banco MySQL extra. Compare com as versões anteriores em `index.php?page=metodo`. **Leia [`docs/notas/CORRECAO_METODO_PRINCIPAL.md`](docs/notas/CORRECAO_METODO_PRINCIPAL.md) antes de instalar.**
+
+> **Índice da documentação (Etapa 1):** consulte [`docs/INDICE.md`](docs/INDICE.md) para visão geral, fluxo oficial, guias e notas.
 
 ---
 
@@ -82,17 +84,11 @@ O desenvolvimento seguinte começa pela **paridade funcional com o Lab antigo**,
 
 A série histórica foi corrigida para ordenar datas internamente e calcular `K_base`
 apenas com eventos até o ano-base. Notas fracionárias dos sete critérios agora
-são rejeitadas. Detalhes e regressões: `docs/CORRECOES_0_1_1.md`.
+são rejeitadas. Detalhes e regressões: [`docs/CORRECOES_0_1_1.md`](docs/CORRECOES_0_1_1.md).
 
 As fórmulas e escalas originais **não foram alteradas**. Não houve migração de
 banco nesta revisão. Esta atualização não constitui validação científica.
 
-
 ### Revisão corretiva 0.1.2 (05/11/2026)
 
-Reforço da curadoria humana, integridade de fontes, fila de dossiês incompletos, proteção de aprovação após alteração, datas pré-históricas, verificação de CSV, relatórios, sensibilidade leave-one-out e concordância de avaliadores. **Leia `MELHORIAS_E_LIMITACOES_0_1_2.md` e `GUIA_XAMPP_0_1_2.md` antes de instalar.** Esta revisão ainda requer teste com o banco científico real e não constitui validação histórica.
-
-
-### Revisão corretiva 0.1.2 (05/11/2026)
-
-Reforço da curadoria humana, integridade de fontes, fila de dossiês incompletos, proteção de aprovação após alteração, datas pré-históricas, verificação de CSV, relatórios, sensibilidade leave-one-out e concordância de avaliadores. **Leia `MELHORIAS_E_LIMITACOES_0_1_2.md` e `GUIA_XAMPP_0_1_2.md` antes de instalar.** Esta revisão ainda requer teste com o banco científico real e não constitui validação histórica.
+Reforço da curadoria humana, integridade de fontes, fila de dossiês incompletos, proteção de aprovação após alteração, datas pré-históricas, verificação de CSV, relatórios, sensibilidade leave-one-out e concordância de avaliadores. **Leia [`docs/notas/MELHORIAS_E_LIMITACOES_0_1_2.md`](docs/notas/MELHORIAS_E_LIMITACOES_0_1_2.md) e [`docs/guias/GUIA_XAMPP_0_1_2.md`](docs/guias/GUIA_XAMPP_0_1_2.md) antes de instalar.** Esta revisão ainda requer teste com o banco científico real e não constitui validação histórica.

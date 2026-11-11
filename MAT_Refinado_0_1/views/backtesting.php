@@ -10,6 +10,9 @@ if(!in_array($btHoriz,[10,25,50,100],true))$btHoriz=25;
 $btRef=(string)($_GET['referencia']??'mediana');
 if(!isset(TemporisFinal::MODELOS[$btRef]))$btRef='mediana';
 $btShowAll=($_GET['mostrar_todos']??'')==='1';
+$btCortePed=(string)($_GET['corte']??'todos');
+$btCorte=null;
+if(ctype_digit($btCortePed)&&in_array((int)$btCortePed,TemporisFinal::CORTES_FIXOS,true))$btCorte=(int)$btCortePed;
 $btError=null;$btRows=[];$btAudit=[];$btSource='—';$btFonteReal='';$btCount=0;
 $btFmt=static fn(?float $n,int $digits=1):string=>$n===null?'—':number_format($n,$digits,',','.');
 try {
@@ -19,7 +22,9 @@ try {
     $btCount=count($btPoints);
     $btLine=TemporisFinal::linha($btPoints,'quadratica');
     foreach(TemporisFinal::MODELOS as $id=>$label){
-        $stat=TemporisFinal::validar($btLine,$id,$btHoriz,2026);
+        $stat=$btCorte!==null
+            ? TemporisFinal::validarCorte($btLine,$id,$btHoriz,$btCorte)
+            : TemporisFinal::validar($btLine,$id,$btHoriz,2026);
         $btRows[]=['id'=>$id,'label'=>$label,'stat'=>$stat];
     }
 } catch(Throwable $e){$btError=$e->getMessage();}
@@ -56,6 +61,14 @@ if($btRefRow && $btRefRow['stat']['wape']!==null){
   <label for="bt-horizonte">Prever quantos anos à frente?
    <select name="horizonte" id="bt-horizonte"><?php foreach([10,25,50,100] as $h):?><option value="<?=$h?>" <?=$btHoriz===$h?'selected':''?>><?=$h?> anos</option><?php endforeach;?></select>
   </label>
+  <label for="bt-corte">Prever a partir de qual ano?
+   <select name="corte" id="bt-corte">
+    <option value="todos" <?=$btCorte===null?'selected':''?>>Todos os cortes (padrão)</option>
+<?php foreach(TemporisFinal::CORTES_FIXOS as $y):?>
+    <option value="<?=$y?>" <?=$btCorte===$y?'selected':''?>><?=$y?> → <?=$y+$btHoriz?></option>
+<?php endforeach;?>
+   </select>
+  </label>
   <label for="bt-referencia">Seu método (modelo de referência)
    <select name="referencia" id="bt-referencia"><?php foreach(TemporisFinal::MODELOS as $id=>$label):?><option value="<?=h($id)?>" <?=$btRef===$id?'selected':''?>><?=h($label)?></option><?php endforeach;?></select>
   </label>
@@ -81,6 +94,14 @@ if($btRefRow && $btRefRow['stat']['wape']!==null){
  <span><strong>Dados utilizados:</strong> <?=h($btFonteReal==='snapshot'?'exportação histórica (não atualiza com o MySQL)':($btFonteReal==='curadoria'?'curadoria ativa (MySQL)':'base isolada do MAT Final (MySQL)'))?></span>
  <span><strong><?=$btCount?></strong> marcos no teste, de <strong><?= (int)($btAudit['total']??0) ?></strong> candidatos</span>
 </div>
+
+<?php if($btCorte!==null): ?>
+<section class="paper-panel mat-final-section" style="border-color:#194a40;background:#eef4ee">
+ <div class="panel-head"><span>CORTE ESCOLHIDO · MODO ÚNICO</span><span>UM ÚNICO TESTE HISTÓRICO</span></div>
+ <h2 style="margin-top:4px">Previsão a partir de <strong><?=$btCorte?> → <?=$btCorte+$btHoriz?></strong></h2>
+ <p>Cada modelo usa <strong>somente</strong> os dados disponíveis até <strong><?=$btCorte?></strong> para prever o crescimento até <strong><?=$btCorte+$btHoriz?></strong>, que é comparado com o crescimento realmente observado. Como é um único corte, o percentual de erro se refere a esse teste isolado — não é uma média histórica; para a visão agregada, volte o corte para “Todos os cortes”.</p>
+</section>
+<?php endif; ?>
 
 <section class="tf-bt-result" aria-labelledby="bt-resultado-titulo">
  <div class="tf-bt-result-main">

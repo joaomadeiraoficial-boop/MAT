@@ -321,18 +321,36 @@ final class TemporisFinal {
         if($modelo==='logistico'||$modelo==='gompertz')return self::saturado($linha,$cut,$h,$k,$modelo);
         return null;
     }
-    public static function validar(array $linha,string $modelo,int $h,int $ultimoAno=2026):array {
-        $folds=[];$actualSum=0.;$errorSum=0.;$signed=0.;
-        // Origem fixa de 25 em 25 anos; não escolher cortes pelo desempenho.
-        for($cut=1700;$cut+$h<=$ultimoAno;$cut+=25){
-            $pred=self::projetar($linha,$cut,$h,$modelo);
-            if($pred===null)continue;
-            $kCut=self::k($linha,$cut);$actual=self::k($linha,$cut+$h)-$kCut;$growth=$pred-$kCut;
-            $error=$growth-$actual;
-            $folds[]=['corte'=>$cut,'alvo'=>$cut+$h,'crescimento_real'=>$actual,'crescimento_previsto'=>$growth,'erro'=>$error];
-            $actualSum+=$actual;$errorSum+=abs($error);$signed+=$error;
-        }
+    /** Um único teste retrospectivo em um corte fixo; retorna null quando não há dados para ajustar. */
+    private static function foldCorte(array $linha,string $modelo,int $h,int $cut):?array {
+        $pred=self::projetar($linha,$cut,$h,$modelo);
+        if($pred===null)return null;
+        $kCut=self::k($linha,$cut);$actual=self::k($linha,$cut+$h)-$kCut;$growth=$pred-$kCut;
+        $error=$growth-$actual;
+        return ['corte'=>$cut,'alvo'=>$cut+$h,'crescimento_real'=>$actual,'crescimento_previsto'=>$growth,'erro'=>$error];
+    }
+    /** Agrega os folds em métricas (n, WAPE, MAE, viés). */
+    private static function agregar(array $folds):array {
+        $actualSum=0.;$errorSum=0.;$signed=0.;
+        foreach($folds as $f){$actualSum+=$f['crescimento_real'];$errorSum+=abs($f['erro']);$signed+=$f['erro'];}
         return ['n'=>count($folds),'wape'=>$actualSum>0?100*$errorSum/$actualSum:null,
             'mae'=>$folds?$errorSum/count($folds):null,'bias'=>$folds?$signed/count($folds):null,'folds'=>$folds];
     }
+    public static function validar(array $linha,string $modelo,int $h,int $ultimoAno=2026):array {
+        $folds=[];
+        // Origem fixa de 25 em 25 anos; não escolher cortes pelo desempenho.
+        for($cut=1700;$cut+$h<=$ultimoAno;$cut+=25){
+            $f=self::foldCorte($linha,$modelo,$h,$cut);
+            if($f!==null)$folds[]=$f;
+        }
+        return self::agregar($folds);
+    }
+    /** Backtesting em um único corte escolhido pelo usuário (mesma métrica e mesmos dados). */
+    public static function validarCorte(array $linha,string $modelo,int $h,int $cut):array {
+        $f=self::foldCorte($linha,$modelo,$h,$cut);
+        if($f===null)return ['n'=>0,'wape'=>null,'mae'=>null,'bias'=>null,'folds'=>[]];
+        return self::agregar([$f]);
+    }
+    /** Cortes disponíveis para o modo de corte único (passo fixo de 25 anos). */
+    public const CORTES_FIXOS = [1600,1625,1650,1675,1700,1725,1750,1775,1800,1825,1850,1875,1900,1925,1950,1975,2000];
 }

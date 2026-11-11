@@ -48,9 +48,8 @@ Local: [`notas/`](notas/)
 - **Alterações e integração:** `ALTERACOES_E_TESTES.md`, `ALTERACOES_MAT_FINAL_INTEGRADO.md`
 - **Qualidade, protocolo e testes:** `MELHORIAS_E_LIMITACOES_0_1_2.md`, `PROTOCOLO_CIENTIFICO_CURADORIA_0_1_2.md`, `RELATORIO_DE_TESTES_0_1_2.md`, `TESTES_MESCLAGEM.md`, `RELATORIO_ALTERACOES_MODO_SIMPLIFICADO.md`
 
-## 5. Organização desta etapa
+## 5. Organização e etapas
 
-- Guias e leituras operacionais consolidados em `docs/guias/`.
-- Notas, relatórios e correções consolidados em `docs/notas/`.
-- Duplicações conhecidas no `README.md` removidas e referências atualizadas para os novos caminhos.
-- **Próximas etapas (plano):** migrações/integridade de banco (Etapa 2), ampliação de testes (Etapa 3), configuração/operação (Etapa 4) e apoio à curadoria (Etapa 5).
+- **Etapa 1 (concluída, base):** guias em `docs/guias/`, notas em `docs/notas/`, duplicações do `README.md` removidas e referências atualizadas.
+- **Etapa 2 (em andamento):** mapeamento de bancos/esquemas, rotina de backup/restore e estratégia de migrações em [`notas/ETAPA2_BANCO_MIGRACOES.md`](notas/ETAPA2_BANCO_MIGRACOES.md); migrações em [`../database/migrations/`](../database/migrations/); verificações em [`../database/verificacao_consistencia_curadoria.sql`](../database/verificacao_consistencia_curadoria.sql) e [`../cli/verificar_consistencia_db.php`](../cli/verificar_consistencia_db.php).
+- **Próximas etapas (plano):** ampliação de testes (Etapa 3), configuração/operação (Etapa 4) e apoio à curadoria (Etapa 5).

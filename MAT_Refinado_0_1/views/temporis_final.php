@@ -15,6 +15,7 @@ $tfCorte=filter_var($_GET['corte']??2026,FILTER_VALIDATE_INT);
 $tfCorte=$tfCorte===false?2026:max(1700,min(2026,$tfCorte));
 $tfErro=null;$tfFonte='desconhecida';$tfBanco='—';$tfDados=null;
 $tfTodos=[];$tfPontos=[];$tfLinha=[];$tfHistorico=[];$tfPeriodos=[];$tfProjecoes=[];$tfIndex=null;
+$tfConsulta=null;$tfConsultaErro=null;$tfAvanco=null;
 $tfNumber=static fn(?float $v,int $digits=2):string=>$v===null?'—':number_format($v,$digits,',','.');
 try {
     $resultado=TemporisFinal::obterDados($tfFontePedida,2026);
@@ -24,6 +25,32 @@ try {
     $tfKbase=TemporisFinal::k($tfLinha,$tfBase);
     $tfK2026=TemporisFinal::k($tfLinha,2026);
     $tfIndex=TemporisFinal::indice($tfK2026,$tfKbase,$tfEscala);
+    // Consulta pontual: Têmporis de um ano e avanço entre dois anos.
+    // Reutilizam a mesma linha de pesos (marcos reais do banco), sem interpolação de valores.
+    $tfAnoConsulta=filter_var($_GET['ano_consulta']??null,FILTER_VALIDATE_INT);
+    $tfAnoA=filter_var($_GET['ano_a']??null,FILTER_VALIDATE_INT);
+    $tfAnoB=filter_var($_GET['ano_b']??null,FILTER_VALIDATE_INT);
+    if($tfAnoConsulta!==false&&$tfAnoConsulta!==null){
+        $tfAnoConsulta=max(-9999,min(2100,$tfAnoConsulta));
+        $tfKConsulta=TemporisFinal::k($tfLinha,$tfAnoConsulta);
+        $tfConsulta=['ano'=>$tfAnoConsulta,'k'=>$tfKConsulta,
+            't'=>TemporisFinal::indice($tfKConsulta,$tfKbase,$tfEscala),
+            'marcos'=>count(array_filter($tfPontos,static fn(array $p):bool=>$p['year']<=$tfAnoConsulta))];
+    }
+    if($tfAnoA!==false&&$tfAnoA!==null&&$tfAnoB!==false&&$tfAnoB!==null){
+        $tfAnoA=max(-9999,min(2100,$tfAnoA));$tfAnoB=max(-9999,min(2100,$tfAnoB));
+        if($tfAnoA===$tfAnoB){$tfConsultaErro='Escolha dois anos diferentes para calcular o avanço.';}
+        else{
+            if($tfAnoA>$tfAnoB){[$tfAnoA,$tfAnoB]=[$tfAnoB,$tfAnoA];}
+            $tfKa=TemporisFinal::k($tfLinha,$tfAnoA);$tfKb=TemporisFinal::k($tfLinha,$tfAnoB);
+            $tfTa=TemporisFinal::indice($tfKa,$tfKbase,$tfEscala);$tfTb=TemporisFinal::indice($tfKb,$tfKbase,$tfEscala);
+            $tfSpan=max(1,abs($tfAnoB-$tfAnoA));
+            $tfAvanco=['a'=>$tfAnoA,'b'=>$tfAnoB,'ka'=>$tfKa,'kb'=>$tfKb,'ta'=>$tfTa,'tb'=>$tfTb,
+                'dt'=>($tfTa!==null&&$tfTb!==null)?$tfTb-$tfTa:null,'dk'=>$tfKb-$tfKa,
+                'marcos'=>count(array_filter($tfPontos,static fn(array $p):bool=>$p['year']>=$tfAnoA&&$p['year']<=$tfAnoB)),
+                'anos'=>$tfSpan,'taxa'=>($tfKb-$tfKa)/$tfSpan];
+        }
+    }
     $tfAuditoria=$tfDados['audit'];
     $tfValidos=count(array_filter($tfPontos,static fn($p)=>$p['ano_validado']));
     $tfSem=count(array_filter($tfPontos,static fn($p)=>$p['sem_evidencia']));
@@ -83,6 +110,7 @@ $tfSvg=function(array $series,array $years,int $height=290):string{
   <div class="tf-hero-value"><span>TÊMPORIS · 2026</span><strong><?=$tfNumber($tfIndex)?></strong><small>Ano-base <?=$tfBase?> = 100 · <?=h(TemporisFinal::ESCALAS[$tfEscala])?></small><small><?=count($tfPontos)?> registros efetivamente calculados</small></div>
 </section>
 <div class="tf-source-bar" role="status"><strong><?= $tfFonte==='snapshot'?'Exportação estática (não atualiza)':'MySQL conectado · leitura em tempo real' ?></strong><span>Origem: <code><?=h($tfBanco)?></code></span><span>Solicitado: <?=h(TemporisFinal::FONTES[$tfFontePedida])?></span></div>
+<?php if($tfFonte==='snapshot'):?><div class="mat-final-warning" role="alert"><strong>Estes números NÃO vêm do banco de dados.</strong> O MySQL da curadoria não respondeu nesta leitura, então a página exibiu a exportação estática de 07/11/2026 (800 candidatos), que não acompanha o acervo atual. Inicie o MySQL no XAMPP e recarregue para calcular sobre os dados reais; ou abra a fonte “Curadoria atual” diretamente para ver o erro de conexão.</div><?php endif; ?>
 <form class="tf-form" method="get" action="index.php">
  <input type="hidden" name="page" value="temporis">
  <div class="tf-form-main"><label>Origem dos dados<select name="fonte"><?php foreach(TemporisFinal::FONTES as $id=>$desc):?><option value="<?=h($id)?>" <?=$tfFontePedida===$id?'selected':''?>><?=h($desc)?></option><?php endforeach;?></select></label>
@@ -105,6 +133,52 @@ $tfSvg=function(array $series,array $years,int $height=290):string{
  </details>
 </section>
 <?php if($tfKbase<=0):?><div class="mat-final-warning">K(<?=$tfBase?>) = 0. O índice é matematicamente indefinido nessa seleção; altere a amostra ou o ano-base.</div><?php endif; ?>
+<section class="paper-panel mat-final-section" aria-labelledby="tf-consulta-titulo">
+ <div class="panel-head"><span>CONSULTA DIRETA</span><span>MESMOS MARCOS · MESMOS PESOS · MESMA ESCALA</span></div>
+ <h2 id="tf-consulta-titulo">Têmporis de um ano e avanço entre dois anos</h2>
+ <p>As duas consultas somam os <strong>marcos reais do banco</strong> até o ano pedido, na seleção atual — nada é interpolado ou extrapolado. O avanço é a diferença do índice entre os dois anos, em pontos.</p>
+ <form class="tf-form" method="get" action="index.php">
+  <input type="hidden" name="page" value="temporis">
+  <input type="hidden" name="fonte" value="<?=h($tfFontePedida)?>">
+  <input type="hidden" name="coorte" value="<?=h($tfCoorte)?>">
+  <input type="hidden" name="peso" value="<?=h($tfPeso)?>">
+  <input type="hidden" name="escala" value="<?=h($tfEscala)?>">
+  <input type="hidden" name="base" value="<?=$tfBase?>">
+  <input type="hidden" name="corte" value="<?=$tfCorte?>">
+  <div class="tf-form-main"><label>Têmporis de um ano<input type="number" name="ano_consulta" value="<?=$tfConsulta!==null?(string)$tfConsulta['ano']:''?>" min="-9999" max="2100" placeholder="Ex.: 1969" required></label>
+  <button class="btn btn-dark" type="submit">Calcular do ano →</button></div>
+ </form>
+ <form class="tf-form" method="get" action="index.php">
+  <input type="hidden" name="page" value="temporis">
+  <input type="hidden" name="fonte" value="<?=h($tfFontePedida)?>">
+  <input type="hidden" name="coorte" value="<?=h($tfCoorte)?>">
+  <input type="hidden" name="peso" value="<?=h($tfPeso)?>">
+  <input type="hidden" name="escala" value="<?=h($tfEscala)?>">
+  <input type="hidden" name="base" value="<?=$tfBase?>">
+  <input type="hidden" name="corte" value="<?=$tfCorte?>">
+  <div class="tf-form-main"><label>Avanço · de<input type="number" name="ano_a" value="<?=$tfAvanco!==null?(string)$tfAvanco['a']:''?>" min="-9999" max="2100" placeholder="1950" required></label>
+  <label>até<input type="number" name="ano_b" value="<?=$tfAvanco!==null?(string)$tfAvanco['b']:''?>" min="-9999" max="2100" placeholder="2026" required></label>
+  <button class="btn btn-dark" type="submit">Calcular avanço →</button></div>
+ </form>
+ <?php if($tfConsultaErro):?><div class="mat-final-warning" role="alert"><?=h($tfConsultaErro)?></div><?php endif; ?>
+ <?php if($tfConsulta): ?>
+ <div class="exp-boxes">
+  <div class="exp-box">Têmporis de <?=$tfConsulta['ano']?><strong><?=$tfNumber($tfConsulta['t'])?></strong></div>
+  <div class="exp-box">K(<?=$tfConsulta['ano']?>) acumulado<strong><?=$tfNumber($tfConsulta['k'],3)?></strong></div>
+  <div class="exp-box">Marcos até <?=$tfConsulta['ano']?><strong><?=$tfConsulta['marcos']?></strong></div>
+ </div>
+ <p class="mat-final-disclaimer">T(<?=$tfConsulta['ano']?>) = 100 × K(<?=$tfConsulta['ano']?>) / K(<?=$tfBase?>) na escala <?=h(TemporisFinal::ESCALAS[$tfEscala])?><?php if($tfConsulta['t']===null):?> · <strong>indefinido nesta seleção</strong>: K(<?=$tfBase?>) é zero, então o índice não pode ser calculado<?php endif; ?>.</p>
+ <?php endif; ?>
+ <?php if($tfAvanco): ?>
+ <div class="exp-boxes">
+  <div class="exp-box">Têmporis de <?=$tfAvanco['a']?><strong><?=$tfNumber($tfAvanco['ta'])?></strong></div>
+  <div class="exp-box">Têmporis de <?=$tfAvanco['b']?><strong><?=$tfNumber($tfAvanco['tb'])?></strong></div>
+  <div class="exp-box">Avanço · T(<?=$tfAvanco['b']?>) − T(<?=$tfAvanco['a']?>)<strong><?=$tfNumber($tfAvanco['dt'])?></strong></div>
+  <div class="exp-box">ΔK no período<strong><?=$tfNumber($tfAvanco['dk'],3)?></strong></div>
+ </div>
+ <p class="mat-final-disclaimer">Entre <?=$tfAvanco['a']?> e <?=$tfAvanco['b']?> entraram <strong><?=$tfAvanco['marcos']?> marcos</strong> (Σ pesos = <?=$tfNumber($tfAvanco['dk'],3)?>), ritmo de <?=$tfNumber($tfAvanco['taxa'],4)?> pontos de K por ano em <?=$tfAvanco['anos']?> anos. O avanço em Têmporis é <strong><?=$tfNumber($tfAvanco['dt'])?> pontos</strong><?php if($tfAvanco['ta']===null||$tfAvanco['tb']===null):?> · indefinido nesta seleção (K do ano-base é zero)<?php endif; ?>.</p>
+ <?php endif; ?>
+</section>
 <section class="paper-panel tf-chart-main" aria-labelledby="tf-curva-titulo">
  <div class="panel-head"><span>01 / RESULTADO OBSERVADO</span><span>APENAS O MÉTODO SELECIONADO</span></div>
  <h2 id="tf-curva-titulo">A curva do Têmporis</h2>

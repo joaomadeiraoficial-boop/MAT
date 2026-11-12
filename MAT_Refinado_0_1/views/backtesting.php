@@ -13,6 +13,10 @@ $btShowAll=($_GET['mostrar_todos']??'')==='1';
 $btCortePed=(string)($_GET['corte']??'todos');
 $btCorte=null;
 if(ctype_digit($btCortePed)&&in_array((int)$btCortePed,TemporisFinal::CORTES_FIXOS,true))$btCorte=(int)$btCortePed;
+// Um backtesting exige que o ano-alvo JÁ exista na série observada.
+// Os dois filtros são independentes: horizonte = duração; corte = origem histórica.
+$btUltimoAnoObservado=null;
+$btAvisoCorte=null;
 $btError=null;$btRows=[];$btAudit=[];$btSource='—';$btFonteReal='';$btCount=0;
 $btFmt=static fn(?float $n,int $digits=1):string=>$n===null?'—':number_format($n,$digits,',','.');
 try {
@@ -21,10 +25,15 @@ try {
     $btPoints=TemporisFinal::filtrar($btResult['dados']['pontos'],$btCoorte);
     $btCount=count($btPoints);
     $btLine=TemporisFinal::linha($btPoints,'quadratica');
+    $btUltimoAnoObservado=$btLine['anos']===[]?null:(int)max($btLine['anos']);
+    if($btCorte!==null && $btUltimoAnoObservado!==null && $btCorte+$btHoriz>$btUltimoAnoObservado){
+        $btAvisoCorte='O teste '.($btCorte).' → '.($btCorte+$btHoriz).' termina depois do último ano com marcos observados ('.$btUltimoAnoObservado.'). Para medir o erro, precisamos conhecer o que aconteceu no ano-alvo. Foram exibidos os testes históricos válidos.';
+        $btCorte=null;
+    }
     foreach(TemporisFinal::MODELOS as $id=>$label){
         $stat=$btCorte!==null
             ? TemporisFinal::validarCorte($btLine,$id,$btHoriz,$btCorte)
-            : TemporisFinal::validar($btLine,$id,$btHoriz,2026);
+            : TemporisFinal::validar($btLine,$id,$btHoriz,$btUltimoAnoObservado??2026);
         $btRows[]=['id'=>$id,'label'=>$label,'stat'=>$stat];
     }
 } catch(Throwable $e){$btError=$e->getMessage();}
@@ -58,14 +67,14 @@ if($btRefRow && $btRefRow['stat']['wape']!==null){
 <form class="tf-form tf-bt-form" method="get" action="index.php">
  <input type="hidden" name="page" value="backtesting">
  <div class="tf-bt-form-first">
-  <label for="bt-horizonte">Prever quantos anos à frente?
+  <label for="bt-horizonte">1. Quantos anos quero prever? (duração)
    <select name="horizonte" id="bt-horizonte"><?php foreach([10,25,50,100] as $h):?><option value="<?=$h?>" <?=$btHoriz===$h?'selected':''?>><?=$h?> anos</option><?php endforeach;?></select>
   </label>
-  <label for="bt-corte">Prever a partir de qual ano?
-   <select name="corte" id="bt-corte">
-    <option value="todos" <?=$btCorte===null?'selected':''?>>Todos os cortes (padrão)</option>
+  <label for="bt-corte">2. Em que ano começo? (ponto de partida)
+   <select name="corte" id="bt-corte" data-last-observed="<?=$btUltimoAnoObservado??''?>">
+    <option value="todos" <?=$btCorte===null?'selected':''?>>Vários anos (avaliação geral)</option>
 <?php foreach(TemporisFinal::CORTES_FIXOS as $y):?>
-    <option value="<?=$y?>" <?=$btCorte===$y?'selected':''?>><?=$y?> → <?=$y+$btHoriz?></option>
+    <option value="<?=$y?>" <?=$btCorte===$y?'selected':''?> <?=($btUltimoAnoObservado!==null && $y+$btHoriz>$btUltimoAnoObservado)?'disabled':''?>><?=$y?></option>
 <?php endforeach;?>
    </select>
   </label>
@@ -73,6 +82,11 @@ if($btRefRow && $btRefRow['stat']['wape']!==null){
    <select name="referencia" id="bt-referencia"><?php foreach(TemporisFinal::MODELOS as $id=>$label):?><option value="<?=h($id)?>" <?=$btRef===$id?'selected':''?>><?=h($label)?></option><?php endforeach;?></select>
   </label>
   <button class="btn btn-dark" type="submit">Ver resultado →</button>
+ </div>
+ <div class="tf-bt-explain" aria-live="polite">
+  <strong>Como interpretar:</strong>
+  <span id="bt-explicacao-corte"><?php if($btCorte!==null):?>O modelo considera somente dados até <?=$btCorte?> e prevê <?=$btCorte+$btHoriz?> (<?=$btHoriz?> anos depois).<?php else: ?>O MAT repete a previsão em vários anos históricos, cada uma com <?=$btHoriz?> anos de duração, e resume os erros.<?php endif; ?></span>
+  <small>O primeiro campo define a distância da previsão; o segundo, quais dados históricos o modelo poderá utilizar. Mudar qualquer um deles altera o teste.</small>
  </div>
  <details class="tf-bt-options" <?=$btShowAll?'open':''?>><summary>Mostrar mais opções · fonte, conjunto e exibição</summary>
   <div class="tf-form-advanced">
@@ -86,6 +100,33 @@ if($btRefRow && $btRefRow['stat']['wape']!==null){
   </div>
  </details>
 </form>
+<script>
+(function(){
+  'use strict';
+  const horizon=document.getElementById('bt-horizonte');
+  const cut=document.getElementById('bt-corte');
+  const expl=document.getElementById('bt-explicacao-corte');
+  if(!horizon||!cut||!expl)return;
+  function update(){
+    const years=Number(horizon.value);
+    const last=Number(cut.dataset.lastObserved);
+    for(const opt of cut.options){
+      if(opt.value==='todos')continue;
+      opt.disabled=!!last&&(Number(opt.value)+years>last);
+    }
+    if(cut.selectedOptions[0]?.disabled)cut.value='todos';
+    expl.textContent=cut.value==='todos'
+      ?'O MAT repete a previsão em vários anos históricos, cada uma com '+years+' anos de duração, e resume os erros.'
+      :'O modelo considera somente dados até '+cut.value+' e prevê '+(Number(cut.value)+years)+' ('+years+' anos depois).';
+  }
+  horizon.addEventListener('change',update);
+  cut.addEventListener('change',update);
+  update();
+})();
+</script>
+<?php if($btAvisoCorte): ?>
+<div class="mat-final-warning" role="status"><strong>Período não disponível para backtesting:</strong> <?=h($btAvisoCorte)?></div>
+<?php endif; ?>
 
 <?php if($btError): ?>
 <div class="mat-final-warning" role="alert"><strong>Não foi possível calcular as previsões.</strong> <?=h($btError)?>. <a href="<?=mat_url('backtesting',['fonte'=>'snapshot','coorte'=>$btCoorte,'horizonte'=>$btHoriz])?>">Consultar a exportação histórica disponível</a>.</div>

@@ -127,3 +127,9 @@
 .tf-bt-footer>a:not(.btn){font:600 12px var(--ui,system-ui),sans-serif;color:#25604a}
 @media(max-width:850px){.tf-bt-result,.tf-bt-example{grid-template-columns:1fr}}
 @media(max-width:690px){.tf-bt-facts{grid-template-columns:1fr}.tf-bt-short-row{grid-template-columns:minmax(0,1fr) 85px;gap:6px 12px}.tf-bt-short-meter{grid-column:1/-1;grid-row:2}.tf-bt-short-value{grid-column:2;grid-row:1}.tf-bt-short-title{grid-column:1;grid-row:1}.tf-bt-result{padding:18px}.tf-bt-example{padding:16px}.tf-bt-actual-predicted{grid-template-columns:1fr 1fr}}
+
+/* Backtesting: separa explicitamente horizonte de ponto de partida. */
+.tf-bt-explain{margin-top:13px;padding:12px 14px;background:#edf3ee;border-left:3px solid #346958;color:#173e34;font:14px/1.6 var(--ui,system-ui),sans-serif}
+.tf-bt-explain strong{font-weight:750}
+.tf-bt-explain small{display:block;color:#426358;margin-top:3px;font-size:12px}
+.tf-bt-form-first label{flex-basis:310px}

@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="assets/datacao-intervalo.css?v=1">
 <link rel="stylesheet" href="assets/fila-rapida.css?v=3">
 <link rel="stylesheet" href="assets/temporis-integracao.css?v=3">
-<link rel="stylesheet" href="assets/temporis-reorganizacao.css?v=2">
+<link rel="stylesheet" href="assets/temporis-reorganizacao.css?v=3">
 <link rel="stylesheet" href="assets/duplicatas-comparacao.css?v=3">
 <script defer src="assets/app.js?v=1.6"></script>
 <?php if(in_array($page,['rodadas','fila_rapida'],true)): ?><script defer src="assets/datacao-intervalo.js?v=1"></script><?php endif; ?>

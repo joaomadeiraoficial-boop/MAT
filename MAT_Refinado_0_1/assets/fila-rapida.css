@@ -134,3 +134,18 @@
 .mat-fast-normalizacao-check input[type=checkbox]{width:17px;height:17px;flex:0 0 17px;accent-color:#225d50;margin:0}
 .mat-fast-normalizacao-form button{justify-self:start;max-width:100%;white-space:normal}
 @media(max-width:760px){.mat-fast-batch-criterion{grid-template-columns:1fr}.mat-fast-batch-criterion>strong,.mat-fast-batch-criterion>label:last-child{grid-column:auto}.mat-fast-normalizacao>summary{align-items:flex-start}.mat-fast-tool-expand{align-self:center}}
+
+/* Saiba mais: explicacao das ressalvas do modo simplificado */
+.mat-fast-aviso{position:relative}
+.mat-fast-aviso-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.mat-fast-saiba{position:relative;flex:0 0 auto}
+.mat-fast-saiba summary{list-style:none;display:inline-block;padding:5px 12px;border:1px solid #beaf97;background:#fffdfa;color:#2a5349;font:11px var(--mono);letter-spacing:.5px;cursor:pointer;border-radius:4px}
+.mat-fast-saiba summary::-webkit-details-marker{display:none}
+.mat-fast-saiba summary:hover{border-color:#225d50}
+.mat-fast-saiba[open] summary{background:#225d50;color:#f1e8d7;border-color:#225d50}
+.mat-fast-saiba-body{position:absolute;right:0;top:34px;z-index:40;width:min(430px,88vw);background:#fffaf0;border:1px solid #beaf97;border-radius:6px;padding:15px 17px;box-shadow:0 18px 50px rgba(15,26,25,.22);font:12px/1.65 var(--ui);color:#425c50;max-height:60vh;overflow:auto}
+.mat-fast-saiba-body p{margin:0 0 9px}
+.mat-fast-saiba-body ul{margin:0 0 9px;padding-left:17px}
+.mat-fast-saiba-body li{margin-bottom:5px}
+.mat-fast-saiba-body b{color:#193d37}
+@media(max-width:760px){.mat-fast-aviso-head{flex-direction:column}.mat-fast-saiba{align-self:flex-start}}

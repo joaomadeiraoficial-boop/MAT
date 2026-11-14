@@ -1,0 +1,40 @@
+/* Pontos de Inflexão Tecnológica — segunda camada do Atlas das eras */
+/* Tom de página envelhecida (livro antigo) apenas nesta página */
+body{background:linear-gradient(180deg,#f2e9d5 0%,#ecdfc5 100%) fixed}
+.inflex-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.inflex-card{min-height:auto}
+.inflex-card h2{font-size:21px;margin:9px 0 8px}
+/* Cartão com imagem: foto em cor cheia no topo, texto sobre papel sólido abaixo */
+.inflex-card.has-img{padding:0}
+.inflex-card.has-img:after{display:none}
+.inflex-card.has-img .inflex-media{display:block;aspect-ratio:3/2;min-height:260px;background-size:cover;background-position:center;background-color:#e6dccb}
+.inflex-card.has-img .inflex-body{display:flex;flex-direction:column;padding:18px 22px 21px;background:#f8f1e5}
+.inflex-card.has-img .era-card-bottom{margin-top:0}
+/* Camadas do arquivo: pirâmide com silhueta real, largura proporcional aos candidatos */
+.pyramid-stack{gap:8px;min-height:0;align-items:center}
+.pyramid-stratum{position:relative;display:flex;align-items:center;justify-content:center;height:54px;padding:0 12px;min-width:24%;clip-path:polygon(3% 0,97% 0,100% 100%,0 100%);background:#8fa89b;color:#17262a;text-align:center;overflow:hidden;transition:filter .2s}
+.pyramid-stratum .pyr-fill{position:absolute;top:0;bottom:0;background:rgba(23,38,42,.34)}
+.pyramid-stratum .pyr-label{position:relative;z-index:1;display:flex;flex-direction:column;gap:2px}
+.pyramid-stratum .pyr-label strong{font:15px/1.1 var(--serif);letter-spacing:-.2px;white-space:nowrap}
+.pyramid-stratum .pyr-label small{font:9px var(--mono);letter-spacing:.4px;opacity:.88;white-space:nowrap}
+.pyramid-stratum:nth-child(1){background:#cf9a70}
+.pyramid-stratum:nth-child(2){background:#d8ac82}
+.pyramid-stratum:nth-child(3){background:#cbb08c}
+.pyramid-stratum:nth-child(4){background:#b4a991}
+.pyramid-stratum:nth-child(5){background:#aeb4a0}
+.pyramid-stratum:nth-child(6){background:#91a99c}
+.pyramid-stratum:nth-child(7){background:#7b9992}
+.pyramid-stratum.pyr-empty{clip-path:none;border:1px dashed rgba(231,214,183,.45);background:transparent;border-radius:3px;color:#93a29a}
+.pyramid-stratum:hover{filter:brightness(1.16)}
+@media(max-width:760px){.pyramid-stratum{height:48px;min-width:34%;padding:0 8px}.pyramid-stratum .pyr-label strong{font-size:12px}.pyramid-stratum .pyr-label small{font-size:7.5px}.pyr-approved-era{padding:12px 14px 10px}}
+/* Lista de aprovados por era, abaixo das camadas */
+.pyramid-approved{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:24px}
+.pyr-approved-era{border:1px solid rgba(231,214,183,.25);padding:15px 18px 13px}
+.pyr-approved-era h3{font:italic 16px var(--serif);color:#e6c8a7;margin:0 0 9px}
+.pyr-approved-era ol{margin:0;padding-left:18px}
+.pyr-approved-era li{font:12px/1.65 var(--ui);color:#c8cbbc;margin-bottom:6px}
+.pyr-approved-era li a{color:#e6c8a7;text-decoration:underline}
+.pyr-approved-era .pyr-none{font:italic 12px var(--serif);color:#8fa39a;margin:0}
+.inflex-fatores{border-top:1px solid var(--line);padding-top:10px;display:grid;gap:8px;margin-bottom:14px}
+.inflex-fatores strong{display:block;font:10px var(--mono);color:#a58461;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.inflex-fatores span{font:12px/1.55 var(--ui);color:#77786d;display:block}

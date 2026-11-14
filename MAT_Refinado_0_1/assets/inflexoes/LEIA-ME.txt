@@ -1,0 +1,23 @@
+IMAGENS DE FUNDO DOS PONTOS DE INFLEXÃO TECNOLÓGICA
+====================================================
+
+Coloque aqui as imagens de fundo dos cartões do Atlas (index.php?page=atlas).
+
+Nome do arquivo = chave do ponto + extensão (jpg, jpeg, png, webp ou avif):
+
+  revolucao_neolitica.jpg      -> Revolução Neolítica
+  escrita_burocracia.jpg       -> Escrita e burocracia
+  impressao_tipografica.jpg    -> Imprensa tipográfica
+  revolucao_cientifica.jpg     -> Revolução Científica
+  revolucao_industrial.jpg     -> Revolução Industrial
+  eletricidade_massa.jpg       -> Eletricidade e produção em massa
+  mobilizacao_mundiais.jpg     -> Guerras mundiais e mobilização industrial
+  transistor_computacao.jpg    -> Transistor e computação
+  rede_global.jpg              -> Rede global
+
+Sem imagem para um ponto, o cartão fica com o fundo padrão (nada quebra).
+Recomendação: imagens horizontais, pelo menos 800px de largura; o cartão
+aplica um véu claro por cima para o texto continuar legível.
+
+Para usar um nome de arquivo fora da convenção, edite app/PontosInflexao.php
+e adicione ao ponto: 'imagem' => 'assets/inflexoes/nome_do_arquivo.jpg'.

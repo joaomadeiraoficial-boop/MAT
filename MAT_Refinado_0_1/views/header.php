@@ -10,15 +10,16 @@
 <link rel="stylesheet" href="assets/style.css?v=1.2">
 <link rel="stylesheet" href="assets/mat-final.css?v=1">
 <?php if($page==='metodo'): ?><link rel="stylesheet" href="assets/metodo-tres-versoes.css?v=1"><?php endif; ?>
+<?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=12"><?php endif; ?>
 <?php if(is_file(MAT_ROOT . '/assets/temporis-0-2.css')): ?><link rel="stylesheet" href="assets/temporis-0-2.css?v=1"><?php endif; ?>
 <link rel="stylesheet" href="assets/progresso-marcos.css?v=1">
 <link rel="stylesheet" href="assets/navegacao-grupos.css?v=1">
 <link rel="stylesheet" href="assets/rodadas.css?v=1">
 <link rel="stylesheet" href="assets/revisao-temporis.css?v=1">
 <link rel="stylesheet" href="assets/datacao-intervalo.css?v=1">
-<link rel="stylesheet" href="assets/fila-rapida.css?v=3">
+<link rel="stylesheet" href="assets/fila-rapida.css?v=4">
 <link rel="stylesheet" href="assets/temporis-integracao.css?v=3">
-<link rel="stylesheet" href="assets/temporis-reorganizacao.css?v=3">
+<link rel="stylesheet" href="assets/temporis-reorganizacao.css?v=2">
 <link rel="stylesheet" href="assets/duplicatas-comparacao.css?v=3">
 <script defer src="assets/app.js?v=1.6"></script>
 <?php if(in_array($page,['rodadas','fila_rapida'],true)): ?><script defer src="assets/datacao-intervalo.js?v=1"></script><?php endif; ?>
@@ -81,7 +82,7 @@
       <a href="<?=mat_url('temporis_legado')?>" class="nav-item <?=$navPage==='temporis_legado'?'active':''?>"><span class="nav-number">↳</span><span>Legada · potência 0,65</span></a>
      </div>
     </details>
-    <a href="mat_proj/" class="nav-item"><span class="nav-number">03.6</span><span>MAT-Proj · projeções</span></a>
+    <a href="<?=mat_url('projecoes')?>" class="nav-item"><span class="nav-number">03.6</span><span>Previsões · Têmporis bruto</span></a>
    </div>
   </details>
   <details class="mat-nav-group" data-nav-group="pesquisa" <?=$grupoPesquisa?'open':''?>>

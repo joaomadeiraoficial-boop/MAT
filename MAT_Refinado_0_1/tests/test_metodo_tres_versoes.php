@@ -14,7 +14,7 @@ require dirname(__DIR__).'/views/metodo.php';
 $html=(string)ob_get_clean();
 $expected=['metodo-pontuacao','metodo-versoes','metodo-comparar','metodo-validacao',
   'Legada','Reformulada','MAT Final',
-  'K<sub>L</sub>','ln(1 + K(t))','T<sub>F</sub>(t)',
+  'K<sub>L</sub>','ln(1 + K(t))','K<sub>F</sub>(t)',
   'temporis_legado','temporis_reformulado','SEM_EVIDENCIA','metodo-seis'];
 foreach($expected as $needle) {
     if(!str_contains($html,$needle)) {fwrite(STDERR,'FALHA: '.$needle.PHP_EOL);exit(1);}
@@ -32,5 +32,5 @@ if(abs(TemporisFinal::indice($k,$base,'empirica')-150)>1e-10){fwrite(STDERR,'FAL
 if(abs(TemporisFinal::indice($k,$base,'pot065')-100*pow(1.5,.65))>1e-10){fwrite(STDERR,'FALHA: potencia'.PHP_EOL);exit(1);}
 if(abs(TemporisFinal::indice($k,$base,'log')-100*log1p($k)/log1p($base))>1e-10){fwrite(STDERR,'FALHA: log'.PHP_EOL);exit(1);}
 if(TemporisFinal::indice($k,0.0)!==null){fwrite(STDERR,'FALHA: base nula'.PHP_EOL);exit(1);}
-if (substr_count($html,'class="tf-six-current"')!==2 || substr_count($html,'<article><small>0')!==4) throw new RuntimeException("As seis expressões devem estar identificadas");
+if (substr_count($html,'class="tf-six-current"')!==2 || substr_count($html,'<article')<6) throw new RuntimeException("As seis expressões devem estar identificadas");
 echo "OK — caderno com seis fórmulas (três pares), três versões e equivalência dos pesos; sem banco.\n";

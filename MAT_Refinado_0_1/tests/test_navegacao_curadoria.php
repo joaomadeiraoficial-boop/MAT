@@ -25,7 +25,7 @@ check(str_contains($index, "['rodadas','fila_rapida']") && !str_contains($index,
 check(str_contains(file_get_contents($root.'/views/andamento.php'), 'progressSnapshot($curDb, is_admin())'), 'Histórico interno restrito ao pesquisador');
 check(str_contains($login, 'return_page') && str_contains($actions, "['rodadas','andamento','fila_rapida']"), 'Voltar a Rodadas após entrar com conta pesquisadora');
 check(str_contains($header, 'MAT_NAV_EXTENSIONS_V07_START') && str_contains($header,'resultado_temporis_piloto.php'), 'Extensões científicas antigas preservadas');
-check(str_contains($header,'mat_proj/') && str_contains($header,'duplicatas') && !str_contains($header,'href="assistente_ia.php"'), 'Laboratório preservado, atalho legado não interfere na contagem');
+check(str_contains($header,"mat_url('projecoes')") && str_contains($header,'duplicatas') && !str_contains($header,'href="assistente_ia.php"'), 'Laboratório preservado, atalho legado não interfere na contagem');
 check(str_contains($js, 'toggleNav') && str_contains($js, '.mat-nav-group') && str_contains($js, 'Escape'), 'Interação móvel e grupos expansíveis preparados');
 check(str_contains($css, 'var(--serif)') && str_contains($css, 'var(--mono)'), 'Paleta e tipografia editorial do MAT reutilizadas');
 check(str_contains($view, 'CuradoriaRodadas::connect') && str_contains($view, 'memória de cálculo'), 'Página apresenta fonte real e preserva pesquisa pendente');

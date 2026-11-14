@@ -14,7 +14,8 @@ final class TemporisFinal {
         'media'=>'Média dos componentes (sensibilidade)',
     ];
     public const ESCALAS = [
-        'empirica'=>'Acumulada sem compressão (adotada)',
+        'bruta'=>'K(t) · pontos brutos (adotada)',
+        'empirica'=>'Relativa · base opcional = 100',
         'log'=>'Logarítmica anterior',
         'pot065'=>'Potência 0,65',
         'pot125'=>'Potência 1,25',
@@ -232,7 +233,9 @@ final class TemporisFinal {
     }
     public static function indice(float $k,float $base,string $escala='empirica'): ?float {
         if(!isset(self::ESCALAS[$escala]))throw new InvalidArgumentException('Escala inválida');
-        if($base<=0 || !is_finite($k) || $k<0)return null;
+        if(!is_finite($k) || $k<0)return null;
+        if($escala==='bruta')return $k;
+        if($base<=0)return null;
         $ratio=$k/$base;
         return match($escala){
             'log'=>100*log1p($k)/log1p($base),
@@ -299,7 +302,10 @@ final class TemporisFinal {
     public static function projetar(array $linha,int $cut,int $h,string $modelo):?float {
         if(!isset(self::MODELOS[$modelo])||$h<1||$h>200)throw new InvalidArgumentException('Modelo ou horizonte inválido');
         $k=self::k($linha,$cut);$old=self::k($linha,$cut-50);$old100=self::k($linha,$cut-100);
-        if($k<=0||$old100<=0)return null;
+        if($k<=0)return null;
+        if($modelo==='sem_avanco')return $k;
+        if(in_array($modelo,['linear100','exponencial100','mediana','aceleracao'],true) && $old100<=0)return null;
+        if(in_array($modelo,['linear50','exponencial50','amortecida'],true) && $old<=0)return null;
         $r50=max(0.,($k-$old)/50);$r100=max(0.,($k-$old100)/100);$rPrev=max(0.,($old-$old100)/50);
         $exp50=$old>0 ? $k*exp(min(80.,log($k/$old)*$h/50)):null;
         $exp100=$old100>0 ? $k*exp(min(80.,log($k/$old100)*$h/100)):null;

@@ -1,6 +1,6 @@
 <?php
 /**
- * Página separada: Demonstração simples das 3 fórmulas em funcionamento.
+ * Demonstração do índice bruto e de três escalas históricas opcionais.
  * Conectada à base de dados atual (somente leitura).
  */
 require_once MAT_ROOT.'/app/TemporisFinal.php';
@@ -17,12 +17,21 @@ $pontos = []; $linha = []; $Kbase = 0.0;
 $anosRef = [1800,1850,1900,1925,1950,1975,2000,2010,2020,2026];
 $tabela = [];
 $formulas = [
+  'bruta' => [
+    'titulo' => 'Têmporis principal — Acumulado bruto K(t)',
+    'curta' => 'Principal / K(t)',
+    'peso' => 'wᵢ = (Iᵢ / 10)² · Cᵢ · Fᵢ',
+    'indice' => 'K(t) = Σ pesos até a data',
+    'desc' => 'Sem compressão e sem ano-base; valor somado diretamente dos marcos.',
+    'cor' => '#165c4e',
+    'corFill' => 'rgba(20,92,78,0.08)',
+  ],
   'empirica' => [
-    'titulo' => 'Final (atual) — Acumulação proporcional',
-    'curta'  => 'Final / Proporcional',
+    'titulo' => 'Relativa proporcional (opcional) — base 100',
+    'curta'  => 'Relativa / Proporcional',
     'peso'   => 'wᵢ = (Iᵢ / 10)² · Cᵢ · Fᵢ',
     'indice' => 'T(t) = 100 · K(t) / K(t₀)',
-    'desc'   => 'Sem compressão: a variação do índice acompanha diretamente a variação proporcional do acúmulo K.',
+    'desc'   => 'Transformação opcional para comparar proporções; o Índice Têmporis principal é o acumulado bruto K(t).',
     'cor'    => '#0f766e',
     'corFill'=> 'rgba(15,118,110,0.10)',
   ],
@@ -114,7 +123,7 @@ $svgChart = function(array $rows, array $seriesDef, int $baseYear) use ($fmt) {
     $Y = function($v) use ($yMin,$yMax,$top,$bottom){ return $bottom - ($v-$yMin)/max(0.00001,$yMax-$yMin)*($bottom-$top); };
     $nf = function($n){ return number_format((float)$n,2,'.',''); };
 
-    $out = '<svg viewBox="0 0 '.$W.' '.$H.'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparação das três fórmulas do índice Têmporis">';
+    $out = '<svg viewBox="0 0 '.$W.' '.$H.'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparação do índice bruto com três escalas opcionais">';
     $out .= '<defs>';
     foreach ($seriesDef as $k=>$def) {
         $gid = 'g'.preg_replace('/[^a-z0-9]/i','',$k);
@@ -209,7 +218,7 @@ $svgChart = function(array $rows, array $seriesDef, int $baseYear) use ($fmt) {
 
 $k2026 = (!$erro) ? TemporisFinal::k($linha, 2026) : 0.0;
 $ratio = ($Kbase > 0) ? ($k2026 / $Kbase) : null;
-$tFinal = TemporisFinal::indice($k2026,$Kbase,'empirica');
+$tFinal = TemporisFinal::indice($k2026,$Kbase,'bruta');
 $tLog = TemporisFinal::indice($k2026,$Kbase,'log');
 $tLeg = TemporisFinal::indice($k2026,$Kbase,'pot065');
 $ln1k = log1p(max(0.0,$k2026));
@@ -237,7 +246,7 @@ $ln1k0 = log1p(max(0.0,$Kbase));
 <header class="page-heading">
   <div class="section-overline">DEMONSTRAÇÃO SIMPLES / FÓRMULAS EM FUNCIONAMENTO</div>
   <h1>Demonstrativo <em>das fórmulas.</em></h1>
-  <p>Página separada para mostrar, de forma clara, como as 3 fórmulas do Têmporis funcionam na prática: mesma base de dados, mesmo acúmulo <strong>K(t)</strong> e três formas diferentes de transformar esse acúmulo em índice <strong>T(t)</strong>.</p>
+  <p>Página separada para mostrar, de forma clara, como os 4 modos de exibição funcionam na prática: mesma base de dados, mesmo acúmulo <strong>K(t)</strong> e comparações opcionais que transformam esse acúmulo em índice <strong>T(t)</strong>.</p>
 </header>
 
 <section class="paper-panel" style="margin-bottom:1rem">
@@ -256,27 +265,27 @@ $ln1k0 = log1p(max(0.0,$Kbase));
       <div class="tf-form-main">
         <label>Fonte de dados<select name="fonte"><?php foreach(TemporisFinal::FONTES as $id=>$desc): ?><option value="<?=h($id)?>" <?=$fontePedida===$id?'selected':''?>><?=h($desc)?></option><?php endforeach; ?></select></label>
         <label>Seleção de marcos<select name="coorte"><?php foreach(TemporisFinal::COORTES as $id=>$desc): ?><option value="<?=h($id)?>" <?=$coorte===$id?'selected':''?>><?=h($desc)?></option><?php endforeach; ?></select></label>
-        <label>Ano-base (t₀)<input type="number" name="base" value="<?=$base?>" min="1600" max="2000"></label>
+        <label>Ano-base (apenas opções relativas)<input type="number" name="base" value="<?=$base?>" min="1600" max="2000"></label>
         <button class="btn btn-dark" type="submit">Recalcular</button>
       </div>
     </form>
     <div class="demo-hero-grid">
       <div class="demo-card"><div class="panel-head" style="margin:0 0 .3rem"><span>DADOS</span></div><div class="big"><?=$fmt(count($pontos),0)?></div><div>marcos na seleção atual (de <?=$fmt($dados['audit']['elegiveis'] ?? 0,0)?> elegíveis / <?=$fmt($dados['audit']['total'] ?? 0,0)?> na fonte)</div></div>
-      <div class="demo-card"><div class="panel-head" style="margin:0 0 .3rem"><span>ACÚMULO BASE</span></div><div class="big">K(<?=$base?>)=<?=$fmt($Kbase,3)?></div><div>referência de normalização (T = 100 na base)</div></div>
+      <div class="demo-card"><div class="panel-head" style="margin:0 0 .3rem"><span>ACÚMULO BASE</span></div><div class="big">K(<?=$base?>)=<?=$fmt($Kbase,3)?></div><div>referência usada apenas nas escalas opcionais</div></div>
       <div class="demo-card"><div class="panel-head" style="margin:0 0 .3rem"><span>ACÚMULO ATUAL</span></div><div class="big">K(2026)=<?=$fmt($k2026,3)?></div><div>razão K(2026)/K(<?=$base?>) = <?=$ratio===null?'—':$fmt($ratio,4)?></div></div>
-      <div class="demo-card"><div class="panel-head" style="margin:0 0 .3rem"><span>RESULTADO FINAL</span></div><div class="big">T(2026)=<?=$fmt($tFinal,2)?></div><div>método atual (proporcional, sem compressão)</div></div>
+      <div class="demo-card"><div class="panel-head" style="margin:0 0 .3rem"><span>RESULTADO FINAL</span></div><div class="big">K(2026)=<?=$fmt($tFinal,2)?></div><div>índice bruto atual, independente de ano-base</div></div>
     </div>
     <?php if ($Kbase <= 0): ?>
-      <div class="mat-final-warning" style="margin-top:.75rem"><strong>Atenção:</strong> K(<?=$base?>)=0 nesta seleção, então T(t) fica indefinido. Troque o ano-base ou a seleção.</div>
+      <div class="mat-final-warning" style="margin-top:.75rem"><strong>Atenção:</strong> K(<?=$base?>)=0 nesta seleção; somente as escalas relativas ficam indefinidas. O índice bruto K(t) continua válido.</div>
     <?php endif; ?>
   <?php endif; ?>
 </section>
 
 <?php if (!$erro): ?>
 <section class="paper-panel tf-chart-main" style="margin-bottom:1rem">
-  <div class="panel-head"><span>GRÁFICO COMPARATIVO</span><span>AS 3 FÓRMULAS SOBRE OS MESMOS DADOS</span></div>
+  <div class="panel-head"><span>GRÁFICO COMPARATIVO</span><span>K(t) BRUTO E 3 ESCALAS OPCIONAIS</span></div>
   <h2>Como cada fórmula transforma o mesmo acúmulo</h2>
-  <p>Mesmos marcos, mesmas datas e mesmos pesos → mesmo <strong>K(t)</strong>. O que muda é apenas a transformação matemática para obter <strong>T(t)</strong>. A linha contínua destaca o método atual.</p>
+  <p>Mesmos marcos, mesmas datas e mesmos pesos → mesmo <strong>K(t)</strong>. O que muda é apenas a transformação matemática para obter <strong>T(t)</strong>. O acumulado bruto é o método atual; as demais curvas são apenas formas alternativas de apresentação.</p>
   <div class="mat-final-chart"><?=$svgChart($tabela,$formulas,$base)?></div>
   <p class="demo-table-note">Dica: passe o mouse sobre os pontos para ver os valores. Os anos do eixo horizontal estão na proporção temporal real.</p>
 </section>
@@ -332,7 +341,7 @@ $ln1k0 = log1p(max(0.0,$Kbase));
       <div class="demo-step">
         <span class="k">CONTRIBUIÇÃO PARA K(t)</span>
         <h4>Efeito no acúmulo</h4>
-        <p>Esse marco soma <strong><?=$fmt($eW,6)?></strong> ao valor de <code>K(t)</code> em todos os anos <code>t ≥ <?=$eAno?></code>. O índice <code>T(t)</code> é calculado a partir do <code>K(t)</code> acumulado de todos os marcos.</p>
+        <p>Esse marco soma <strong><?=$fmt($eW,6)?></strong> a <code>K(t)</code> em todos os anos <code>t ≥ <?=$eAno?></code>. K(t) é o próprio Têmporis principal; escalas normalizadas são secundárias.</p>
       </div>
     </div>
   </details>
@@ -340,23 +349,29 @@ $ln1k0 = log1p(max(0.0,$Kbase));
 </section>
 
 <section class="paper-panel" style="margin-bottom:1rem">
-  <div class="panel-head"><span>AS 3 FÓRMULAS (DECOMPOSTAS COM VALORES REAIS)</span><span>ANO 2026, BASE <?=$base?></span></div>
-  <h2>Mesma entrada, três transformações</h2>
+  <div class="panel-head"><span>ÍNDICE PRINCIPAL E ESCALAS COMPARATIVAS</span><span>ANO 2026, BASE OPCIONAL <?=$base?></span></div>
+  <h2>Mesmo acervo: primeiro K bruto, depois comparação</h2>
   <div class="demo-steps">
     <div class="demo-step" style="border-left-color:#0f766e">
-      <span class="k">FÓRMULA 1 — FINAL (ATUAL)</span>
-      <h4>Acumulação proporcional</h4>
-      <div class="demo-formula-block">T(t) = 100 · K(t) / K(t₀)<br><br>R = K(2026)/K(<?=$base?>) = <?=$fmt($k2026,6)?> / <?=$fmt($Kbase,6)?> = <strong><?=$ratio===null?'—':$fmt($ratio,6)?></strong><br>T(2026) = 100 · R = <strong><?=$fmt($tFinal,6)?></strong></div>
-      <p>Interpretação: razão direta entre acúmulos (sem compressão).</p>
+      <span class="k">FÓRMULA PRINCIPAL — K(t)</span>
+      <h4>Acumulado bruto</h4>
+      <div class="demo-formula-block">K(t) = Σ wᵢ, anoᵢ ≤ t<br><br>K(2026) = <strong><?=$fmt($tFinal,6)?></strong></div>
+      <p>Esta é a medida que usamos na previsão. 1900 não participa deste cálculo.</p>
+    </div>
+    <div class="demo-step">
+      <span class="k">ESCALA OPCIONAL — PROPORCIONAL</span>
+      <h4>Ano-base = 100 (comparação)</h4>
+      <div class="demo-formula-block">N(t) = 100 · K(t) / K(<?=$base?>)<br>N(2026) = <?=$fmt(TemporisFinal::indice($k2026,$Kbase,'empirica'),6)?></div>
+      <p>É uma regra de exibição; o crescimento bruto continua inalterado.</p>
     </div>
     <div class="demo-step alt-log">
-      <span class="k">FÓRMULA 2 — REFORMULADA</span>
+      <span class="k">ESCALA OPCIONAL — REFORMULADA</span>
       <h4>Transformação logarítmica</h4>
       <div class="demo-formula-block">T(t) = 100 · ln(1 + K(t)) / ln(1 + K(t₀))<br><br>ln(1 + K(2026)) = ln(1 + <?=$fmt($k2026,6)?>) = <strong><?=$fmt($ln1k,6)?></strong><br>ln(1 + K(<?=$base?>)) = ln(1 + <?=$fmt($Kbase,6)?>) = <strong><?=$fmt($ln1k0,6)?></strong><br>T(2026) = 100 · <?=$fmt($ln1k,6)?> / <?=$fmt($ln1k0,6)?> = <strong><?=$fmt($tLog,6)?></strong></div>
       <p>Interpretação: comprime a escala quando K cresce muito.</p>
     </div>
     <div class="demo-step alt-leg">
-      <span class="k">FÓRMULA 3 — LEGADA (ADAPTADA)</span>
+      <span class="k">ESCALA OPCIONAL — LEGADA (ADAPTADA)</span>
       <h4>Potência 0,65</h4>
       <div class="demo-formula-block">T(t) = 100 · (K(t) / K(t₀))^0,65<br><br>R = K(2026)/K(<?=$base?>) = <strong><?=$ratio===null?'—':$fmt($ratio,6)?></strong><br>R^0,65 = (<?=$ratio===null?'—':$fmt($ratio,6)?>)^0,65 = <strong><?=$ratio===null?'—':$fmt(pow((float)$ratio,0.65),6)?></strong><br>T(2026) = 100 · R^0,65 = <strong><?=$fmt($tLeg,6)?></strong></div>
       <p>Interpretação: atenua o crescimento pela potência &lt; 1.</p>
@@ -374,7 +389,7 @@ $ln1k0 = log1p(max(0.0,$Kbase));
           <th>Ano</th>
           <th>K(t) — acúmulo</th>
           <th>Razão K/K(<?=$base?>)</th>
-          <th>Final (proporcional)</th>
+          <th>Relativa (base 100)</th>
           <th>Reformulada (log)</th>
           <th>Legada (pot. 0,65)</th>
         </tr>
@@ -393,7 +408,7 @@ $ln1k0 = log1p(max(0.0,$Kbase));
       </tbody>
     </table>
   </div>
-  <p class="demo-table-note">A coluna <strong>Razão K/K(<?=$base?>)</strong> mostra a entrada comum das transformações. A diferença entre as fórmulas aparece na forma como essa razão é convertida em T(t).</p>
+  <p class="demo-table-note">A primeira coluna numérica, <strong>K(t) bruto</strong>, é o índice científico principal. As demais são transformações opcionais usadas apenas para comparar escalas. Os modelos preditivos usam K(t), sem base 100.</p>
 </section>
 
 <section class="paper-panel">

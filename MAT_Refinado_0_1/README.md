@@ -1,6 +1,6 @@
 # MAT REFINADO + FINAL — MÉTODO NOVO ATIVO
 
-**Acesse `index.php?page=temporis` para o método atual**, acumulado sem compressão. O ZIP inclui os dados de 07/11/2026 para exibir gráficos mesmo sem o banco MySQL extra. Compare com as versões anteriores em `index.php?page=metodo`. **Leia [`docs/notas/CORRECAO_METODO_PRINCIPAL.md`](docs/notas/CORRECAO_METODO_PRINCIPAL.md) antes de instalar.**
+**Acesse `index.php?page=temporis` para o método atual**, acumulado bruto K(t) sem ano-base. **Acesse `index.php?page=projecoes` para previsões e validação**, com WAPE dos incrementos brutos e comparação nas mesmas janelas de teste. O ano de 1900 é apenas uma escala relativa opcional. Consulte [`docs/METODOLOGIA_TEMPORIS_2026.md`](docs/METODOLOGIA_TEMPORIS_2026.md) para critérios, limites e testes. O ZIP inclui os dados de 07/11/2026 para exibir gráficos mesmo sem o banco MySQL extra. Compare com as versões anteriores em `index.php?page=metodo`. **Leia [`docs/notas/CORRECAO_METODO_PRINCIPAL.md`](docs/notas/CORRECAO_METODO_PRINCIPAL.md) antes de instalar.**
 
 > **Índice da documentação (Etapa 1):** consulte [`docs/INDICE.md`](docs/INDICE.md) para visão geral, fluxo oficial, guias e notas.
 

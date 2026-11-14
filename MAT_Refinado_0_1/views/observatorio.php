@@ -10,7 +10,7 @@ $matPanelOk=$matProgress!==null;
    <div class="section-overline"><span class="overline-square"></span> PROJETO MAT <span class="overline-sep">/</span> UM INVENTÁRIO DA MUDANÇA</div>
    <h1>O tempo deixa<br><em>vestígios.</em><span class="hero-caret">_</span></h1>
    <p class="hero-lead">E se pudéssemos ler a história da tecnologia não apenas como uma sequência de invenções, mas como um fenômeno passível de investigação?</p>
-   <div class="hero-actions"><a class="btn btn-dark" href="<?=mat_url('linha')?>">Percorrer a história <span>↗</span></a><a class="btn btn-ghost" href="<?=mat_url('metodo')?>">Conheça a pesquisa <span>↗</span></a><a class="btn btn-ghost" href="<?=mat_url('temporis')?>">★ Têmporis · método novo <span>↗</span></a><a class="btn btn-ghost" href="mat_proj/">MAT-Proj · Projeções <span>↗</span></a></div>
+   <div class="hero-actions"><a class="btn btn-dark" href="<?=mat_url('linha')?>">Percorrer a história <span>↗</span></a><a class="btn btn-ghost" href="<?=mat_url('metodo')?>">Conheça a pesquisa <span>↗</span></a><a class="btn btn-ghost" href="<?=mat_url('temporis')?>">★ Têmporis · método novo <span>↗</span></a><a class="btn btn-ghost" href="<?=mat_url('projecoes')?>">Previsões validadas <span>↗</span></a></div>
    <div class="hero-footnote"><span class="ornament-line"></span> ENTRE A CRONOLOGIA E A MATEMÁTICA <span class="roman">I</span></div>
  </section>
  <section class="hero-art" aria-label="Ilustração abstrata da evolução temporal">
@@ -51,4 +51,4 @@ $matPanelOk=$matProgress!==null;
  <p>O lote documental registrado neste banco é a base de trabalho desta etapa. Os candidatos são documentados com onze rubricas, notas de 1 a 3 e indicação explícita de lacunas, sem pontuação automática por falta de evidência. O acervo anterior não participa desta fila.</p>
  <?php if(is_admin()): ?><a class="btn btn-dark" href="<?=mat_url('andamento')?>">Ver fila dos candidatos ↗</a><?php else: ?><a class="btn btn-dark" href="<?=mat_url('laboratorio')?>">Conhecer as rubricas ↗</a><?php endif; ?>
 </section>
-<section class="method-ribbon"><div><span>PESQUISA CIENTÍFICA</span><h3>Índice Têmporis · método final.</h3></div><p>Novo método: w = (I/10)² × C × F; K(t) soma os pesos até o ano e T(t) = 100 × K(t)/K(1900). A curadoria e as limitações científicas continuam explícitas.</p><a class="btn btn-outline-light" href="<?=mat_url('temporis')?>">Abrir método atual ↗</a></section>
+<section class="method-ribbon"><div><span>PESQUISA CIENTÍFICA</span><h3>Índice Têmporis · método final.</h3></div><p>Método atual: w = (I/10)² × C × F; K(t) é o índice bruto por ano. 1900 = 100 é apenas exibição relativa opcional; previsões são avaliadas pelo WAPE histórico dos incrementos.</p><a class="btn btn-outline-light" href="<?=mat_url('temporis')?>">Abrir método atual ↗</a></section>

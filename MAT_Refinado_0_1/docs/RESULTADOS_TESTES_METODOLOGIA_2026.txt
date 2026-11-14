@@ -1,0 +1,599 @@
+========== mat_proj/tests/test_engine.php ========== 
+[OK] CSV de demonstração carrega
+[OK] Separação observado/oculto
+[OK] Aleatoriedade reprodutível
+[OK] Nenhuma unidade oculta alterou a previsão após mudança da verdade
+[OK] Sem vazamento na previsão do ano-alvo
+[OK] Previsão com comparação ingênua
+[OK] Retrospectivas com múltiplos anos
+[OK] Rejeita fração inválida
+[OK] Rejeita CSV malformado
+MAT-PROJ: TESTES APROVADOS
+========== tests/test_assistente_ia.php ========== 
+[OK] Fila sugere revisao humana e duplicatas
+[OK] Identifica rotulo automatico
+[OK] Onze criterios presentes
+[OK] Rejeita notas sem citacao literal
+[OK] Mantem sugestao com citacao presente (nao validada)
+[OK] Nao cria nota para os demais criterios
+[OK] Rubricas acessiveis com ou sem bootstrap revisado
+[OK] Rotulos e escalas dos 11 criterios carregados
+[OK] Mantem o Qwen 3.5 4B
+[OK] Desativa Thinking na requisicao
+[OK] Reduz contexto para 4096 tokens
+[OK] Limita tamanho da resposta
+[OK] Mantem o JSON dos 11 criterios
+ASSISTENTE MAT: TESTES LOCAIS APROVADOS (SEM TESTAR O MODELO OLLAMA).
+========== tests/test_auditoria_ambiguidades.php ========== 
+OK: auditoria de ambiguidade (2 cenarios)
+========== tests/test_auditoria_automatica.php ========== 
+[OK] Dossiê completo é apto à auditoria amostral
+[OK] Onze notas reconhecidas
+[OK] Duas fontes distintas identificadas
+[OK] Nota ausente é pendência
+[OK] Data não validada é pendência
+[OK] Uma fonte é sinalizada para revisão
+[OK] Duas referências do mesmo autor não provam independência
+[OK] Possível duplicata exige investigação
+[OK] Pendências históricas têm prioridade
+[OK] Contexto tem fila própria
+[OK] Contexto prevalece sobre notas pendentes
+[OK] Divergência grande de ano dispara alerta
+[OK] Homologado não volta à fila automaticamente
+[OK] Rejeitado não é excluído nem reaberto pela varredura
+[OK] Nota zero explícita não é confundida com falta de evidência
+[OK] Amostra de 20% em grupo de 20
+[OK] Amostra reproduzível
+[OK] Amostra sem repetição
+[OK] Amostra inclui diferentes rodadas
+[OK] Finalizados são excluídos da amostragem
+[OK] Amostra só aparece quando marcada
+[OK] Filtro por rodada funciona
+[OK] Busca por ID funciona
+[OK] Base vazia não gera amostra artificial
+SUCESSO: 24 testes da lógica de auditoria automática.
+========== tests/test_auditoria_material_acervo.php ========== 
+OK 13 verificacoes da auditoria documental.
+========== tests/test_backtest_temporis.php ========== 
+[OK] Simulação possui histórico suficiente
+[OK] Observado e referência construídos
+[OK] Fórmula logarítmica oficial
+[OK] Previsão e erro calculados
+[OK] NENHUM vazamento: futuro não altera a previsão
+[OK] Futuro modifica apenas o observado
+[OK] Sem dados pós-corte não inventa erro
+[OK] Backtests históricos anteriores ao ano de corte
+[OK] Nenhum alvo de validação posterior a 1920
+[OK] MAE e RMSE para folds
+[OK] Não inventa previsões com poucos dados
+[OK] Não converte candidato pendente em marco científico
+MAT BACKTEST: TODOS OS TESTES APROVADOS (SEM MYSQL E SEM OLLAMA).
+========== tests/test_concordancia_csv.php ========== 
+[OK] Pareamento de dossiês independente da ordem
+[OK] Análise por critério trabalha com pares
+[OK] Resumo contabiliza 11 critérios por 2 candidatos
+[OK] Concordância exata refletiu um caso igual e outro divergente
+[OK] Duplicação do mesmo ID é rejeitada
+========== tests/test_core.php ========== 
+OK: Acervo ilustrativo tem 10 registros
+OK: Limite de Gutenberg categorizado corretamente
+OK: Limite da era contemporânea
+OK: Formatacao de data BCE
+OK: Marco ilustrativo nao entra no indice
+OK: Formula P: I=10, C=100, F=1.5 -> 150
+OK: Marco pendente nao pode entrar na formula
+OK: Duas observacoes no indice
+OK: Indice no ano base = 100
+OK: K_base positivo com amostra elegivel
+MAT: Banco indisponivel: could not find driver
+OK: Sem banco, busca nao inventa marcos
+OK: Protecao CSRF estavel por sessao
+TESTES DO NUCLEO CONCLUIDOS
+========== tests/test_duplicatas_explicaveis.php ========== 
+[OK] Caso Stonehenge vs roda de oleiro recebe alerta (não duplicata confirmada)
+[OK] A ausência de justificativa na importação aparece em destaque
+[OK] A origem identifica qual registro declarou o vínculo
+[OK] Datas extraídas não são tratadas como validação cronológica
+[OK] Retira uma referência e mantém as demais
+[OK] Retira objetos de vínculo mantendo outros registros
+[OK] Distingue motivo importado de evidência verificada
+[OK] Mesmo título e datas próximas geram indício, nunca certeza
+[OK] IDs dos lotes 56-60 são reconhecidos
+[OK] Vínculos encerrados possuem histórico, sem atribuir origem incorreta
+[OK] Tela explica fonte e indícios
+[OK] Decisão exige confirmação, bloqueio concorrente e trilha de auditoria
+[OK] Aviso recebe destaque visual
+SUCESSO: explicações de duplicidade verificadas.
+========== tests/test_duplicatas_transacao_fake.php ========== 
+[OK] Parecer distinto confirmado
+[OK] Remove o vínculo de A apenas com B
+[OK] Remove simetricamente o vínculo de B com A
+[OK] Um log auditável registra parecer do par
+[OK] Transação encerrada
+[OK] Não aplica o mesmo encerramento repetidamente
+[OK] Protege contra decisão sem justificativa adequada
+SUCESSO: transação de desvinculação simulada.
+========== tests/test_fila_correcoes.php ========== 
+[OK] IDs históricos MCD mantidos
+[OK] IDs dos lotes 56–60 reconhecidos
+[OK] IDs malformados recusados
+[OK] Filtros de problema são validados
+[OK] Pendências são resolvidas individualmente
+[OK] Nenhum item se resolve sem seleção
+[OK] Alterações concorrentes são detectáveis pelo hash de dados
+[OK] Índices de itens desatualizados são recusados
+[OK] Dossiê regular sem problemas de estrutura
+[OK] Problemas específicos classificados corretamente
+[OK] Filtro por problema mostra só candidatos relevantes
+[OK] Contadores cruzados por problema são reais
+[OK] Página não oferece remoção cega na correção rápida
+[OK] Cadastro de fonte e retorno à fila presentes
+[OK] Resolução exige confirmação e parecer com evidências
+[OK] Revisão mantém proteção CSRF e operação transacional
+SUCESSO: novos testes da fila documental e controle humano.
+========== tests/test_fila_rapida.php ========== 
+[OK] A fila contabiliza os cinco registros, inclusive os rejeitados para auditoria
+[OK] Pendentes excluem aprovados, homologados e rejeitados
+[OK] Aptos e bloqueados são grupos separados
+[OK] Aprovação não equivale a homologação
+[OK] Seleciona primeiro candidato pendente
+[OK] Próximo e anterior funcionam sem alterar o banco
+[OK] Último candidato preserva navegação anterior
+[OK] Bloqueados retornam apenas pendentes de investigação
+[OK] Busca por título funciona
+[OK] Busca por identificador funciona
+[OK] Filtro vazio não gera candidato fictício
+[OK] Filtros não autorizados são normalizados
+[OK] Rota da fila está cadastrada
+[OK] Formulário mantém CSRF e confirmação humana
+[OK] Decisões continuam passando pelo serviço auditável
+[OK] A visualização não executa atualização de dados
+SUCESSO: 16 verificações da fila rápida.
+========== tests/test_gemini_mat.php ========== 
+[OK] Gemini: modelo rejeitado e proposta sem citacao nao validada.
+========== tests/test_integracao_mat_final.php ========== 
+[OK] Curadoria Refinada permanece no banco original
+[OK] Banco do acervo Refinado preservado
+[OK] Snapshot MAT Final configurado separadamente
+[OK] Nao permite reaproveitar o nome original do banco
+[OK] Snapshot incluido
+[OK] Rota do novo laboratorio habilitada
+[OK] Menu para o Têmporis e backtesting integrado instalado
+[OK] Metodo Final prioriza a curadoria ativa em somente leitura
+INTEGRACAO E ORIGEM DE DADOS: testes de configuracao aprovados (sem MySQL real).
+========== tests/test_integracao_pagina_backtest.php ========== 
+[OK] Motor de backtesting carregado
+[OK] Pagina de experimento presente
+[OK] Pagina sem gerador de dados ficticios
+MAT: banco de curadoria indisponível: could not find driver
+MAT: Banco indisponivel: could not find driver
+[OK] Pagina real abriu
+[OK] Pagina exige marcos e avaliacoes reais
+[OK] Parametro demo nao reativa simulacao
+[OK] Formulario de previsao disponivel
+[OK] Nenhum erro fatal durante abertura
+MAT BACKTEST REAL: TESTE DE INTEGRACAO APROVADO.
+========== tests/test_integracao_temporis_atlas_2026.php ========== 
+[OK] Atlas nao perde dossies sem ano
+[OK] Atlas distingue ano validado e ano extraido
+[OK] Atlas separa aprovacao de homologacao
+[OK] Contagem das eras por data com origem distinta
+[OK] Soma de base calculada ate corte
+[OK] Ambas formulas normalizam o mesmo corte
+[OK] Regua historica com tooltip e sem etiquetas por ponto
+[OK] MAT-Proj usa pagina cientifica integrada
+[OK] MAT-Proj usa K bruto e validação por cortes cegos
+[OK] Ensaio didatico e backtest nao sao mesmo destino
+[OK] Tema editorial aplicado aos experimentos
+MAT INTEGRACAO: NOVOS TESTES APROVADOS.
+========== tests/test_laboratorio_cientifico.php ========== 
+[OK] Curadoria sem IA aceita candidato definido sem aprova-lo
+[OK] Titulo provisório impede pontuacao automatica
+[OK] Identificacao previamente salva pode ser reutilizada sem nova chamada
+[OK] Duplicata por mesmo evento/ano ou trecho gera alerta e nao altera dados
+[OK] Cache invalida quando fonte muda
+[OK] As 11 chaves sao as mesmas da metodologia matematica revisada
+[OK] Fonte unica nao sustenta independencia 3 nem rastreabilidade primaria 3
+[OK] Avaliacao incompleta NAO gera peso matematico
+[OK] 11 evidencias validas geram APENAS peso hipotetico pelo PHP
+[OK] Citação inexistente nunca vira nota validada
+[OK] Sem evidencia nao e nota zero
+[OK] Pontuacao Gemini nunca ingressa no calculo oficial automaticamente
+[OK] Motor de estresse sintetico continua funcional
+[OK] Laboratorio cientifico: 13 verificacoes offline aprovadas.
+========== tests/test_melhorias_2026.php ========== 
+[OK] Pré-história aceita datas anteriores a 20 mil anos
+[OK] Ano zero e limite exterior bloqueados
+[OK] Ano histórico bruto antigo entra apenas no ensaio
+[OK] Ano extraído não é promovido a validado
+[OK] Fonte fantasma bloqueia memória de cálculo
+[OK] Fontes correspondentes produzem memória válida
+[OK] Falta de fontes bloqueia cálculo
+[OK] Pendência não pode ser resolvida sem parecer individual
+[OK] Parecer individual é preservado por índice
+[OK] Resolução individual bloqueada quando a fonte não existe
+[OK] Salvar sem alteração científica não invalida aprovação
+[OK] Edição científica reabre revisão e escopo
+[OK] Fila indica fonte antes de exigir 11 notas
+[OK] Fila de 0–10 inclui candidato sem nota
+[OK] Sensibilidade leave-one-out informa perda de referência histórica
+[OK] Dois avaliadores perfeitamente concordantes: kappa 1
+[OK] Sem variabilidade kappa é indefinido, não 100%
+[OK] Fechamento global não esvazia pendências
+[OK] Aprovação/rejeição em lote explicitamente bloqueada
+SUCESSO: melhorias de robustez e integridade científica.
+========== tests/test_menu_inicial.php ========== 
+[OK] Assistente de IA vinculado no menu
+[OK] Resultado Têmporis vinculado no menu
+[OK] Atalhos da pagina inicial carregados
+[OK] Atalhos visuais preparados
+[OK] Menu nao duplicado
+[OK] Atalhos nao duplicados
+[OK] Menu original preservado
+MAT MENU: TESTES APROVADOS.
+========== tests/test_metodo_principal_integrado.php ========== 
+OK: método final como padrão; legadas acessíveis; exportação local 800/667; T(2026)=156.24
+========== tests/test_metodo_tres_versoes.php ========== 
+OK — caderno com seis fórmulas (três pares), três versões e equivalência dos pesos; sem banco.
+========== tests/test_metodologia_temporis_2026.php ========== 
+[OK] K(t) soma apenas marcos com ano <= t
+[OK] K bruto existe mesmo sem ano-base
+[OK] Base 100 permanece opcional e não altera K
+[OK] Último período de 2000 a 2026 possui 26 anos
+[OK] Crescimento e velocidade usam diferença do acumulado
+[OK] Um marco posterior ao corte NÃO influencia previsão de 1850
+[OK] A observação pode mudar, mas treino continua cego
+[OK] Nenhum percentual de erro inventado para 2051
+[OK] Amostra comparável em linear50
+[OK] Mesmos cortes usados em linear50
+[OK] Amostra comparável em exponencial50
+[OK] Mesmos cortes usados em exponencial50
+[OK] Amostra comparável em linear100
+[OK] Mesmos cortes usados em linear100
+[OK] Amostra comparável em exponencial100
+[OK] Mesmos cortes usados em exponencial100
+[OK] WAPE é calculável a partir dos incrementos históricos
+[OK] Backtesting reporta ambos incrementos e o erro
+[OK] Snapshot identificado como fixo e não confundido com MySQL atual
+[OK] Snapshot preserva a mesma fórmula, sem alterar pontuação
+[OK] Seleção progressiva reproduzível sem usar cortes futuros
+VALIDAÇÃO NOVA METODOLOGIA: TODOS OK
+========== tests/test_modo_real.php ========== 
+[OK] Era correta para -3501
+[OK] Era correta para -3500
+[OK] Era correta para 475
+[OK] Era correta para 476
+[OK] Era correta para 1452
+[OK] Era correta para 1453
+[OK] Era correta para 1788
+[OK] Era correta para 1789
+[OK] Era correta para 1944
+[OK] Era correta para 1945
+[OK] Era correta para 1999
+[OK] Era correta para 2000
+[OK] Data invalida nao vira ano zero
+[OK] Atlas separa acervo, aprovados e candidatos
+[OK] Nao exibe dados demonstrativos
+[OK] Triagem por regras funciona com contexto marcado
+[OK] Sem evidencia => nao cria pontuacoes
+[OK] Mesmos onze criterios da formula revisada
+[OK] Backtest publico sem simulacoes
+[OK] Ensaio didatico independente, sem redirecionamento ao backtesting
+MAT REAL: TESTES DE CODIGO APROVADOS (SEM OLLAMA OU MYSQL).
+========== tests/test_modo_simplificado.php ========== 
+[OK] Sem impedimentos preliminares com fonte, 11 notas e data extraída
+[OK] Rigoroso preserva pendências, data não validada e notas provisórias
+[OK] Avisos distinguem duplicidade, pendência, ano e notas provisórias
+[OK] Prévia calcula 11 notas mínimas, mas identifica 11 provisórias
+[OK] Sem fonte geral não há aprovação preliminar
+[OK] Sem data não há aprovação preliminar
+[OK] Zero deve ser corrigido para mínimo 1
+[OK] Contexto não é aprovado automaticamente
+[OK] Série oficial preserva análise rigorosa e situação da nota
+[OK] Operação de lote configurada
+[OK] Controles do novo modo protegidos por CSRF
+SUCESSO: modo simplificado, salvaguardas e lote.
+========== tests/test_navegacao_curadoria.php ========== 
+[OK] Três grupos nativos independentes
+[OK] Quatro áreas principais
+[OK] Nova rota de rodadas no menu e no controlador
+[OK] Dossiês protegidos por autenticação
+[OK] Resumo de progresso disponível sem login
+[OK] Histórico interno restrito ao pesquisador
+[OK] Voltar a Rodadas após entrar com conta pesquisadora
+[OK] Extensões científicas antigas preservadas
+[OK] Laboratório preservado, atalho legado não interfere na contagem
+[OK] Interação móvel e grupos expansíveis preparados
+[OK] Paleta e tipografia editorial do MAT reutilizadas
+[OK] Página apresenta fonte real e preserva pesquisa pendente
+[OK] Bloqueio de URL javascript
+[OK] Bloqueio de URL file
+[OK] URL HTTPS válida permitida
+[OK] JSON somente lista validado
+[OK] 11 critérios oficiais preservados
+[OK] Curadoria consulta apenas o banco com os 10 dossiês
+[OK] Sem contagem legada ou importação de 300
+[OK] Tela de consulta não modifica o banco
+NAVEGAÇÃO E CURADORIA: TESTES APROVADOS.
+========== tests/test_navegacao_mat_proj.php ========== 
+[OK] Menu lateral possui acesso ao MAT-Proj
+[OK] Página inicial possui acesso ao MAT-Proj
+[OK] Módulo MAT-Proj está instalado
+[OK] Página inicial do Observatório permanece presente
+[OK] Motor original da Têmporis permanece presente
+INTEGRACAO DE NAVEGACAO MAT-PROJ: APROVADA
+========== tests/test_normalizacao_candidatos.php ========== 
+[OK] Normalizacao: 4 verificacoes offline aprovadas.
+========== tests/test_pagina_temporis.php ========== 
+MAT: Banco indisponivel: could not find driver
+MAT: banco de curadoria indisponível: could not find driver
+[OK] Ensaio didatico separado carregou sem valor inventado.
+[OK] Classe RevisedMethodology disponivel.
+PAGINA TEMPORIS: TESTE DE INTEGRACAO APROVADO.
+========== tests/test_painel_cientifico.php ========== 
+[OK] Painel MAT 09: 9 grupos de verificacoes offline aprovados.
+========== tests/test_pendencias_pontuacao.php ========== 
+[OK] Onze notas de 1 a 3, textualmente sustentadas, geram proposta completa
+[OK] Peso calculado pelo PHP continua hipotetico e nao aprovado
+[OK] Zero vira criterio a revisar, nunca uma nota valida
+[OK] Um criterio nao atendido impede peso provisorio completo
+[OK] Pendencia informa o que o pesquisador precisa conferir
+[OK] Resposta nao_atende segue regra de revisao
+[OK] Sem evidencia nao equivale a criterio nao atendido
+[OK] Citacao inventada recebe diagnostico preciso
+[OK] Uma fonte unica nao comprova independencia 3
+[OK] Justificativa ausente impede pontuacao completa
+[OK] Zero em resultado anterior sinaliza revisao sem refazer API
+[OK] Painel nao conta nota zero como proposta completa
+[OK] Painel indica criterio especifico e proximo passo
+[OK] Pendencias e notas Gemini: 13 verificacoes offline aprovadas.
+========== tests/test_pipeline_cientifico.php ========== 
+[OK] Pipeline: 3 verificacoes offline aprovadas.
+========== tests/test_pontuacao_acervo.php ========== 
+[OK] As onze rubricas da metodologia revisada existem
+[OK] Notas faltantes nao sao inventadas
+[OK] Sem onze notas nao calcula peso
+[OK] Pre-preenchimento parcial sem nota forcada
+[OK] Rascunho humano tem prioridade sobre IA
+[OK] Nao utiliza fonte sem trecho documental
+[OK] Peso provisorio usa a formula oficial (nao validado)
+[OK] Icone original do MAT presente
+[OK] Pagina de pontuacao instalada
+MAT / PONTUACAO DO ACERVO: TESTES LOCAIS APROVADOS. SEM MYSQL OU OLLAMA.
+========== tests/test_pontuacao_compat.php ========== 
+[OK] Pagina da pontuacao presente
+[OK] Comando de pontuacao presente
+[OK] Repositorio revisado carregado quando instalado
+[OK] Metodologia revisada reconhecida quando instalada
+[OK] Os 11 criterios oficiais disponiveis
+[OK] Pagina nao chama funcao ausente diretamente
+[OK] CLI usa o mesmo adaptador
+MAT PONTUACAO: TESTE DE COMPATIBILIDADE APROVADO. NAO TESTA MYSQL OU OLLAMA.
+========== tests/test_projecoes_centenarias_2026.php ========== 
+[OK] 1900 -> 2000 comparável e tem observação
+[OK] Erro com sinal definido
+[OK] Erro é previsto menos observado
+[OK] 1926 -> 2026 calculável na fórmula potência
+[OK] T(corte)=100 na potência
+[OK] T(corte)=100 no log
+[OK] 2026 -> 2126 prevê mas não inventa observação
+[OK] 2026 -> 2126 não apresenta erro fictício
+[OK] Eventos após asOf não contaminam a previsão
+[OK] Eventos pós-corte não entram no TREINO
+[OK] Eventos pós-corte entram somente na observação do retroteste
+[OK] Métricas históricas para horizonte centenário
+[OK] Ano-base 1900 fixo mostra T(2026) > 100
+[OK] Previsão 2126 não recomeça artificialmente em 100
+[OK] Retroteste compara T(1926) e T(2026) na mesma base
+[OK] Mesmo T(2026) observado nas duas simulações com base 1900
+[OK] Retrotestes com base fixa não usam cortes anteriores à base
+[OK] Sem inventar curva para amostra insuficiente
+[OK] SVG cronológico é produzido
+[OK] Datas pré-históricas não quebram os retrotestes
+[OK] Não usa corte no futuro
+========== tests/test_regressoes_0_1_1.php ========== 
+OK: K_base inclui apenas os dois eventos até o ano-base
+OK: Série e K_base invariantes à permutação dos registros
+OK: Eventos BCE e futuros ordenados corretamente
+OK: T(t) no último evento do ano-base = 100
+OK: K_total inclui também eventos posteriores ao ano-base
+OK: Ano-base anterior a todos os marcos fica sem normalização
+OK: Conjunto vazio preserva série vazia
+OK: Ano inválido não vira ano zero
+OK: Desempate por título estável no mesmo ano
+OK: Campo sem critério permanece ausente
+OK: Nota válida: 0
+OK: Nota válida: 1
+OK: Nota válida: 2
+OK: Nota válida: 3
+OK: Nota válida: '0'
+OK: Nota válida: '1'
+OK: Nota válida: '2'
+OK: Nota válida: '3'
+OK: Nota válida: 2.0
+OK: Nota válida: ' 2 '
+OK: Notas não inteiras, booleanos e valores fora da escala são rejeitados
+OK: P_i original permanece inalterado
+OK: Rubrica B continua produzindo I=10
+OK: Rubrica B continua produzindo F=1.5
+OK: Fórmula parametrizada B preservada
+REGRESSÕES MAT REFINADO 0.1.1: CONCLUÍDAS
+========== tests/test_reorganizacao_temporis.php ========== 
+[OK] Origem estática identificada corretamente
+[OK] 800 candidatos brutos
+[OK] 3 rejeitados auditados
+[OK] 130 registros sem data
+[OK] 667 elegíveis sem inclusão fictícia
+[OK] Página do índice apresenta Candidatos na fonte
+[OK] Página do índice apresenta Elegíveis para cálculo
+[OK] Página do índice apresenta Sem data utilizável
+[OK] Página do índice apresenta Origem dos dados
+[OK] Página do índice apresenta Mostrar mais · outras fórmulas
+[OK] Página do índice apresenta Mostrar mais · modelos de previsão
+[OK] Página do índice apresenta 156,24
+[OK] Página do índice apresenta 667
+[OK] Página do índice apresenta 800
+[OK] Página do índice apresenta temporis_final_snapshot.json
+[OK] Curva principal e comparativo separados
+[OK] Backtesting exibe Backtesting
+[OK] Backtesting exibe WAPE
+[OK] Backtesting exibe Seu método
+[OK] Backtesting exibe Melhor no teste
+[OK] Backtesting exibe Pior no teste
+[OK] Backtesting exibe Exponencial
+[OK] Backtesting exibe Logístico
+[OK] Backtesting exibe Linear
+[OK] Backtesting exibe candidatos
+[OK] Backtesting exibe Previsão de crescimento
+[OK] Backtesting exibe Crescimento observado
+[OK] Backtesting exibe Mostrar comparação detalhada de todos os modelos
+[OK] Resumo apresenta só os 3 essenciais (seu método, melhor e pior)
+[OK] Destaque correto para horizonte de 25 anos no snapshot
+[OK] Detalhes técnicos completos ficam ocultos por padrão
+[OK] Fonte e coorte ficam nas opções avançadas
+[OK] Backtesting expandido exibe Testes válidos
+[OK] Backtesting expandido exibe Comparação detalhada de todos os
+[OK] Backtesting expandido exibe Conferir cada previsão histórica
+[OK] Backtesting mantém os 11 modelos na tabela expandida
+[OK] Detalhes científicos completos aparecem quando solicitados
+[OK] A origem estática permanece identificada
+MAT: banco de curadoria indisponível: could not find driver
+[OK] Fonte forçada não é substituída silenciosamente
+REORGANIZACAO TEMPORIS: verificacoes offline OK
+========== tests/test_revisao_curadoria.php ========== 
+[OK] 11 critérios, fontes, data, sem bloqueios
+[OK] Memória de cálculo completa
+[OK] Zero justificado é nota, ausência não é zero
+[OK] Sem evidência não recebe nota automaticamente
+[OK] Data sem validação bloqueia aprovação
+[OK] Pendências documentais bloqueiam aprovação
+[OK] Possíveis duplicatas bloqueiam aprovação
+[OK] Fonte inexistente bloqueia aprovação
+[OK] Critério sem nota bloqueia aprovação
+[OK] Prévia com dois marcos completos
+[OK] Propostas não entram automaticamente na série oficial
+[OK] Ano-base 1920 normaliza a referência em 100
+[OK] Acúmulo posterior eleva o índice exploratório
+[OK] Somente homologado com dados completos entra na série oficial
+[OK] Ano bruto não substitui data validada na prévia
+[OK] Registro rejeitado preservado, porém não entra em séries
+[OK] Sem base histórica não inventa índice
+SUCESSO: 17 testes da revisão e metodologia logarítmica.
+========== tests/test_salvamento_fila_rapida_2026.php ========== 
+[OK] Rubrica sem nota pode ser preenchida com evidencia
+[OK] Campos vazios nao inventam nota
+[OK] Rejeita justificativa incompleta
+[OK] Rejeita fonte inexistente
+[OK] Rejeita notas fora da rubrica
+[OK] Nao sobrescreve nota preexistente
+[OK] Remove apenas pendencia explicitamente marcada
+[OK] Rejeita criterio desconhecido
+[OK] Formulario unico inclui rubricas faltantes e pendencias
+[OK] Falha preserva rascunho e posiciona o retorno
+[OK] Implementacao relê e verifica o que foi gravado
+11 verificacoes concluidas.
+========== tests/test_science.php ========== 
+OK: Classificador de escopo portado
+OK: Classificador nao decide aprovacao
+OK: Deteccao de sigla herdada funciona
+OK: Eventos distintos nao se confundem
+OK: Sete criterios de pre-codificacao carregados
+OK: Sem fontes, nao ha suporte documental calculado
+OK: Formula original preservada sob todas as exigencias
+OK: Gate cientifico bloqueia ausencia de fonte_vinculada
+OK: Gate cientifico bloqueia ausencia de escopo_revisado
+OK: Gate cientifico bloqueia ausencia de incluir_temporis
+OK: Marco fora do escopo fica fora do indice
+OK: Normalizacao lexical disponivel
+TESTES CIENTIFICOS CONCLUIDOS
+========== tests/test_selecao_300.php ========== 
+[OK] Evento explito de 1712 pode ser enviado para pedir notas
+[OK] Curadoria inicial NAO transforma registro em marco aprovado
+[OK] Duplicata fica em revisao e nao e pontuada duas vezes
+[OK] Duplicata mais antiga nao invalida principal
+[OK] Data suspeita nao e corrigida silenciosamente
+[OK] Trecho nao identificado continua pendente em vez de receber pontuacao artificial
+[OK] Curadoria inicial oferece dezenas de eventos documentais identificaveis
+[OK] Selecionados para TRIAGEM; pontuacoes ainda dependem de Gemini e auditoria.
+========== tests/test_temporis_final.php ========== 
+OK: K antes
+OK: K base
+OK: K 2000
+OK: sem compressao
+OK: potencia original
+OK: log antiga
+OK: periodo sem incluir 2000
+OK: sem_avanco · previsao=79.29999999999998 · testes=13
+OK: linear50 · previsao=83.24999999999997 · testes=13
+OK: linear100 · previsao=83.18749999999999 · testes=13
+OK: exponencial50 · previsao=83.57197681114911 · testes=13
+OK: exponencial100 · previsao=83.7474200444578 · testes=13
+OK: aceleracao · previsao=83.28124999999997 · testes=13
+OK: amortecida · previsao=82.66138122045851 · testes=13
+OK: mediana · previsao=83.24999999999997 · testes=13
+OK: impeto · previsao=83.380458789498 · testes=13
+OK: logistico · previsao=83.22177361366823 · testes=13
+OK: gompertz · previsao=83.26325393958251 · testes=13
+TODOS OS TESTES MAT FINAL OK
+========== tests/test_temporis_graficos_2026.php ========== 
+[OK] Base só acumula marcos até o ano de referência
+[OK] Ambos índices normalizam a base para 100
+[OK] Após 1920, valores crescem sem depender da ordem dos registros
+[OK] Sem K-base não há índice fictício
+[OK] SVG usa IDs e anos verdadeiros no eixo temporal
+[OK] Faixa de datação e status registrados em tooltip
+[OK] Zoom conserva o ano-base no eixo horizontal
+[OK] SVG não inventa curvas com um único ponto
+[OK] Backtesting produz referência histórica com amostra válida
+[OK] Gráfico compara previsão com observação real do conjunto
+[OK] Não apresenta erro inexistente como zero
+[OK] A faixa ±RMSE é exibida só quando há ao menos 3 testes
+[OK] Backtest usa banco de 800 dossiês e não confunde com legado
+[OK] Página não usa pontos simulados
+[OK] Aprovações são posicionadas em eixo separado mesmo sem notas
+[OK] Marco aprovado é plotável em 1805 sem falsificar peso ou homologação
+[OK] Distinção entre fórmula original e escala legada registrada
+MAT: TESTES DE CRONOLOGIA E ERRO CONCLUÍDOS.
+========== tests/test_temporis_intervalos.php ========== 
+[OK] Intervalo completo e validado antes de gravar
+[OK] Ponto médio calculado, não gravado como ano validado
+[OK] Extremos preservados para sensibilidade
+[OK] Intervalo justificado satisfaz o requisito temporal
+[OK] Intervalo com fonte permite revisão regular, sem aprovação automática
+[OK] Fila não marca intervalo válido como ano pendente
+[OK] Têmporis identifica origem e ponto médio apenas no cálculo
+[OK] Período explícito apresentado ao pesquisador
+[OK] Anos pontuais antigos continuam sem alteração
+[OK] Ano extraído NÃO passa por validação científica
+[OK] Ano extraído só entra no ensaio separado
+[OK] Fonte desaparecida bloqueia aprovação de intervalo
+[OK] Pendência histórica continua bloqueando aprovação
+[OK] Fonte desconhecida rejeitada antes de salvar
+[OK] Sem fonte, intervalo não recebe validação
+[OK] Limites invertidos rejeitados
+[OK] Ensaio usa um ano extraído, prévia revisada não usa
+[OK] Nenhuma homologação criada automaticamente
+[OK] Anos incertos explicitamente contados
+[OK] Modelo β=2 produz teste matemático com base anterior a 1920
+[OK] Sensibilidade distingue início e fim do processo
+[OK] β=2 conserva pesos da fórmula original
+[OK] Sem base, T permanece matematicamente indefinido
+[OK] Painel contém testes β e cenários de datação
+[OK] Formulário opcional inclui modo e fonte de datação
+SUCESSO: testes de datas intervalares e ensaio experimental.
+========== tests/test_temporis_original_curadoria_2026.php ========== 
+OK: teste de fonte, fórmula original, ordenação, base, gráfico, nulidade e escopo do banco.
+========== tests/test_temporis_piloto.php ========== 
+[OK] Metodologia revisada carregada sem dependencia do bootstrap
+[OK] As 11 rubricas revisadas estao disponiveis
+[OK] Ensaio tem seis marcos ordenados cronologicamente
+[OK] Ordenacao cronologica
+[OK] Indice normalizado em T(1971)=100
+[OK] Serie do ensaio apos o ano-base
+[OK] Faixa maxima I=10 C=1 F=1,5 w=1,5
+[OK] Onze notas obrigatorias
+[OK] Paridade com RevisedMethodology::series original
+[OK] Paridade para beta=1
+[OK] Paridade para beta=1.5
+[OK] Paridade para beta=2
+MAT: ENSAIO DIDATICO TESTADO; SEM MODIFICAR BANCO OU APROVAR MARCOS.

@@ -1,0 +1,17 @@
+ÍNDICE TÊMPORIS — METODOLOGIA NOVA (12/11/2026)
+
+1) FAÇA BACKUP da pasta MAT antiga e do MySQL. Este ZIP não altera bancos.
+2) Extraia e copie os arquivos da pasta MAT_Refinado_0_1 para dentro do htdocs do XAMPP. PRESERVE o seu config.local.php original: ele contém as suas credenciais e por segurança NÃO está incluído no novo ZIP. Se fizer instalação em uma pasta nova, copie config.local.php do backup para ela.
+3) Acesse:
+   http://localhost/MAT_Refinado_0_1/index.php?page=temporis
+   http://localhost/MAT_Refinado_0_1/index.php?page=projecoes
+   http://localhost/MAT_Refinado_0_1/index.php?page=backtesting
+4) Inicie o MySQL para usar a base atual. Verifique o aviso de origem no topo da página. Sem MySQL o sistema apresenta SNAPSHOT HISTÓRICO (667 elegíveis), que NÃO é o seu banco de 1.257 elegíveis.
+5) Leia docs/METODOLOGIA_TEMPORIS_2026.md para as equações, riscos e testes.
+
+PRINCIPAL: K(t)=SOMA DOS PESOS dos marcos até t. 1900=100 é OPÇÃO visual.
+PREVISÃO: modelos usam K bruto até o corte, medidos pelo WAPE histórico dos incrementos.
+WAPE NÃO É GARANTIA de percentual de acerto nem intervalo de confiança futuro.
+
+TESTADO: sintaxe PHP, testes automatizados, páginas HTTP em modo snapshot.
+PENDENTE: testar conexão do banco real no XAMPP do usuário.

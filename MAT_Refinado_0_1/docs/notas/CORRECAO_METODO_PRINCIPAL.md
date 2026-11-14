@@ -8,7 +8,7 @@ A versão mesclada anteriormente manteve na vitrine inicial e no endereço `?pag
 
 ## O que esta versão efetivamente muda
 
-- **`index.php?page=temporis` agora abre o MAT Final**, com o método acumulado sem compressão `T(t)=100×K(t)/K(ano-base)`.
+- **`index.php?page=temporis` agora abre o MAT Final**, com o método acumulado bruto `K(t)=Σw`, sem ano-base obrigatório.
 - **`index.php?page=temporis_reformulado` guarda o logaritmo antigo**; `temporis_legado` mantém a potência antiga.
 - Página inicial, atalho central, navegação lateral e Caderno de método apontam para os endereços corretos.
 - A exportação histórica real de **07/11/2026** foi convertida em JSON local (800 candidatos, 8.800 critérios); os gráficos e filtros agora carregam mesmo sem importar MySQL. Os 667 elegíveis e T(2026)≈156,24 foram reproduzidos pelo mesmo motor matemático.

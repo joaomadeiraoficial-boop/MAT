@@ -141,14 +141,14 @@
 
  <article class="tf-six-current">
    <small>06 — FINAL / ÍNDICE ADOTADO</small>
-   <h3>Acumulação proporcional</h3>
-   <div class="tf-formula">T<sub>F</sub>(t) = 100 · K(t) / K(t₀)</div>
-   <p>Se K(t) dobrar mantendo a mesma base, T também dobra. K(t) = Σ w<sub>i</sub> dos marcos datados até t; T fica indefinido quando K(t₀) = 0.</p>
+   <h3>Acúmulo bruto K(t)</h3>
+   <div class="tf-formula">K<sub>F</sub>(t) = Σ w<sub>i</sub>, com ano<sub>i</sub> ≤ t</div>
+   <p>O índice principal é a soma dos pesos dos marcos até cada ano, sem precisar de ano-base. <strong>Opcional:</strong> N<sub>b</sub>(t) = 100·K(t)/K(b) apenas para comparação em escala relativa, se K(b)&gt;0.</p>
    <div class="tf-fund">
      <h4>Por que essa fórmula? — Fundamentação científica</h4>
-     <p>Aplica <strong>normalização de base fixa</strong> (número-índice): o ano-base vale 100 e valores posteriores expressam proporção direta do estoque ponderado em relação à base. Isso segue princípios de mensuração proporcional e transparência na construção de indicadores (OECD/JRC, 2008). <strong>Vantagens:</strong> maior transparência, interpretabilidade e rastreabilidade matemática.</p>
+     <p>A soma dos pesos é determinística para um catálogo congelado: não depende do ano de referência. A normalização por 1900 = 100 é apenas uma apresentação opcional (número-índice), e não controla nem melhora o crescimento. Essa distinção explicita o que foi medido e facilita auditoria dos marcos.</p>
      <details><summary>Ver fundamentação e referências</summary>
-       <p>A razão <code>K(t)/K(t₀)</code> preserva proporcionalidade: variações relativas do acúmulo são refletidas linearmente no índice. <strong>Limitação:</strong> o crescimento do índice não comprova, isoladamente, aceleração tecnológica; ele descreve o acúmulo ponderado segundo as regras e dados adotados.</p>
+       <p>No indicador bruto, cada novo marco de peso positivo aumenta K(t) exatamente pelo seu peso. A razão <code>K(t)/K(b)</code> preserva proporções somente quando solicitada como escala relativa. <strong>Limitação:</strong> acúmulo crescente não comprova aceleração e pode variar com o grau de cobertura da curadoria.</p>
        <ul class="refs-mini"><li><a href="https://doi.org/10.1787/9789264043466-en" target="_blank" rel="noopener">OECD/JRC (2008)</a></li></ul>
      </details>
    </div>
@@ -161,16 +161,16 @@
   <p>Entretanto, identificou-se uma limitação relevante: à medida que o estoque ponderado de marcos tecnológicos aumentava, a transformação reduzia progressivamente a variação da pontuação. Consequentemente, avanços acumulados ao longo de décadas ou séculos poderiam resultar em diferenças relativamente pequenas no índice.</p>
   <p>Essa característica comprometia um dos objetivos centrais do Têmporis: <strong>representar numericamente, de maneira gradual e interpretável, a evolução tecnológica ao longo do tempo</strong>, sem impor uma compressão excessiva à sua representação.</p>
   <p>Embora os testes anteriores tenham indicado erros percentuais próximos de 0,5% em determinadas configurações, esses resultados precisam ser interpretados com cautela. Um erro reduzido não demonstra, por si só, capacidade preditiva superior, especialmente quando a transformação utilizada diminui a amplitude das variações avaliadas.</p>
-  <p>Diante dessa limitação, desenvolveu-se a Formulação Final, substituindo a transformação logarítmica por uma normalização proporcional. O objetivo foi preservar a relação entre o estoque histórico ponderado e a pontuação do índice, favorecendo a interpretação de seu crescimento.</p>
+  <p>Diante dessa limitação, a metodologia atual adota diretamente o acumulado bruto K(t) como medida principal, mantendo a escala proporcional 1900 = 100 apenas para consulta comparativa opcional. A interpretação da aceleração exige observar diferenças temporais e velocidades V25/V50, não o nível acumulado isolado.</p>
   <p><strong>A proposta final busca conciliar dois objetivos: representar adequadamente a evolução tecnológica acumulada e permitir a construção de estimativas futuras, para horizontes de 10 a 100 anos, cuja confiabilidade deverá ser avaliada por meio de backtesting e métricas de erro.</strong></p>
-  <p>Assim, a transição da Reformulada para a Final não foi motivada exclusivamente pela redução do erro estatístico, mas também pela necessidade de preservar o significado histórico e quantitativo da pontuação apresentada.</p>
+  <p>A transição de uma transformação comprimida para o estoque bruto não garante previsão mais exata; permite medir incrementos na unidade original do catálogo e validar os modelos sem esconder erros em diferenças de escala.</p>
 </div>
 
 <details class="tf-inline-details" style="margin-top:.8rem"><summary><strong>Ver fundamentação e referências (visão geral das três versões)</strong></summary>
   <div class="metodo-note-wide">
     <p><strong>Legada:</strong> agrega critérios por produto com ênfase no impacto (I²) e aplica compressão por potência sublinear (expoente 0,65). Baseia-se em ideias gerais de avaliação multicritério/indicadores compostos e transformações de escala (OECD/JRC, 2008; Box &amp; Cox, 1964). <em>Limitação:</em> 0,65 é escolha metodológica do MAT, não constante científica comprovada.</p>
     <p><strong>Reformulada:</strong> normaliza o impacto (I/10) e adota índice logarítmico para comprimir magnitudes (OECD/JRC, 2008; Box &amp; Cox, 1964). <em>Limitação:</em> reduz a interpretação proporcional direta do crescimento histórico.</p>
-    <p><strong>Final:</strong> mantém o peso normalizado multicritério e usa índice proporcional de base fixa (OECD/JRC, 2008; princípios de números-índice/mensuração proporcional). <em>Vantagens:</em> transparência, interpretabilidade e rastreabilidade. <em>Limitação:</em> o crescimento do índice não comprova, isoladamente, aceleração tecnológica.</p>
+    <p><strong>Final:</strong> mantém o peso normalizado multicritério e adota K(t) bruto como índice principal; a escala de base fixa é opcional (OECD/JRC, 2008; princípios de números-índice/mensuração proporcional). <em>Vantagens:</em> transparência, interpretabilidade e rastreabilidade. <em>Limitação:</em> o crescimento do índice não comprova, isoladamente, aceleração tecnológica.</p>
   </div>
 </details>
 
@@ -182,9 +182,9 @@
  <div class="tf-version-links">
  <a href="<?=mat_url('temporis_legado')?>"><small>VERSÃO 01</small><strong>Legada</strong><span>Potência 0,65 — implementação histórica →</span></a>
  <a href="<?=mat_url('temporis_reformulado')?>"><small>VERSÃO 02</small><strong>Reformulada</strong><span>Transformação logarítmica — versão anterior →</span></a>
- <a class="tf-version-current" href="<?=mat_url('temporis')?>"><small>VERSÃO 03 — ATUAL</small><strong>MAT Final</strong><span>Acúmulo proporcional — análise em destaque →</span></a>
+ <a class="tf-version-current" href="<?=mat_url('temporis')?>"><small>VERSÃO 03 — ATUAL</small><strong>MAT Final</strong><span>Acumulado bruto K(t) — análise em destaque →</span></a>
  </div>
- <p class="metodo-rodape">O índice só é normalizável com K(t₀) positivo. Para comparar versões, mantenha constantes o conjunto de marcos, as datas, a pontuação e o ano-base. As telas históricas do sistema podem usar bases de dados diferentes; resultados de bases distintas não devem ser comparados diretamente.</p>
+ <p class="metodo-rodape">A medida bruta K(t) não precisa de ano-base; as versões relativas exigem K(t₀) positivo. Para comparar versões, mantenha constantes o conjunto de marcos, as datas, a pontuação e o ano-base. As telas históricas do sistema podem usar bases de dados diferentes; resultados de bases distintas não devem ser comparados diretamente.</p>
 </section>
 
 <section id="metodo-comparar" class="paper-panel metodo-section" aria-labelledby="metodo-comparar-titulo">
@@ -215,9 +215,9 @@
       </tr>
       <tr class="metodo-table-destaque">
         <th scope="row">Final</th>
-        <td>Normalização proporcional que busca representar de forma mais fiel e proporcional o crescimento tecnológico acumulado na pontuação do Têmporis.</td>
-        <td>Permite previsões mais significativas; dependendo do cenário, pode apresentar margens de erro maiores (ex.: próximas de 30%), sem sacrificar a representação do crescimento.</td>
-        <td>Melhor equilíbrio entre representatividade do avanço e avaliação preditiva (a ser verificada por backtesting e métricas de erro).</td>
+        <td>Acúmulo bruto K(t) = soma dos pesos dos marcos; escala relativa opcional apenas para exibição.</td>
+        <td>Os modelos projetam K(t) bruto e são avaliados em cortes históricos cegos por WAPE dos incrementos. Não há percentual de acerto futuro garantido.</td>
+        <td>Mensuração bruta, taxa de crescimento e predição são operações independentes, com rastreabilidade dos marcos.</td>
       </tr>
     </tbody>
   </table></div>
@@ -246,9 +246,9 @@
       </tr>
       <tr class="metodo-table-destaque">
         <th scope="row">MAT Final</th>
-        <td>Razão direta: 100·K/K<sub>t₀</sub></td>
+        <td><strong>K(t) = Σw</strong>; base 100 opcional</td>
         <td>w<sub>i</sub>=(I<sub>i</sub>/10)<sup>2</sup>·C<sub>i</sub>·F<sub>i</sub> (normalizado)</td>
-        <td>Mostra o aumento proporcional registrado em relação à base.</td>
+        <td>Soma ponderada por data, independente da escolha de ano-base.</td>
         <td>Maior transparência, interpretabilidade e rastreabilidade matemática.</td>
         <td>Crescimento do índice não comprova, isoladamente, aceleração tecnológica.</td>
         <td>Padrão experimental</td>
@@ -260,7 +260,7 @@
     <p>Além da forma matemática, cada formulação afeta <strong>como a evolução tecnológica é representada pela pontuação do Índice Têmporis</strong> e <strong>como as previsões se comportam</strong>. Avaliar uma fórmula exige considerar esses dois aspectos, não apenas uma métrica isolada de erro.</p>
     <p><strong>Formulação Legada:</strong> foi a primeira tentativa de representar esse crescimento por meio da pontuação, mas ainda apresentava limitações na forma como o índice acompanhava a evolução tecnológica acumulada.</p>
     <p><strong>Formulação Reformulada:</strong> buscou aprimorar esse comportamento e a precisão das previsões. Contudo, sua transformação logarítmica comprimia excessivamente o crescimento do índice: mesmo com o passar de décadas ou séculos e a inclusão de novos avanços, a pontuação aumentava muito pouco. Em determinados testes, isso levou a erros de previsão muito baixos (aproximadamente 0,5%), em parte porque os valores variavam pouco — criando uma aparente precisão, mas prejudicando a representação do avanço tecnológico.</p>
-    <p><strong>Formulação Final:</strong> procura equilibrar os dois objetivos — representar de maneira mais fiel e proporcional o crescimento tecnológico no Têmporis e, ao mesmo tempo, permitir previsões mais sofisticadas e significativas. Dependendo do cenário analisado, seus modelos podem apresentar margens de erro maiores (por exemplo, próximas de 30%), o que pode ser preferível quando a representação do crescimento não é sacrificada apenas para reduzir o erro estatístico.</p>
+    <p><strong>Formulação Final:</strong> procura equilibrar os dois objetivos — representar de maneira mais fiel e proporcional o crescimento tecnológico no Têmporis e, ao mesmo tempo, permitir previsões mais sofisticadas e significativas. O erro deve ser medido nos incrementos históricos com cortes temporais reproduzíveis; valores como 30% de WAPE são retrospectivos e não constituem margem garantida para previsões futuras.</p>
     <p><strong>Conclusão:</strong> uma fórmula não deve ser considerada melhor apenas porque apresenta o menor erro de previsão, mas também pela sua capacidade de representar adequadamente a evolução tecnológica ao longo do tempo.</p>
   </div>
 

@@ -20,7 +20,7 @@ if(count($serie)>1){$range=max(1,(int)$maxY-(int)$minY);$cap=$usarAcumulado?max(
  foreach($serie as $point){$x=24+round(752*($point['year']-$minY)/$range,2);$y=222-round(187*(float)($usarAcumulado?$point['k']:($point['t']??0))/$cap,2);$poly[]=$x.','.$y;}}
 ?>
 <header class="page-heading"><div class="section-overline">TÊMPORIS 0.2 / MODELO REFORMULADO</div><h1>Uma medida do <em>tempo tecnológico.</em></h1><p>O índice logarítmico usa as onze notas documentadas das rodadas científicas. Uma coisa é simular hipóteses; outra é aprovar marcos para a série homologada.</p></header>
-<div class="mat-final-legacy-note">Atenção: esta é a implementação <strong>anterior</strong>, preservada para comparação. O método adotado no MAT Final usa T(t) = 100 × K(t) / K(1900), sem compressão. <a href="<?=mat_url('temporis_final')?>">Abrir MAT Final →</a></div>
+<div class="mat-final-legacy-note">Atenção: esta é a implementação <strong>anterior</strong>, preservada para comparação. O método adotado no MAT Final usa K(t) = soma dos pesos brutos, sem base obrigatória. A escala 1900 = 100 é opcional. <a href="<?=mat_url('temporis_final')?>">Abrir MAT Final →</a></div>
 <div class="tempo-version-switch"><a href="<?=mat_url('temporis_reformulado')?>" class="is-active" aria-current="page">✦ Reformulada · logaritmo</a><a href="<?=mat_url('temporis_legado')?>">↗ Original · potência 0,65</a><a href="<?=mat_url('rodadas')?>">◈ Revisar dossiês</a></div>
 <?php if(!$modelo): ?><section class="paper-panel"><h2>Sem conexão com o banco de curadoria.</h2><p><?=h($erroMetodo??'Confira o banco mat_temporis_curadoria no phpMyAdmin.')?></p></section>
 <?php else: ?>

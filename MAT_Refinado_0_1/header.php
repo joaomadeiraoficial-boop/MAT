@@ -44,7 +44,7 @@
  // A navegação apresenta o mesmo acervo e as mesmas ferramentas, apenas agrupados.
  // A página ativa abre automaticamente o seu grupo (inclusive sem JavaScript).
  $matScript = basename((string)($_SERVER['SCRIPT_NAME'] ?? ''));
- $grupoHistoria = in_array($navPage, ['linha','atlas','acervo','galeria'], true);
+ $grupoHistoria = in_array($navPage, ['linha','atlas','acervo'], true);
  $grupoTemporis = in_array($navPage, ['temporis','temporis_legado','metodo','laboratorio'], true)
      || in_array($matScript, ['experimento_temporis.php','resultado_temporis_piloto.php'], true);
  $grupoPesquisa = in_array($navPage, ['rodadas','fila_rapida','andamento','importar','triagem','fontes','duplicatas','auditoria','editar'], true)
@@ -60,7 +60,6 @@
     <a href="<?=mat_url('linha')?>" class="nav-item <?=$navPage==='linha'?'active':''?>" <?=$navPage==='linha'?'aria-current="page"':''?>><span class="nav-number">02.1</span><span>Linha do tempo</span></a>
     <a href="<?=mat_url('atlas')?>" class="nav-item <?=$navPage==='atlas'?'active':''?>" <?=$navPage==='atlas'?'aria-current="page"':''?>><span class="nav-number">02.2</span><span>Atlas das eras</span></a>
     <a href="<?=mat_url('acervo')?>" class="nav-item <?=$navPage==='acervo'?'active':''?>" <?=$navPage==='acervo'?'aria-current="page"':''?>><span class="nav-number">02.3</span><span>Acervo de marcos</span></a>
-    <a href="<?=mat_url('galeria')?>" class="nav-item <?=$navPage==='galeria'?'active':''?>" <?=$navPage==='galeria'?'aria-current="page"':''?>><span class="nav-number">02.4</span><span>Panfletos do acervo</span></a>
    </div>
   </details>
   <details class="mat-nav-group" data-nav-group="temporis" <?=$grupoTemporis?'open':''?>>
@@ -126,7 +125,7 @@
   <button class="menu-toggle" id="navOpen" type="button" aria-label="Abrir menu">☰</button>
   <?php
     $matBreadcrumbGroup = match($navPage) {
-        'linha','atlas','acervo','galeria' => 'Exploração histórica',
+        'linha','atlas','acervo' => 'Exploração histórica',
         'temporis','temporis_legado','metodo','laboratorio' => 'Índice Têmporis',
         'rodadas','fila_rapida','andamento','importar','triagem','fontes','duplicatas','auditoria','editar','login' => 'Pesquisa e curadoria',
         default => null,

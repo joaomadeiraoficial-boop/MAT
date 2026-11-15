@@ -21,7 +21,7 @@
 
 ## Estado da versão
 
-**Há código executável** de acervo, histórico, dossiês, atlas, panfletos, laboratório de evidências, fontes, triagem, duplicatas, importação CSV em staging, exportações, autenticação e motor experimental Têmporis. **Ainda faltam recursos antigos importantes**, documentados na matriz LF01–LF25 do caderno técnico. Não descartar o Lab antigo!
+**Há código executável** de acervo, histórico, dossiês, atlas, laboratório de evidências, fontes, triagem, duplicatas, importação CSV em staging, exportações, autenticação e motor experimental Têmporis. **Ainda faltam recursos antigos importantes**, documentados na matriz LF01–LF25 do caderno técnico. Não descartar o Lab antigo!
 
 **Dados:** pacote contém SQL opcional com 17 **marcos candidatos**, todos pendentes de revisão e **fora** da Têmporis até aprovação. A amostra não comprova aceleração e não produz previsão validada.
 

@@ -7,10 +7,10 @@
 <title><?=h($pageLabels[$page]??'MAT')?> · MAT Refinado + Final</title>
 <meta name="description" content="MAT: acervo histórico e laboratório para estudar a evolução tecnológica e o Índice Têmporis.">
 <link rel="icon" href="assets/insignia.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/style.css?v=1.2">
+<link rel="stylesheet" href="assets/style.css?v=1.3">
 <link rel="stylesheet" href="assets/mat-final.css?v=1">
 <?php if($page==='metodo'): ?><link rel="stylesheet" href="assets/metodo-tres-versoes.css?v=1"><?php endif; ?>
-<?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=24"><?php endif; ?>
+<?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=28"><?php endif; ?>
 <?php if(is_file(MAT_ROOT . '/assets/temporis-0-2.css')): ?><link rel="stylesheet" href="assets/temporis-0-2.css?v=1"><?php endif; ?>
 <link rel="stylesheet" href="assets/progresso-marcos.css?v=1">
 <link rel="stylesheet" href="assets/navegacao-grupos.css?v=1">
@@ -49,7 +49,7 @@
  // A navegação apresenta o mesmo acervo e as mesmas ferramentas, apenas agrupados.
  // A página ativa abre automaticamente o seu grupo (inclusive sem JavaScript).
  $matScript = basename((string)($_SERVER['SCRIPT_NAME'] ?? ''));
- $grupoHistoria = in_array($navPage, ['linha','atlas','acervo','galeria'], true);
+ $grupoHistoria = in_array($navPage, ['linha','atlas','acervo'], true);
  $grupoTemporis = in_array($navPage, ['temporis','temporis_final','temporis_reformulado','temporis_legado','demonstracao_formulas','metodo','backtesting','projecoes','ensaio_didatico'], true)
      || in_array($matScript, ['experimento_temporis.php','resultado_temporis_piloto.php'], true);
  $grupoPesquisa = in_array($navPage, ['laboratorio','laboratorio','rodadas','fila_rapida','andamento','importar','triagem','fontes','duplicatas','auditoria','editar'], true)
@@ -65,7 +65,6 @@
     <a href="<?=mat_url('linha')?>" class="nav-item <?=$navPage==='linha'?'active':''?>" <?=$navPage==='linha'?'aria-current="page"':''?>><span class="nav-number">02.1</span><span>Linha do tempo</span></a>
     <a href="<?=mat_url('atlas')?>" class="nav-item <?=$navPage==='atlas'?'active':''?>" <?=$navPage==='atlas'?'aria-current="page"':''?>><span class="nav-number">02.2</span><span>Atlas das eras</span></a>
     <a href="<?=mat_url('acervo')?>" class="nav-item <?=$navPage==='acervo'?'active':''?>" <?=$navPage==='acervo'?'aria-current="page"':''?>><span class="nav-number">02.3</span><span>Acervo de marcos</span></a>
-    <a href="<?=mat_url('galeria')?>" class="nav-item <?=$navPage==='galeria'?'active':''?>" <?=$navPage==='galeria'?'aria-current="page"':''?>><span class="nav-number">02.4</span><span>Panfletos do acervo</span></a>
    </div>
   </details>
   <details class="mat-nav-group" data-nav-group="temporis" <?=$grupoTemporis?'open':''?>>
@@ -133,7 +132,7 @@
   <button class="menu-toggle" id="navOpen" type="button" aria-label="Abrir menu">☰</button>
   <?php
     $matBreadcrumbGroup = match($navPage) {
-        'linha','atlas','acervo','galeria' => 'Exploração histórica',
+        'linha','atlas','acervo' => 'Exploração histórica',
         'temporis','temporis_final','temporis_reformulado','temporis_legado','demonstracao_formulas','metodo','backtesting','projecoes','ensaio_didatico' => 'Índice Têmporis',
         'laboratorio','laboratorio','rodadas','fila_rapida','andamento','importar','triagem','fontes','duplicatas','auditoria','editar','login' => 'Pesquisa e curadoria',
         default => null,

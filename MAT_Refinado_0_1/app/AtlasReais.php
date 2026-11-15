@@ -151,6 +151,35 @@ final class AtlasReais {
         $candidates=$cur->query('SELECT ano_validado,ano_original,estado_revisao_humana,homologado FROM cur_candidatos')->fetchAll(PDO::FETCH_ASSOC);
         return self::fromSources($legacy,$candidates);
     }
+    /** Contagens reais da curadoria por era e por sub-era. Um SELECT; candidatos com ano classificável. */
+    public static function fetchSubCounts(): array {
+        require_once __DIR__.'/CuradoriaRodadas.php';
+        $cur=CuradoriaRodadas::connect();
+        if(!$cur)return [];
+        $rows=$cur->query('SELECT ano_validado,ano_original,estado_revisao_humana FROM cur_candidatos')->fetchAll(PDO::FETCH_ASSOC);
+        $out=[];
+        foreach(self::SUBERAS as $p=>$subs){
+            $out[$p]=['total'=>0,'aprovados'=>0,'subs'=>[]];
+            foreach($subs as $sk=>$s)$out[$p]['subs'][$sk]=['total'=>0,'aprovados'=>0];
+        }
+        foreach($rows as $c){
+            $ano=$c['ano_validado']??$c['ano_original']??null;
+            $p=self::keyForYear($ano);
+            if($p===null || !isset($out[$p]))continue;
+            $ano=(int)$ano;
+            $aprov=in_array((string)($c['estado_revisao_humana']??''),['APROVADO','HOMOLOGADO'],true);
+            $out[$p]['total']++;
+            if($aprov)$out[$p]['aprovados']++;
+            foreach(self::SUBERAS[$p] as $sk=>$s){
+                if(($s['de']===null||$ano>=$s['de'])&&($s['ate']===null||$ano<=$s['ate'])){
+                    $out[$p]['subs'][$sk]['total']++;
+                    if($aprov)$out[$p]['subs'][$sk]['aprovados']++;
+                }
+            }
+        }
+        return $out;
+    }
+
     public static function fetchCounts(PDO $pdo): array {
         return self::fetchOverview($pdo)['eras'];
     }

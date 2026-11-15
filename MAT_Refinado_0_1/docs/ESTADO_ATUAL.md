@@ -1,6 +1,6 @@
 # Estado atual — MAT Observatório v6.2
 
-**Funcional:** identidade editorial, acervo, dossiês, cronologia, atlas, panfletos, exportações, autenticação básica, importação CSV em staging, Têmporis experimental, classificação de escopo (sugestão e parecer), sugestão de rubricas, catálogo e vínculos de fontes, detecção de possíveis duplicatas, trilha de revisão.
+**Funcional:** identidade editorial, acervo, dossiês, cronologia, atlas, exportações, autenticação básica, importação CSV em staging, Têmporis experimental, classificação de escopo (sugestão e parecer), sugestão de rubricas, catálogo e vínculos de fontes, detecção de possíveis duplicatas, trilha de revisão.
 
 **Testado aqui:** sintaxe PHP, cálculos de núcleo, classificação, duplicatas por siglas e pré-codificação. Também foram verificadas respostas HTTP das páginas em modo demonstração.
 

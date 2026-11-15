@@ -31,7 +31,7 @@ body{background:linear-gradient(180deg,#f2e9d5 0%,#ecdfc5 100%) fixed}
 .era-subs li a{display:flex;flex-direction:column;align-items:stretch;gap:7px;padding:0 0 9px}
 .era-subs li a .era-sub-thumb{flex:0 0 auto;width:100%;height:auto;border:1px solid var(--line);border-top-left-radius:3px;border-top-right-radius:3px;border-bottom:none;background:#e6dccb}
 .era-subs li a .era-sub-text{display:flex;justify-content:space-between;align-items:baseline;gap:10px;width:100%;padding:0 12px}
-.era-sub-banner{display:block;height:64px;background-size:cover;background-position:center;background-color:#e6dccb;border:1px solid var(--line);border-radius:4px;margin:0 0 14px}
+.era-sub-banner{display:block;width:100%;height:auto;background-color:#e6dccb;border:1px solid var(--line);border-radius:4px;margin:0 0 14px}
 .era-subs{border-top:1px solid var(--line);margin:0 22px 0;padding:10px 0 13px;position:relative;z-index:1}
 .era-subs summary{font:15px var(--mono);color:#a58461;letter-spacing:1px;cursor:pointer;list-style:none;user-select:none}
 .era-subs summary::-webkit-details-marker{display:none}
@@ -40,7 +40,7 @@ body{background:linear-gradient(180deg,#f2e9d5 0%,#ecdfc5 100%) fixed}
 .era-subs li a{border:1px solid var(--line);background:#fffaf0;font:17px var(--ui);color:#57584e}
 .era-subs li a:hover{border-color:#b28c6c;color:#3e4a44}
 .era-subs li a b{font-weight:650}
-.era-subs li a small{font:14px var(--mono);color:#927558;white-space:nowrap}
+.era-subs li a small{font:14px var(--mono);color:#927558}
 /* Chips de sub-período no painel de detalhes */
 .era-sub-chips{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 16px}
 .era-sub-chips a{border:1px solid var(--line);background:#fffaf0;padding:5px 11px;border-radius:14px;font:11px var(--mono);letter-spacing:.4px;color:#6d6c5f}

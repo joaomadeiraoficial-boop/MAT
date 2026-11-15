@@ -10,6 +10,41 @@ body{background:linear-gradient(180deg,#f2e9d5 0%,#ecdfc5 100%) fixed}
 .inflex-card.has-img .inflex-media{display:block;aspect-ratio:3/2;min-height:260px;background-size:cover;background-position:center;background-color:#e6dccb}
 .inflex-card.has-img .inflex-body{display:flex;flex-direction:column;padding:18px 22px 21px;background:#f8f1e5}
 .inflex-card.has-img .era-card-bottom{margin-top:0}
+/* Faixa de imagem nos cartões das eras: <img> com proporção natural — aparece inteira, sem recorte */
+.era-card.has-img{padding:0}
+.era-card.has-img:after{display:none}
+.era-card.has-img .era-media{display:block;width:100%;height:auto;background-color:#e6dccb}
+.era-card.has-img .era-card-main{display:block;padding:16px 22px 18px;min-height:0;position:relative;z-index:1}
+.era-card.has-img .era-emblem{height:72px}
+.era-card.has-img .era-emblem span{font-size:56px}
+/* Legibilidade em apresentação (slide): fontes maiores; fileira de 3 colunas garantida em qualquer largura */
+.atlas-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.era-card-top{font-size:13px;letter-spacing:1.5px}
+.era-card .era-dates{font-size:16px;line-height:1.4;letter-spacing:.5px}
+.era-card h2{font-size:40px;line-height:1.15;text-wrap:balance;margin:10px 0 10px}
+.era-card p{font-size:18px;line-height:1.5}
+.era-card .era-count{align-items:baseline;gap:12px}
+.era-card .era-count strong{font-size:41px;line-height:1}
+.era-card .era-count span{font-size:15px;line-height:1.35}
+
+/* Sub-períodos dentro do cartão de era (expansíveis): mini-tirinha ~68% da largura + texto abaixo */
+.era-subs li a{display:flex;flex-direction:column;align-items:stretch;gap:7px;padding:0 0 9px}
+.era-subs li a .era-sub-thumb{flex:0 0 auto;width:100%;height:auto;border:1px solid var(--line);border-top-left-radius:3px;border-top-right-radius:3px;border-bottom:none;background:#e6dccb}
+.era-subs li a .era-sub-text{display:flex;justify-content:space-between;align-items:baseline;gap:10px;width:100%;padding:0 12px}
+.era-sub-banner{display:block;height:64px;background-size:cover;background-position:center;background-color:#e6dccb;border:1px solid var(--line);border-radius:4px;margin:0 0 14px}
+.era-subs{border-top:1px solid var(--line);margin:0 22px 0;padding:10px 0 13px;position:relative;z-index:1}
+.era-subs summary{font:15px var(--mono);color:#a58461;letter-spacing:1px;cursor:pointer;list-style:none;user-select:none}
+.era-subs summary::-webkit-details-marker{display:none}
+.era-subs summary:hover{color:#8a6a45}
+.era-subs ul{list-style:none;margin:9px 0 0;padding:0;display:grid;gap:6px}
+.era-subs li a{border:1px solid var(--line);background:#fffaf0;font:17px var(--ui);color:#57584e}
+.era-subs li a:hover{border-color:#b28c6c;color:#3e4a44}
+.era-subs li a b{font-weight:650}
+.era-subs li a small{font:14px var(--mono);color:#927558;white-space:nowrap}
+/* Chips de sub-período no painel de detalhes */
+.era-sub-chips{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 16px}
+.era-sub-chips a{border:1px solid var(--line);background:#fffaf0;padding:5px 11px;border-radius:14px;font:11px var(--mono);letter-spacing:.4px;color:#6d6c5f}
+.era-sub-chips a.active{background:#a58461;color:#fffaf0;border-color:#a58461}
 /* Camadas do arquivo: pirâmide com silhueta real, largura proporcional aos candidatos */
 .pyramid-stack{gap:8px;min-height:0;align-items:center}
 .pyramid-stratum{position:relative;display:flex;align-items:center;justify-content:center;height:54px;padding:0 12px;min-width:24%;clip-path:polygon(3% 0,97% 0,100% 100%,0 100%);background:#8fa89b;color:#17262a;text-align:center;overflow:hidden;transition:filter .2s}

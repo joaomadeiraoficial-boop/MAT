@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="assets/style.css?v=1.2">
 <link rel="stylesheet" href="assets/mat-final.css?v=1">
 <?php if($page==='metodo'): ?><link rel="stylesheet" href="assets/metodo-tres-versoes.css?v=1"><?php endif; ?>
-<?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=12"><?php endif; ?>
+<?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=24"><?php endif; ?>
 <?php if(is_file(MAT_ROOT . '/assets/temporis-0-2.css')): ?><link rel="stylesheet" href="assets/temporis-0-2.css?v=1"><?php endif; ?>
 <link rel="stylesheet" href="assets/progresso-marcos.css?v=1">
 <link rel="stylesheet" href="assets/navegacao-grupos.css?v=1">

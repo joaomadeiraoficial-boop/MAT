@@ -1,0 +1,46 @@
+IMAGENS DO ATLAS - GUIA DE NOMES E TAMANHOS
+============================================
+
+ERAS (faixa no topo do cartao, cor cheia)
+Pasta: assets/eras/
+Tamanho recomendado: 1200 x 260 px (tirinha horizontal ~4.5:1)
+
+  prehistoria.jpg     -> Pre-historia
+  antiguidade.jpg     -> Antiguidade
+  medieval.jpg        -> Idade Media
+  moderna.jpg         -> Idade Moderna
+  industrial.jpg      -> Era Industrial
+  digital.jpg         -> Era Digital
+  contemporanea.jpg   -> Era Contemporanea
+
+SUB-PERIODOS (miniatura 64x40 na lista + faixa 64px nos detalhes)
+Pasta: assets/eras/
+Nome: <era>__<sub>.jpg   (dois underscores)
+Tamanho recomendado: 900 x 160 px (tirinha)
+
+  prehistoria__paleolitico.jpg
+  prehistoria__mesolitico.jpg
+  prehistoria__neolitico.jpg
+  antiguidade__primeiras_civilizacoes.jpg
+  antiguidade__antiguidade_classica.jpg
+  medieval__alta_idade_media.jpg
+  medieval__baixa_idade_media.jpg
+  moderna__renascimento_expansao.jpg
+  moderna__ciencia_absolutismo.jpg
+  moderna__iluminismo.jpg
+  industrial__primeira_revolucao.jpg
+  industrial__segunda_revolucao.jpg
+  industrial__guerras_mundiais.jpg
+  digital__computacao_inicial.jpg
+  digital__microinformatica.jpg
+  digital__web_inicial.jpg
+  contemporanea__redes_moveis.jpg
+  contemporanea__ia_dados_massivos.jpg
+
+PONTOS DE INFLEXAO (cartao grande, cor cheia)
+Pasta: assets/inflexoes/
+Tamanho recomendado: qualquer horizontal >= 800 px de largura
+(9 arquivos ja colocados)
+
+Formatos aceitos em todos os casos: jpg, jpeg, png, webp, avif.
+Sem arquivo para um item, ele fica com o fundo padrao - nada quebra.

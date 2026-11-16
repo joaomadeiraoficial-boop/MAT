@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         }
     }
 }
-if (isset($_GET['gravado']))$flash='Parecer salvo somente na triagem assistida. Nenhum marco foi aprovado ou homologado.';
+if (isset($_GET['gravado']))$flash='Parecer salvo somente na triagem assistida. Nenhum marco foi aprovado ou validado.';
 $trilha=substr((string)($_GET['trilha']??''),0,48);
 $estado=substr((string)($_GET['estado']??''),0,35);
 $busca=substr(trim((string)($_GET['busca']??'')),0,80);
@@ -94,7 +94,7 @@ $maxpage=max(1,(int)ceil($total/30));
 </style></head><body>
 <header><strong>MAT</strong> · Triagem assistida do Índice Têmporis <span style="float:right"><a href="index.php?page=fila_rapida">Fila oficial ↗</a>　<a href="index.php?page=andamento">Progresso ↗</a></span></header>
 <main><div class="muted">PESQUISA E CURADORIA / BANCO REAL / REVISÃO ASSISTIDA</div><h1>Revisar sem perder o rigor.</h1>
-<p class="desc">Esta fila foi gerada a partir de um retrato dos 750 dossiês. As trilhas são <strong>recomendações operacionais</strong> calculadas a partir dos registros existentes. Registrar um parecer aqui <strong>não altera avaliações, aprovações, homologações ou o Índice Têmporis.</strong></p>
+<p class="desc">Esta fila foi gerada a partir de um retrato dos 750 dossiês. As trilhas são <strong>recomendações operacionais</strong> calculadas a partir dos registros existentes. Registrar um parecer aqui <strong>não altera avaliações, aprovações, validações ou o Índice Têmporis.</strong></p>
 <div class="cards"><div class="card"><small>Dossiês carregados na fila</small><span><?=$counts['total']?></span></div><div class="card"><small>Aguardando triagem assistida</small><span><?=$counts['pendentes']?></span></div><div class="card"><small>Parecer documental registrado</small><span><?=$counts['pareceres']?></span></div><div class="card"><small>Resultados do filtro</small><span><?=$total?></span></div></div>
 <?php if($flash):?><div class="notice success"><?=h($flash)?></div><?php endif;?>
 <?php if($error):?><div class="notice" role="alert"><?=h($error)?></div><?php endif;?>
@@ -116,5 +116,5 @@ $maxpage=max(1,(int)ceil($total/30));
 <label for="parecer">Parecer e evidência conferida (obrigatório para encaminhamento)</label><textarea id="parecer" name="parecer_pesquisador" maxlength="3000" placeholder="Escreva qual fonte consultou, qual afirmação ela sustenta, controvérsias e o próximo passo. Não atribua validade a fontes que não leu."><?=h((string)($selected['parecer_pesquisador']??''))?></textarea><p class="note">40 caracteres ou mais para registrar qualquer estado diferente de pendente. Uma alteração cria registro próprio no histórico auxiliar.</p><button type="submit">Salvar encaminhamento documental</button></form>
 <?php if($history):?><details><summary>Histórico dos encaminhamentos (<?=count($history)?> recentes)</summary><?php foreach($history as $entry):?><div class="document"><small><?=h($entry['realizado_em'])?> · <?=h($entry['status_anterior'])?> → <?=h($entry['status_novo'])?></small><p><?=h($entry['parecer'])?></p></div><?php endforeach;?></details><?php endif;?>
 <?php endif;?></section></div>
-<p class="note">As datas, notas e títulos mostrados vêm do banco existente. A nova tabela auxiliar organiza o trabalho e preserva o histórico sem homologar candidatos. Caso o banco original tenha mudado desde a extração, confronte a ficha atual antes de usar um parecer.</p>
+<p class="note">As datas, notas e títulos mostrados vêm do banco existente. A nova tabela auxiliar organiza o trabalho e preserva o histórico sem validar candidatos. Caso o banco original tenha mudado desde a extração, confronte a ficha atual antes de usar um parecer.</p>
 </main></body></html>

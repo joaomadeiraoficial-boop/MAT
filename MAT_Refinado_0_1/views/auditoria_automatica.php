@@ -189,7 +189,7 @@ $pendCategorias=[
  </div>
  <div class="mat-pend-pagination"><span>Mostrando <?=count($pendVisiveis)?> de <?=short_num($pendTotal)?> · página <?=$pendPagina?> de <?=$pendPaginas?></span><div><?php if($pendPagina>1):?><a data-mat-pend-nav href="<?=h(matPendUrl($pendFiltro,$pendRodada,$pendBusca,$pendPagina-1))?>">← Anterior</a><?php endif;?><?php if($pendPagina<$pendPaginas):?><a data-mat-pend-nav href="<?=h(matPendUrl($pendFiltro,$pendRodada,$pendBusca,$pendPagina+1))?>">Próxima →</a><?php endif;?></div></div>
 </section>
-<footer class="mat-pend-footer"><strong>Critério científico:</strong> esta é uma análise estrutural de dados cadastrados. O sistema não verifica automaticamente se as afirmações históricas são verdadeiras, nem determina que um registro deve ser homologado. A aprovação e a homologação permanecem no dossiê de cada marco.</footer>
+<footer class="mat-pend-footer"><strong>Critério científico:</strong> esta é uma análise estrutural de dados cadastrados. O sistema não verifica automaticamente se as afirmações históricas são verdadeiras, nem determina que um registro deve ser validado. A aprovação e a validação permanecem no dossiê de cada marco.</footer>
 <script>
 (function(){
   var print=document.getElementById('matPendPrint');if(print)print.addEventListener('click',function(){window.print()});

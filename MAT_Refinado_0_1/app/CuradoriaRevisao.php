@@ -11,7 +11,7 @@ final class CuradoriaRevisao {
         'EM_REVISAO'=>'Em revisão',
         'APROVADO'=>'Aprovado pelo pesquisador',
         'REJEITADO'=>'Rejeitado (preservado)',
-        'HOMOLOGADO'=>'Homologado para a série',
+        'HOMOLOGADO'=>'Validado para a série',
     ];
     /** O simplificado avalia a aptidão PRELIMINAR; o rigoroso continua obrigatório para homologar. */
     public static function impedimentos(array $r, ?string $modo=null): array {
@@ -165,10 +165,10 @@ final class CuradoriaRevisao {
             $antes=['estado'=>$r['estado_revisao_humana'],'homologado'=>(int)$r['homologado'], 'ano_validado'=>$r['ano_validado'],'datacao_intervalar'=>CuradoriaDatacao::intervalo($r)];
             $prev=(string)$r['estado_revisao_humana'];
             if($acao==='reabrir'){
-                if($prev!=='HOMOLOGADO') throw new InvalidArgumentException('Somente dossiê homologado pode ser reaberto.');
+                if($prev!=='HOMOLOGADO') throw new InvalidArgumentException('Somente dossiê validado pode ser reaberto.');
                 $pdo->prepare("UPDATE cur_candidatos SET estado_revisao_humana='EM_REVISAO',homologado=0 WHERE id_extracao=?")->execute([$id]);
             } elseif($acao==='metadados') {
-                if($prev==='HOMOLOGADO') throw new InvalidArgumentException('Reabra a homologação antes de corrigir os dados.');
+                if($prev==='HOMOLOGADO') throw new InvalidArgumentException('Reabra a validação antes de corrigir os dados.');
                 $modo=trim((string)($dados['modo_datacao']??(CuradoriaDatacao::intervalo($r)!==null?'intervalo':'pontual')));
                 if(!in_array($modo,['pontual','intervalo'],true)) throw new InvalidArgumentException('Tipo de datação inválido.');
                 $ano=trim((string)($dados['ano_validado']??''));
@@ -222,7 +222,7 @@ final class CuradoriaRevisao {
                 }
 
             } elseif($acao==='fonte') {
-                if($prev==='HOMOLOGADO') throw new InvalidArgumentException('Reabra a homologação antes de adicionar uma fonte.');
+                if($prev==='HOMOLOGADO') throw new InvalidArgumentException('Reabra a validação antes de adicionar uma fonte.');
                 $fid=trim((string)($dados['fonte_id']??''));
                 if(!preg_match('/^[A-Za-z0-9][A-Za-z0-9_.-]{1,47}$/D',$fid)) throw new InvalidArgumentException('ID de fonte inválido. Use de 2 a 48 letras, números, pontos, hifens ou sublinhados.');
                 $autor=trim((string)($dados['autor_instituicao']??''));
@@ -244,7 +244,7 @@ final class CuradoriaRevisao {
                 $pdo->prepare("UPDATE cur_candidatos SET estado_revisao_humana='EM_REVISAO',homologado=0 WHERE id_extracao=?")->execute([$id]);
                 $depoisFonte=['fonte_id'=>$fid,'autor_instituicao'=>$autor,'titulo'=>$titulo,'ano'=>$anoFonte,'descricao_evidencia'=>$descricao,'url'=>$url];
             } elseif($acao==='criterio') {
-                if($prev==='HOMOLOGADO') throw new InvalidArgumentException('Reabra a homologação antes de alterar notas.');
+                if($prev==='HOMOLOGADO') throw new InvalidArgumentException('Reabra a validação antes de alterar notas.');
                 $codigo=(string)($dados['codigo']??'');
                 if(!isset(CuradoriaRodadas::CRITERIOS[$codigo])) throw new InvalidArgumentException('Critério desconhecido.');
                 $nota=trim((string)($dados['nota']??''));
@@ -267,8 +267,8 @@ final class CuradoriaRevisao {
                     $bloqueios=self::impedimentos($r,$acao==='homologar'?CuradoriaPolitica::RIGOROSO:CuradoriaPolitica::modo());
                     if($bloqueios)throw new InvalidArgumentException('Aprovação bloqueada: '.implode(' | ',array_slice($bloqueios,0,4)));
                 }
-                if($acao==='homologar' && $prev!=='APROVADO') throw new InvalidArgumentException('Primeiro aprove o dossiê; a homologação é uma segunda decisão.');
-                if($prev==='HOMOLOGADO') throw new InvalidArgumentException('Dossiê já homologado. Utilize Reabrir para nova auditoria.');
+                if($acao==='homologar' && $prev!=='APROVADO') throw new InvalidArgumentException('Primeiro aprove o dossiê; a validação é uma segunda decisão.');
+                if($prev==='HOMOLOGADO') throw new InvalidArgumentException('Dossiê já validado. Utilize Reabrir para nova auditoria.');
                 $destino=match($acao){'em_revisao'=>'EM_REVISAO','rejeitar'=>'REJEITADO','aprovar'=>'APROVADO','homologar'=>'HOMOLOGADO'};
                 $st=$pdo->prepare('UPDATE cur_candidatos SET estado_revisao_humana=?,homologado=? WHERE id_extracao=?');
                 $st->execute([$destino,$acao==='homologar'?1:0,$id]);

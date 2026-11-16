@@ -12,7 +12,7 @@ if(!in_array($amostra,['previa','ensaio','homologada'],true))$amostra='previa';
 $nomesAmostra=[
  'previa'=>'Prévia com data validada e 11 critérios completos',
  'ensaio'=>'Ensaio com data extraída (não validada)',
- 'homologada'=>'Somente marcos homologados'
+ 'homologada'=>'Somente marcos validados'
 ];
 $erroLegado=null;$dadosLegado=null;$totalCandidatos=0;
 $curvaOriginal=['series'=>[],'included'=>0,'k_base'=>0.,'k_total'=>0.,'normalizavel'=>false];
@@ -54,7 +54,7 @@ $serieOriginal=$curvaOriginal['series'];
 </div>
 <div class="lab-alert"><span class="lab-symbol">※</span><div>
  <strong>MESMO BANCO, DUAS FÓRMULAS · DIFERENÇA ENTRE TESTE E RESULTADO CIENTÍFICO</strong>
- <p>Fonte: <code>mat_temporis_curadoria</code> (`cur_candidatos`, `cur_criterios` e `cur_fontes`). A fórmula de potência é aplicada aos valores I, C e F obtidos das <strong>11 rubricas atuais</strong>. Isso é uma <strong>adaptação experimental</strong>, não a reconstrução das antigas notas de 1 a 5 nem um resultado homologado.</p>
+ <p>Fonte: <code>mat_temporis_curadoria</code> (`cur_candidatos`, `cur_criterios` e `cur_fontes`). A fórmula de potência é aplicada aos valores I, C e F obtidos das <strong>11 rubricas atuais</strong>. Isso é uma <strong>adaptação experimental</strong>, não a reconstrução das antigas notas de 1 a 5 nem um resultado validado.</p>
 </div></div>
 <?php if($erroLegado!==null): ?>
  <div class="mat-grafo-crit" role="alert"><strong>Não foi possível consultar a curadoria:</strong> <?=h($erroLegado)?></div>
@@ -63,7 +63,7 @@ $serieOriginal=$curvaOriginal['series'];
  <div class="exp-box">Candidatos no banco atual<strong><?=number_format($totalCandidatos,0,',','.')?></strong><small>Total independente de pontuação</small></div>
  <div class="exp-box">Prévia documentada<strong><?=$comData?></strong><small>11 critérios completos, fontes e data utilizável</small></div>
  <div class="exp-box">Ensaio cronológico<strong><?=$comAnoExtraido?></strong><small>Pode conter anos não confirmados</small></div>
- <div class="exp-box">Homologados elegíveis<strong><?=$homologados?></strong><small>Somente estes compõem o índice definitivo</small></div>
+ <div class="exp-box">Validados elegíveis<strong><?=$homologados?></strong><small>Somente estes compõem o índice definitivo</small></div>
 </div>
 <form method="get" class="exp-form" style="margin:20px 0 18px">
  <input type="hidden" name="page" value="temporis_legado">
@@ -126,11 +126,11 @@ $serieOriginal=$curvaOriginal['series'];
 <section class="paper-panel" style="margin-top:25px">
  <div class="panel-head"><span>05 / ESTADO CIENTÍFICO</span><span>SEM APROVAÇÃO AUTOMÁTICA</span></div>
  <?php if($homologados===0): ?>
- <h2>A série homologada ainda não começou</h2>
- <p>Há <?=$totalCandidatos?> candidatos no banco de curadoria, mas nenhum deles reúne atualmente os requisitos para integrar a curva oficial. Os cálculos acima usam as notas existentes em caráter de <strong>prévia</strong> ou <strong>ensaio</strong>, conforme o filtro. A ausência de homologação é uma condição do acervo, <strong>não um erro da fórmula</strong>.</p>
+ <h2>A série validada ainda não começou</h2>
+ <p>Há <?=$totalCandidatos?> candidatos no banco de curadoria, mas nenhum deles reúne atualmente os requisitos para integrar a curva oficial. Os cálculos acima usam as notas existentes em caráter de <strong>prévia</strong> ou <strong>ensaio</strong>, conforme o filtro. A ausência de validação é uma condição do acervo, <strong>não um erro da fórmula</strong>.</p>
  <?php else: ?>
- <h2>Homologações identificadas: <?=$homologados?></h2>
- <p>Escolha “Somente marcos homologados” no filtro para calcular a curva formal, desde que haja peso positivo até o ano-base.</p>
+ <h2>Validações identificadas: <?=$homologados?></h2>
+ <p>Escolha “Somente marcos validados” no filtro para calcular a curva formal, desde que haja peso positivo até o ano-base.</p>
  <?php endif; ?>
  <p><a class="text-link" href="experimento_temporis.php">Backtesting: medir previsão e erro ↗</a>　<a class="text-link" href="resultado_temporis_piloto.php">Ensaio didático: entender as fórmulas ↗</a></p>
 </section>

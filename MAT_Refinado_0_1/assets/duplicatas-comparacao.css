@@ -27,3 +27,44 @@
 .mat-dup-confirm{display:flex;align-items:flex-start;gap:9px;font:12px/1.45 var(--ui);color:#41504a;margin-bottom:14px}
 .mat-dup-confirm input{margin-top:2px;width:15px;height:15px;flex:none}
 @media(max-width:820px){.mat-dup-diagnosis{padding:16px}.mat-dup-diagnosis h3{font-size:21px}}
+
+/* Historico auditavel da limpeza de vinculos importados */
+.mat-dup-limpeza{margin-top:24px}.mat-dup-limpeza p{color:#3c4c46;line-height:1.65;max-width:900px}
+.mat-dup-limpeza-list{border:1px solid var(--line);margin:18px 0 14px;max-height:520px;overflow-y:auto}
+.mat-dup-limpeza-item{padding:11px 15px;border-bottom:1px solid #ede3d6;font:12px/1.55 var(--ui)}
+.mat-dup-limpeza-item:last-child{border-bottom:none}
+.mat-dup-limpeza-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;color:#2c423c}
+.mat-dup-limpeza-head strong{font:11px var(--mono);color:#203b36}
+.mat-dup-limpeza-head span{font:10px var(--mono);color:#977653}
+.mat-dup-limpeza-json{display:block;margin-top:5px;font:11px var(--mono);color:#6e6558;overflow-wrap:anywhere}
+
+/* --- v5: pares como linhas compactas expans�veis + busca local --- */
+.mat-dup-summary.is-four{grid-template-columns:repeat(4,1fr)}
+.mat-dup-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 18px}
+.mat-dup-search{flex:1 1 320px;min-width:220px;border:1px solid var(--line);border-radius:5px;padding:10px 14px;font:14px var(--ui);background:#fffdf8;color:var(--ink)}
+.mat-dup-search:focus{outline:2px solid #c29868;outline-offset:1px}
+.mat-dup-toolbar .mat-dup-tabs{margin:0}
+.mat-dup-visible{font:10px var(--mono);letter-spacing:.5px;color:var(--muted);margin-left:auto}
+.mat-dup-case{margin:0 0 10px}
+.mat-dup-case summary.mat-dup-row{display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer;list-style:none}
+.mat-dup-case summary.mat-dup-row::-webkit-details-marker{display:none}
+.mat-dup-case summary.mat-dup-row:hover{background:#f3ecdf}
+.mat-dup-case[open] summary.mat-dup-row{border-bottom:1px solid #e9ddd0;background:#f6f0e4}
+.mat-dup-key{font:11px var(--mono);color:#465c56;white-space:nowrap;letter-spacing:.2px}
+.mat-dup-titles{flex:1;min-width:0;display:block;font:14px/1.4 var(--ui);color:var(--ink)}
+.mat-dup-titles b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-weight:600;min-width:0;margin:1px 0}
+.mat-dup-tag{display:inline-block;font:9px var(--mono);font-weight:700;letter-spacing:.5px;border:1px solid #c9b795;border-radius:3px;padding:0 4px;margin-right:7px;color:#7a6234;background:#f3ead9;vertical-align:1px}
+.mat-dup-meta{font:10px var(--mono);color:#907151;white-space:nowrap}
+.mat-dup-level{font:9px var(--mono);letter-spacing:.4px;text-transform:uppercase;padding:4px 8px;border-radius:12px;border:1px solid #d8cbb8;background:#f1ece2;color:#7a6a52;white-space:nowrap}
+.mat-dup-level.is-alerta{background:#f8e4e1;border-color:#d9a49b;color:#8f3d33}
+.mat-dup-level.is-indicio{background:#fdf3d7;border-color:#d8c184;color:#7c6320}
+.mat-dup-chevron{flex:none;color:#b08a5c;transition:transform .15s ease}
+.mat-dup-case[open] .mat-dup-chevron{transform:rotate(180deg)}
+.mat-dup-body{padding:16px 18px 18px}
+.mat-dup-safety-top{border:1px solid #d9c9a8;background:#fdf6e7;border-radius:6px;padding:12px 16px;margin:0 0 18px;line-height:1.55}
+@media(max-width:820px){
+ .mat-dup-summary.is-four{grid-template-columns:1fr 1fr}
+ .mat-dup-case summary.mat-dup-row{flex-wrap:wrap;row-gap:4px}
+ .mat-dup-titles{flex-basis:100%;order:5}
+ .mat-dup-visible{margin-left:0}
+}

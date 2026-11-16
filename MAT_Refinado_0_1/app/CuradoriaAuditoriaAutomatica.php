@@ -203,7 +203,7 @@ final class CuradoriaAuditoriaAutomatica
                 $log->execute([$id,'ENCAMINHADO_PARA_REVISAO',json_encode($auditoria,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)]);
             }
             $pdo->commit();
-            return count($ids).' dossiê(s) atualizado(s) com histórico. Homologação permanece individual.';
+            return count($ids).' dossiê(s) atualizado(s) com histórico. A validação permanece individual.';
         }catch(Throwable $e){if($pdo->inTransaction())$pdo->rollBack();throw $e;}
     }
 }

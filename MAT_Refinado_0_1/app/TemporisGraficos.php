@@ -125,7 +125,7 @@ final class TemporisGraficos
             $r=$homolog?6.5:($approved?5.5:3.3);
             $title=(string)($p['title']??'Marco')." | ".(string)($p['id']??'')." | ano ".(int)$p['year'];
             if($begin<$end)$title.=" | intervalo $begin a $end";
-            $title.=' | '.($homolog?'HOMOLOGADO':($approved?'APROVADO':'provisório')).' | peso '.self::formato((float)$p['score'],4);
+            $title.=' | '.($homolog?'VALIDADO':($approved?'APROVADO':'provisório')).' | peso '.self::formato((float)$p['score'],4);
             $svg.='<circle cx="'.$num($xx).'" cy="'.$num($yy).'" r="'.$r.'" fill="'.$color.'" stroke="'.$stroke.'" stroke-width="1.6"><title>'.$esc($title).'</title></circle>';
         }
         $svg.='<text x="'.$L.'" y="426" fill="#62746c" font-size="13">Eixo X = ano histórico (espaçamento cronológico proporcional)</text>';
@@ -134,7 +134,7 @@ final class TemporisGraficos
         $corSerie= $destaque==='potencia' && !$comparar ? '#ad734f' : '#135c58';
         $svg.='<div class="mat-grafo-legenda"><span><i style="background:'.$corSerie.'"></i>'.$tituloSerie.'</span>';
         if($normal && $comparar)$svg.='<span><i style="background:#ad734f"></i>Potência 0,65 · mesma rubrica</span>';
-        $svg.='<span><i style="background:#b88635"></i>Aprovado pelo pesquisador</span><span><i style="background:#178467"></i>Homologado</span><span><i style="background:#bf814f"></i>Faixa de datação (não estatística)</span></div>';
+        $svg.='<span><i style="background:#b88635"></i>Aprovado pelo pesquisador</span><span><i style="background:#178467"></i>Validado</span><span><i style="background:#bf814f"></i>Faixa de datação (não estatística)</span></div>';
         if(!$normal)$svg.='<p class="mat-grafo-aviso">A amostra não possui peso positivo até o ano-base '.$anoBase.'. Exibimos K(t), sem inventar um denominador para T(t).</p>';
         return $svg;
     }
@@ -155,7 +155,7 @@ final class TemporisGraficos
         $svg='<svg xmlns="http://www.w3.org/2000/svg" class="mat-grafo-svg" viewBox="0 0 1135 230" role="img" aria-label="Anos das decisões humanas em escala cronológica; consulte detalhes ao posicionar o ponteiro sobre os pontos">';
         $svg.='<rect width="1135" height="230" fill="#fbf8f0" rx="12"/>';
         $svg.='<text x="'.$left.'" y="29" fill="#3b5a50" font-size="15">Decisões humanas por ano histórico</text>';
-        $svg.='<text x="'.$left.'" y="49" fill="#7b735e" font-size="12">'.$aprovados.' aprovações · '.$homologados.' homologações · '.count($v).' registros datados</text>';
+        $svg.='<text x="'.$left.'" y="49" fill="#7b735e" font-size="12">'.$aprovados.' aprovações · '.$homologados.' validações · '.count($v).' registros datados</text>';
         $svg.='<line x1="'.$left.'" x2="'.$right.'" y1="143" y2="143" stroke="#82948b" stroke-width="2"/>';
         // Apenas marcas maiores no eixo: texto para cada ponto causava sobreposição.
         for($i=0;$i<=6;$i++){
@@ -171,14 +171,14 @@ final class TemporisGraficos
             $yy=130.-($offset%4)*16.;
             $homolog=($p['estado']??'')==='HOMOLOGADO'&&(int)($p['homologado']??0)===1;
             $color=$homolog?'#188066':'#b88635';
-            $title=(string)$p['id'].' · '.(string)$p['title'].' · ano '.(int)$p['year'].' · '.($homolog?'HOMOLOGADO':'APROVADO');
+            $title=(string)$p['id'].' · '.(string)$p['title'].' · ano '.(int)$p['year'].' · '.($homolog?'VALIDADO':'APROVADO');
             if(empty($p['notas_completas']))$title.=' · notas incompletas';
             $svg.='<line x1="'.$n($xx).'" x2="'.$n($xx).'" y1="'.$n($yy+5).'" y2="143" stroke="'.$color.'" stroke-width="0.9" opacity=".42"/>';
             $svg.='<circle cx="'.$n($xx).'" cy="'.$n($yy).'" r="5.4" fill="'.$color.'" stroke="#fffdf7" stroke-width="1.5"><title>'.$esc($title).'</title></circle>';
         }
         $svg.='<text x="'.$left.'" y="199" font-size="12" fill="#53665d">Cada ponto conserva seu ano exato; passe o mouse para identificar o marco.</text>';
         $svg.='<circle cx="'.$left.'" cy="216" r="4.5" fill="#b88635"/><text x="'.($left+11).'" y="220" font-size="11" fill="#63736a">Aprovado</text>';
-        $svg.='<circle cx="'.($left+110).'" cy="216" r="4.5" fill="#188066"/><text x="'.($left+121).'" y="220" font-size="11" fill="#63736a">Homologado</text>';
+        $svg.='<circle cx="'.($left+110).'" cy="216" r="4.5" fill="#188066"/><text x="'.($left+121).'" y="220" font-size="11" fill="#63736a">Validado</text>';
         return $svg.'</svg>';
     }
 

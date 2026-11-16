@@ -15,11 +15,11 @@ if($curDb) { try {
 <header class="page-heading mat-cur-heading mat-fast-heading">
  <div class="section-overline">MAT / PESQUISA E CURADORIA · REVISÃO HUMANA</div>
  <h1>Fila de <em>curadoria completa.</em></h1>
- <p>Todos os dossiês aparecem aqui, mesmo com <strong>0 a 10 notas</strong>. Leia as justificativas e confira as referências antes de decidir. A fila <strong>não</strong> aprova nem homologa ninguém automaticamente.</p>
+ <p>Todos os dossiês aparecem aqui, mesmo com <strong>0 a 10 notas</strong>. Leia as justificativas e confira as referências antes de decidir. A fila <strong>não</strong> aprova nem valida ninguém automaticamente.</p>
 </header>
 <section class="paper-panel mat-fast-mode-panel" aria-label="Configuração da curadoria">
  <div class="mat-fast-mode-intro">
-  <div><span class="mat-fast-eyebrow">CONFIGURAÇÃO ATUAL</span><strong>Modo de avaliação</strong><p>Use o modo simplificado para concluir a análise preliminar. A homologação oficial continua rigorosa.</p></div>
+  <div><span class="mat-fast-eyebrow">CONFIGURAÇÃO ATUAL</span><strong>Modo de avaliação</strong><p>Use o modo simplificado para concluir a análise preliminar. A validação oficial continua rigorosa.</p></div>
   <form method="post" action="actions.php" class="mat-fast-mode-form">
    <?=csrf_field()?><input type="hidden" name="action" value="curadoria_modo">
    <label for="mat-fast-modo">Política de revisão</label>
@@ -30,7 +30,7 @@ if($curDb) { try {
    <button type="submit" class="mat-fast-btn mat-fast-btn-primary">Aplicar</button>
   </form>
  </div>
- <p class="mat-fast-mode-foot"><strong>Importante:</strong> notas 1 provisórias e ressalvas permanecem identificadas. Mudar o modo não apaga os dados nem homologa candidatos.</p>
+ <p class="mat-fast-mode-foot"><strong>Importante:</strong> notas 1 provisórias e ressalvas permanecem identificadas. Mudar o modo não apaga os dados nem valida candidatos.</p>
 </section>
 <?php if(!$queue): ?>
 <section class="paper-panel mat-cur-empty" role="alert"><h2>Curadoria indisponível</h2><p>Conecte o banco <code>mat_temporis_curadoria</code> e verifique a existência das tabelas de candidatos, fontes e critérios. Nenhum dado fictício será exibido.</p><a href="<?=mat_url('andamento')?>">Voltar ao progresso científico ↗</a></section>
@@ -44,7 +44,7 @@ if($curDb) { try {
  <div class="mat-fast-stat"><small>AGUARDANDO DECISÃO</small><strong><?=short_num($queue['counts']['pendentes'])?></strong><span>Inclui prontos e pendentes</span></div>
  <a class="mat-fast-stat mat-fast-stat-ready" href="<?=mat_url('fila_rapida',['filtro'=>'aptos'])?>"><small>PRONTOS PARA REVISAR</small><strong><?=short_num($queue['counts']['aptos'])?></strong><span>Conferir e decidir <span aria-hidden="true">→</span></span></a>
  <a class="mat-fast-stat mat-fast-stat-attention" href="<?=mat_url('fila_rapida',['filtro'=>'bloqueados'])?>"><small>PRECISAM DE CORREÇÃO</small><strong><?=short_num($queue['counts']['bloqueados'])?></strong><span>Abrir pendências <span aria-hidden="true">→</span></span></a>
- <div class="mat-fast-stat"><small>APROVADOS</small><strong><?=short_num($queue['counts']['aprovados'])?></strong><span>Aprovação preliminar; não é homologação</span></div>
+ <div class="mat-fast-stat"><small>APROVADOS</small><strong><?=short_num($queue['counts']['aprovados'])?></strong><span>Aprovação preliminar; não é validação</span></div>
 </div>
 <?php if(CuradoriaPolitica::modo()===CuradoriaPolitica::SIMPLIFICADO): ?>
 <details class="mat-fast-batch">
@@ -95,7 +95,7 @@ if($curDb) { try {
     <a class="mat-fast-item <?=$active?'active':''?>" <?=$active?'aria-current="page"':''?> href="<?=mat_url('fila_rapida',['id'=>$item['id_extracao'],'filtro'=>$filter,'busca'=>$search,'problema'=>$problem])?>">
       <span class="mat-fast-item-head"><b><?=h($item['id_extracao'])?></b><small><?=h((string)($item['quantidade_notas']??0))?>/11</small></span>
       <span class="mat-fast-item-name"><?=h((string)$item['titulo_proposto'])?></span>
-      <span class="mat-fast-item-foot"><?=h((string)($item['ano_validado']===null?'Ano pendente':yfmt((int)$item['ano_validado'])))?> · <?=h($state==='APROVADO'?'Aprovado':($state==='HOMOLOGADO'?'Homologado':($state==='REJEITADO'?'Rejeitado':($blocked?'⚠ '.$item['quantidade_bloqueios'].' impedimento(s)':'Pronto para conferir'))))?></span>
+      <span class="mat-fast-item-foot"><?=h((string)($item['ano_validado']===null?'Ano pendente':yfmt((int)$item['ano_validado'])))?> · <?=h($state==='APROVADO'?'Aprovado':($state==='HOMOLOGADO'?'Validado':($state==='REJEITADO'?'Rejeitado':($blocked?'⚠ '.$item['quantidade_bloqueios'].' impedimento(s)':'Pronto para conferir'))))?></span>
     </a>
    <?php endforeach; ?>
   </div>
@@ -184,7 +184,7 @@ if($curDb) { try {
     </div>
    </details>
    <?php endif; ?>
-   <div class="mat-fast-criteria-head" id="mat-fast-criteria"><h3>Conferência das 11 rubricas</h3><span>NOTAS PROPOSTAS · NÃO HOMOLOGADAS</span></div>
+   <div class="mat-fast-criteria-head" id="mat-fast-criteria"><h3>Conferência das 11 rubricas</h3><span>NOTAS PROPOSTAS · NÃO VALIDADAS</span></div>
    <?php foreach(CuradoriaRodadas::GRUPOS as $group=>$codes): ?>
     <section class="mat-fast-criteria-group" aria-label="<?=h($group)?>"><h4><?=h($group)?></h4>
      <?php foreach($codes as $code): $note=$current['criterios'][$code]??null; $nval=$note['nota']??null; $sourceIds=$note?CuradoriaRodadas::decodeArray((string)$note['fontes_ids_json']):[]; ?>
@@ -226,7 +226,7 @@ if($curDb) { try {
      <span class="mat-fast-tool-expand" aria-hidden="true">Abrir</span>
     </summary>
     <div class="mat-fast-normalizacao-body">
-     <p>Use esta opção apenas quando não houver informação suficiente para uma nota maior. A nota 1 ficará identificada como <strong>provisória</strong> e continuará exigindo pesquisa na homologação.</p>
+     <p>Use esta opção apenas quando não houver informação suficiente para uma nota maior. A nota 1 ficará identificada como <strong>provisória</strong> e continuará exigindo pesquisa na validação.</p>
      <form method="post" action="actions.php" class="mat-fast-normalizacao-form">
       <?=csrf_field()?><input type="hidden" name="action" value="curadoria_minimos"><input type="hidden" name="id_extracao" value="<?=h($current['id_extracao'])?>">
       <label for="mat-fast-min-reason">Justificativa da avaliação preliminar</label>
@@ -267,7 +267,7 @@ if($curDb) { try {
   <section class="paper-panel mat-fast-decision" id="decisao-rapida">
    <div class="panel-head"><span>PARECER DO PESQUISADOR</span><span>TRILHA DE AUDITORIA · MYSQL</span></div>
    <h2>Registrar e ir ao próximo</h2>
-   <?php if($state==='HOMOLOGADO'): ?><p>Este dossiê já foi homologado. Para reabri-lo, acesse a ficha completa; a fila não altera homologações automaticamente.</p><a href="<?=mat_url('rodadas',['id'=>$current['id_extracao']])?>#revisao-humana">Reabrir no dossiê ↗</a>
+   <?php if($state==='HOMOLOGADO'): ?><p>Este dossiê já foi validado. Para reabri-lo, acesse a ficha completa; a fila não altera validações automaticamente.</p><a href="<?=mat_url('rodadas',['id'=>$current['id_extracao']])?>#revisao-humana">Reabrir no dossiê ↗</a>
    <?php else: ?>
    <form method="post" action="actions.php" class="mat-fast-decision-form" data-fast-form>
     <?=csrf_field()?><input type="hidden" name="action" value="curadoria_decisao"><input type="hidden" name="id_extracao" value="<?=h($current['id_extracao'])?>">
@@ -279,12 +279,12 @@ if($curDb) { try {
     <div class="mat-fast-actions">
      <button class="mat-fast-btn mat-fast-review" type="submit" name="decisao" value="em_revisao">Manter em revisão →</button>
      <button class="mat-fast-btn mat-fast-reject" type="submit" name="decisao" value="rejeitar">Rejeitar →</button>
-     <?php if($state==='APROVADO'): ?><button class="mat-fast-btn mat-fast-approve" type="submit" name="decisao" value="homologar" <?=!CuradoriaRevisao::impedimentos($current,CuradoriaPolitica::RIGOROSO)?'':'disabled'?>>Homologar após conferência rigorosa →</button>
+     <?php if($state==='APROVADO'): ?><button class="mat-fast-btn mat-fast-approve" type="submit" name="decisao" value="homologar" <?=!CuradoriaRevisao::impedimentos($current,CuradoriaPolitica::RIGOROSO)?'':'disabled'?>>Validar após conferência rigorosa →</button>
      <?php elseif($state==='REJEITADO'): ?><span class="mat-fast-action-hint">Para reconsiderar um rejeitado, use “Manter em revisão”.</span>
      <?php else: ?><button class="mat-fast-btn mat-fast-approve" type="submit" name="decisao" value="aprovar" <?=$canApprove?'':'disabled'?>>✓ Aprovar e próximo →</button><?php endif; ?>
     </div>
     <?php if(!$canApprove): ?><p class="mat-fast-action-hint">A aprovação permanece desativada até resolver os impedimentos acima. <a href="#mat-fast-edit-meta">Corrigir data/pendências</a> ou <a href="#mat-fast-criteria">conferir rubricas</a>. Você pode registrar “Em revisão” e avançar.</p><?php endif; ?>
-    <p class="mat-fast-legal">Aprovação é uma decisão humana individual; homologação é outra decisão explícita. Todas as alterações ficam em <code>cur_log</code>. <a href="<?=mat_url('temporis')?>">Consultar gráfico exploratório Têmporis ↗</a></p>
+    <p class="mat-fast-legal">Aprovação é uma decisão humana individual; validação é outra decisão explícita. Todas as alterações ficam em <code>cur_log</code>. <a href="<?=mat_url('temporis')?>">Consultar gráfico exploratório Têmporis ↗</a></p>
    </form>
    <?php endif; ?>
   </section>

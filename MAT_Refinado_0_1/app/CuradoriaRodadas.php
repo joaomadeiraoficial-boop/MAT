@@ -247,7 +247,7 @@ final class CuradoriaRodadas
             'EM_REVISAO' => 'Em revisão humana',
             'APROVADO' => 'Aprovado pelo pesquisador',
             'REJEITADO' => 'Rejeitado · preservado',
-            'HOMOLOGADO' => 'Homologado',
+            'HOMOLOGADO' => 'Validado',
             'NAO_INICIADO' => 'Não iniciado',
             'PENDENTE_DE_TRIAGEM' => 'Aguardando triagem',
             'PLANEJADA' => 'Planejada',

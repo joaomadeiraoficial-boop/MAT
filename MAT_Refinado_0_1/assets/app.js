@@ -38,6 +38,21 @@
     if (mobileBreakpoint.matches) toggleNav(false);
   }));
 
+  // Restaura o destaque da aba atual quando o navegador reexibe a página do
+  // cache de histórico (voltar/avancar), que pode trazer o menu antigo "congelado".
+  const syncNavActive = () => {
+    const cur = new URLSearchParams(location.search).get('page');
+    if (!cur) return; // paginas fora do index.php mantêm o estado servido
+    document.querySelectorAll('.mat-nav a.nav-item[href]').forEach(el => {
+      let target = null;
+      try { target = new URL(el.getAttribute('href'), location.href).searchParams.get('page'); } catch (_) { return; }
+      const on = target === cur || (cur === 'marco' && target === 'acervo');
+      el.classList.toggle('active', on);
+      if (on) el.setAttribute('aria-current', 'page'); else el.removeAttribute('aria-current');
+    });
+  };
+  window.addEventListener('pageshow', e => { if (e.persisted) syncNavActive(); });
+
   // Navegação entre as abas do MAT: preservar a posição do conteúdo e do menu.
   // Aplica-se somente aos links internos do menu; abrir uma ficha/âncora funciona normalmente.
   const key = 'mat:nav:scroll:v1';
@@ -83,29 +98,37 @@
   }
 })();
 
-// Filtros locais de duplicatas: não recarregam nem movimentam a página.
+// Filtros e busca locais de duplicatas: não recarregam nem movimentam a página.
 (function () {
   'use strict';
   for (const root of document.querySelectorAll('[data-dup-filters]')) {
   const board=root.closest('.mat-dup-board');
   const cases=Array.from(board.querySelectorAll('.mat-dup-case'));
   const empty=board.querySelector('[data-dup-empty]');
-  const applyFilter=(filter) => {
+  const search=board.querySelector('[data-dup-search]');
+  const counter=board.querySelector('[data-dup-count]');
+  let filter='pending';
+  let query='';
+  const applyFilter=() => {
+    const needle=query.trim().toLowerCase();
     let showing=0;
     for(const item of cases){
-      const visible=filter==='all'||(filter==='alerts'?item.dataset.dupState==='pending'&&item.dataset.dupRisk==='alerta':item.dataset.dupState===filter);
+      let visible=filter==='all'||(filter==='alerts'?item.dataset.dupState==='pending'&&item.dataset.dupRisk==='alerta':item.dataset.dupState===filter);
+      if(visible&&needle)visible=(item.dataset.search||'').includes(needle);
       item.hidden=!visible;
       if(visible)showing++;
     }
     for(const btn of root.querySelectorAll('button[data-dup-filter]'))
       btn.setAttribute('aria-pressed',String(btn.dataset.dupFilter===filter));
     if(empty)empty.hidden=showing!==0;
+    if(counter)counter.textContent=cases.length?showing+(showing===1?' par visível':' pares visíveis'):'';
   };
   root.addEventListener('click', e=>{
     const button=e.target.closest('button[data-dup-filter]');
-    if(button)applyFilter(button.dataset.dupFilter);
+    if(button){filter=button.dataset.dupFilter;applyFilter();}
   });
-  applyFilter('pending');
+  if(search)search.addEventListener('input', () => { query=search.value; applyFilter(); });
+  applyFilter();
   }
 
   // Retorno de um parecer POST: manter a mesma área da tela após o redirect.

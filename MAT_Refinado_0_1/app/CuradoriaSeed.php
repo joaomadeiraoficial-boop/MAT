@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `temporis_cur_fontes` (
 MAT_CUR_SQL_004,
 <<<'MAT_CUR_SQL_005'
 INSERT IGNORE INTO `temporis_cur_rodadas` (`numero`, `fase`, `descricao`) VALUES
-(1, 'PESQUISA_PRELIMINAR_REALIZADA_AUDITORIA_PENDENTE', '10 registros pesquisados, 0 homologados, pendencias conservadas.'),
+(1, 'PESQUISA_PRELIMINAR_REALIZADA_AUDITORIA_PENDENTE', '10 registros pesquisados, 0 validados, pendencias conservadas.'),
 (2, 'PLANEJADA_NAO_PESQUISADA', '10 registros em fila; nao atribuir notas ate pesquisa documental.')
 MAT_CUR_SQL_005,
 <<<'MAT_CUR_SQL_006'

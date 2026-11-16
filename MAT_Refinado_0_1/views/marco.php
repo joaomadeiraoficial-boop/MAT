@@ -14,7 +14,7 @@
 <p><?=nl2br(h($m['motivo_escopo']??'Aguardando justificativa metodológica.'))?></p>
 <div class="panel-head"><span>VÍNCULOS DOCUMENTAIS</span><span><?=count(linked_sources((int)$m['id']))?> FONTES</span></div>
 <?php foreach(linked_sources((int)$m['id']) as $source):?><div class="research-keyline"><span><?=h($source['papel'])?></span><strong><?=h($source['titulo'])?> <?=h($source['pagina']?'(p. '.$source['pagina'].')':'')?></strong></div><?php endforeach;?>
-<?php if(is_admin()):?><p><a class="text-link" href="<?=mat_url('triagem',['id'=>$m['id']])?>">Rever escopo ↗</a> &nbsp; <a class="text-link" href="<?=mat_url('fontes',['marco_id'=>$m['id']])?>">Adicionar fonte ↗</a></p><?php endif;?></div>
+<?php if(is_admin()):?><p><a class="text-link" href="<?=mat_url('fontes',['marco_id'=>$m['id']])?>">Adicionar fonte ↗</a></p><?php endif;?></div>
 
 <?php if(is_admin() && !empty($m['import_item_id'])): $raw=source_payload((int)$m['import_item_id']);if($raw): ?>
 <details class="paper-panel research-raw" style="margin-top:21px"><summary>PROVENIÊNCIA DE IMPORTAÇÃO · ver registro bruto</summary>

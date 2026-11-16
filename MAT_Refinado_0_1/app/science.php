@@ -112,10 +112,6 @@ function duplicate_rows(): array {
     return $rows;
 }
 
-function audit_rows(): array {
-    if(!db())return [];
-    return db()->query('SELECT r.*,m.titulo,u.nome AS revisor FROM revisoes r LEFT JOIN marcos m ON m.id=r.marco_id LEFT JOIN usuarios u ON u.id=r.usuario_id ORDER BY r.id DESC LIMIT 100')->fetchAll();
-}
 function science_log(int $id,string $action,array $before=[],array $after=[]): void {
     $q=db()->prepare('INSERT INTO revisoes(marco_id,usuario_id,operacao,dados_anteriores,dados_novos) VALUES(?,?,?,?,?)');
     $q->execute([$id,current_user()['id']??null,$action,json_encode($before,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE),json_encode($after,JSON_UNESCAPED_UNICODE|JSON_INVALID_UTF8_SUBSTITUTE)]);

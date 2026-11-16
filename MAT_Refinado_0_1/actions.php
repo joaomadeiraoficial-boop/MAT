@@ -29,7 +29,7 @@ if($action==='curadoria_minimos_lote'){
         $pdo=CuradoriaRodadas::connect();
         if(!$pdo)throw new RuntimeException('Banco de curadoria indisponível.');
         $r=CuradoriaNormalizacaoMinima::proximoLote($pdo,current_user()??[],(string)($_POST['motivo']??''));
-        flash($r['falhas']?'error':'success',$r['marcos'].' dossiê(s) processado(s), '.$r['notas'].' nota(s) 1 provisória(s). Falhas: '.count($r['falhas']).'. Nenhum candidato homologado.');
+        flash($r['falhas']?'error':'success',$r['marcos'].' dossiê(s) processado(s), '.$r['notas'].' nota(s) 1 provisória(s). Falhas: '.count($r['falhas']).'. Nenhum candidato validado.');
     }catch(Throwable $e){flash('error',$e instanceof InvalidArgumentException?$e->getMessage():'Não foi possível processar o lote.');}
     redirect_to('fila_rapida',['filtro'=>'todos']);
 }
@@ -45,7 +45,7 @@ if($action==='curadoria_minimos'){
         if((int)$res['total']===0){
             flash('error','Nenhuma nota foi alterada: as rubricas já estão preenchidas ou não há critério elegível.');
         } else {
-            flash('success',$res['total'].' nota(s) 1 provisória(s) confirmada(s) no banco; nenhuma homologação realizada.');
+            flash('success',$res['total'].' nota(s) 1 provisória(s) confirmada(s) no banco; nenhuma validação realizada.');
         }
     }catch(Throwable $e){flash('error',$e instanceof InvalidArgumentException?$e->getMessage():'A operação falhou sem alterar parcialmente o dossiê.');}
     redirect_to('fila_rapida',['filtro'=>'todos','id'=>$id,'foco'=>'mat-fast-criteria']);
@@ -153,36 +153,6 @@ if($action==='curadoria_par_decisao'){
 }
 if(!db()){http_response_code(503);exit('Banco de dados indisponivel.');}
 
-// Modulo cientifico importado de forma nativa na estrutura do Observatorio.
-if($action==='generate_scope'){
-    $id=(int)($_POST['id']??0);$m=find_marker($id);
-    if(!$m){flash('error','Dossiê não encontrado.');redirect_to('triagem');}
-    $result=scope_preview($m);
-    $q=db()->prepare('UPDATE marcos SET natureza=?,sugestao_elegibilidade=?,classificador_versao=?,scope_score=?,scope_confidence=? WHERE id=?');
-    $q->execute([$result['natureza'],$result['sugestao_elegibilidade'],$result['classificador_versao'],$result['scope_score'],$result['scope_confidence'],$id]);
-    science_log($id,'sugestao_automatica',[],['versao'=>$result['classificador_versao'],'sugestao'=>$result['sugestao_elegibilidade'],'motivo'=>$result['motivo_escopo']]);
-    flash('success','Sugestão registrada. A aprovação continua exclusivamente humana.');redirect_to('triagem',['id'=>$id]);
-}
-if($action==='scope_review'){
-    $id=(int)($_POST['id']??0);$m=find_marker($id);
-    if(!$m){flash('error','Dossiê não encontrado.');redirect_to('triagem');}
-    $decision=(string)($_POST['elegibilidade_temporis']??'revisar');
-    if(!in_array($decision,['sim','nao','revisar'],true))$decision='revisar';
-    $reason=trim((string)($_POST['motivo_escopo']??''));
-    if(strlen($reason)<15){flash('error','Justifique o parecer em pelo menos 15 caracteres.');redirect_to('triagem',['id'=>$id]);}
-    $include=!empty($_POST['incluir_temporis']);
-    if($include && ($decision!=='sim'||($m['status']??'')!=='aprovado'||count(linked_sources($id))<1 || marker_score(array_merge($m,['elegibilidade_temporis'=>'sim','escopo_revisado'=>1,'incluir_temporis'=>1,'fonte_vinculada'=>1]))===null)){
-        flash('error','A inclusão exige escopo SIM, status validado, fonte vinculada e notas completas. Registre o parecer sem ativar inclusão.');redirect_to('triagem',['id'=>$id]);
-    }
-    db()->beginTransaction();
-    try{
-        $q=db()->prepare('UPDATE marcos SET elegibilidade_temporis=?, motivo_escopo=?, escopo_revisado=1, incluir_temporis=? WHERE id=?');
-        $q->execute([$decision,$reason,($include && $decision==='sim')?1:0,$id]);
-        science_log($id,'parecer_escopo',['decision'=>$m['elegibilidade_temporis'],'reason'=>$m['motivo_escopo']],['decision'=>$decision,'reason'=>$reason,'incluir_temporis'=>(int)($include&&$decision==='sim')]);
-        db()->commit();flash('success','Parecer humano registrado no histórico.');
-    }catch(Throwable $e){db()->rollBack();error_log($e->getMessage());flash('error','Não foi possível registrar o parecer.');}
-    redirect_to('triagem',['id'=>$id]);
-}
 if($action==='source_add'){
     $title=trim((string)($_POST['titulo']??''));$authors=trim((string)($_POST['autores']??''));$type=(string)($_POST['tipo']??'outra');
     if($title===''||strlen($title)>255){flash('error','Título inválido.');redirect_to('fontes');}

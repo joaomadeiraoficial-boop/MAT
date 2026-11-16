@@ -33,7 +33,7 @@ final class CuradoriaNormalizacaoMinima {
             $r=CuradoriaRodadas::record($pdo,$id);
             if(!$r)throw new RuntimeException('Dossiê indisponível.');
             if(($r['estado_revisao_humana']??'')==='HOMOLOGADO' || (int)($r['homologado']??0)!==0)
-                throw new InvalidArgumentException('Dossiê homologado: reabra a avaliação antes de editar.');
+                throw new InvalidArgumentException('Dossiê validado: reabra a avaliação antes de editar.');
             if(($r['estado_revisao_humana']??'')==='REJEITADO')
                 throw new InvalidArgumentException('Dossiê rejeitado: reabra a revisão antes de pontuar.');
             if(!$r['fontes'])throw new InvalidArgumentException('Cadastre uma fonte histórica do acontecimento antes de aplicar notas mínimas.');
@@ -43,11 +43,11 @@ final class CuradoriaNormalizacaoMinima {
                 $old=$r['criterios'][$codigo]??null;
                 $nota=$old['nota']??null;
                 if($nota!==null && (string)$nota!=='0')continue;
-                $descricao='Nota 1/3 atribuída PROVISORIAMENTE por convenção metodológica, por insuficiência de evidência específica para pontuação maior. Não significa impacto baixo comprovado. Necessita revisão antes de homologação.';
+                $descricao='Nota 1/3 atribuída PROVISORIAMENTE por convenção metodológica, por insuficiência de evidência específica para pontuação maior. Não significa impacto baixo comprovado. Necessita revisão antes da validação.';
                 $evidencias=($nota!==null && !empty($old['evidencias_json']))?(string)$old['evidencias_json']:'[]';
                 $fontesIds=($nota!==null && !empty($old['fontes_ids_json']))?(string)$old['fontes_ids_json']:'[]';
                 $just=($nota!==null && trim((string)($old['justificativa']??''))!=='')?(string)$old['justificativa']." | ".$descricao:$descricao;
-                $update->execute([$id,$codigo,1,CuradoriaPolitica::SITUACAO_MINIMA,$just,$evidencias,$fontesIds,'Investigar fontes específicas, difusão/efeitos e independência documental antes de homologar.']);
+                $update->execute([$id,$codigo,1,CuradoriaPolitica::SITUACAO_MINIMA,$just,$evidencias,$fontesIds,'Investigar fontes específicas, difusão/efeitos e independência documental antes de validar.']);
                 $alterados[$codigo]=['antes'=>$old,'nova'=>1,'situacao'=>CuradoriaPolitica::SITUACAO_MINIMA];
             }
             if($alterados){

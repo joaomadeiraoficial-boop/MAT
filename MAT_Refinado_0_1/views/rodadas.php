@@ -28,14 +28,14 @@ if($pdo){try{
 <header class="page-heading mat-cur-heading">
  <div class="section-overline">MAT / FONTE ÚNICA · <?=h(CuradoriaRodadas::databaseName())?></div>
  <h1>Curadoria dos <em>candidatos.</em></h1>
- <p>Esta seção consulta <strong>somente</strong> o banco científico da curadoria. Os marcos do acervo principal permanecem separados; nenhuma proposta é homologada automaticamente.</p>
+ <p>Esta seção consulta <strong>somente</strong> o banco científico da curadoria. Os marcos do acervo principal permanecem separados; nenhuma proposta é validada automaticamente.</p>
 </header>
 <?php if(!$dados): ?>
 <section class="paper-panel mat-cur-empty" role="status"><div class="panel-head"><span>VERIFICAÇÃO DE ORIGEM</span><span>NENHUM VALOR SIMULADO</span></div>
 <h2>Banco de pesquisa indisponível.</h2><p>O MAT usa o banco <strong><?=h(CuradoriaRodadas::databaseName())?></strong>. Verifique se o banco de curadoria já contém as tabelas <code>cur_candidatos</code>, <code>cur_criterios</code>, <code>cur_fontes</code>, <code>cur_rodadas</code> e <code>cur_log</code> e se o usuário MySQL do MAT possui permissão de leitura. Não serão exibidos valores simulados.</p></section>
 <?php else: ?>
 <div class="mat-quick-link-strip"><a href="<?=mat_url('fila_rapida')?>">✓ Abrir curadoria integral dos <?=short_num($dados['total'])?> candidatos (0–11 notas) →</a><span>Somente conferência humana, sem aprovação automática</span></div>
-<div class="mat-cur-statusbar"><span class="mat-cur-statusdot"></span> FONTE ATIVA: <?=h(CuradoriaRodadas::databaseName())?> <span class="mat-cur-statusright">MYSQL · DADOS REAIS · PROPOSTAS NÃO HOMOLOGADAS</span></div>
+<div class="mat-cur-statusbar"><span class="mat-cur-statusdot"></span> FONTE ATIVA: <?=h(CuradoriaRodadas::databaseName())?> <span class="mat-cur-statusright">MYSQL · DADOS REAIS · PROPOSTAS NÃO VALIDADAS</span></div>
 <?php if(!$dados['integra']): ?>
 <div class="lab-alert" role="status"><span class="lab-symbol">!</span><div><strong>Identificadores duplicados detectados.</strong><p>O banco contém <?=short_num($dados['total'])?> registros e <?=short_num($dados['ids_distintos'])?> IDs distintos. Verifique a integridade antes de continuar.</p></div></div>
 <?php endif; ?>
@@ -44,13 +44,13 @@ if($pdo){try{
  <div><small>02</small><strong>Pontuar</strong><span>11 critérios justificados</span></div>
  <div><small>03</small><strong>Revisar</strong><span>Data, fontes e ressalvas</span></div>
  <div><small>04</small><strong>Aprovar</strong><span>Decisão humana registrada</span></div>
- <div><small>05</small><strong>Homologar</strong><span>Incluir na Têmporis 0.2</span></div>
+ <div><small>05</small><strong>Validar</strong><span>Incluir na Têmporis 0.2</span></div>
 </div>
 <div class="mat-cur-metrics">
  <div class="mat-cur-metric"><small>CANDIDATOS CADASTRADOS</small><strong><?=short_num($dados['total'])?></strong><span>Dossiês realmente presentes no MySQL</span></div>
  <div class="mat-cur-metric"><small>PESQUISADOS</small><strong><?=short_num($dados['pesquisados'])?></strong><span>Investigados, ainda sob auditoria</span></div>
  <div class="mat-cur-metric"><small>PRÓXIMA RODADA</small><strong><?=short_num($dados['planejados'])?></strong><span>Somente os próximos dossiês já inseridos</span></div>
- <div class="mat-cur-metric"><small>HOMOLOGADOS</small><strong><?=short_num($dados['homologados'])?></strong><span>Validados explicitamente, não por IA</span></div>
+ <div class="mat-cur-metric"><small>VALIDADOS</small><strong><?=short_num($dados['homologados'])?></strong><span>Validados explicitamente, não por IA</span></div>
 </div>
 <?php if($id!==''): ?>
 <div class="mat-cur-return"><a href="<?=mat_url('rodadas')?>">← Todos os candidatos</a> · <a href="<?=mat_url('fila_rapida',['id'=>$id,'filtro'=>'todos'])?>">Abrir na revisão rápida ↗</a></div>
@@ -60,26 +60,26 @@ if($pdo){try{
 <section class="paper-panel mat-cur-record">
  <div class="panel-head"><span>DOSSIÊ DE PESQUISA · <?=h($r['id_extracao'])?></span><span><?=!empty($r['rodada'])?'RODADA '.(int)$r['rodada']:'AINDA NÃO PESQUISADO'?></span></div>
  <div class="mat-cur-record-head"><div><h2><?=h($r['titulo_proposto'])?></h2><p><?=h(CuradoriaDatacao::intervalo($r) ? CuradoriaDatacao::texto($r) : ($r['ano_validado']!==null ? yfmt((int)$r['ano_validado']) : ($r['periodo_historico'] ?: 'Data em investigação'))) ?></p></div><span class="mat-cur-chip"><?=h(CuradoriaRevisao::ESTADOS[$revisao]??CuradoriaRodadas::label((string)($r['estado_fluxo']??'SEM_CONTROLE')))?></span></div>
- <?php if((int)($m['notas_provisorias']??0)>0): ?><div class="mat-cur-pendencias"><b><?= (int)$m['notas_provisorias'] ?> nota(s) 1 provisória(s)</b>: atribuições exploratórias por evidência insuficiente, não homologadas.</div><?php endif; ?>
-<div class="mat-cur-facts"><span>Categoria original: <b><?=h($r['categoria_original']?:'Não informada')?></b></span><span>Página do livro: <b><?=h((string)($r['pagina_livro']??$o['pagina_livro']??'Não informada'))?></b></span><span>Critérios pontuados: <b><?=$m['avaliadas']?>/11</b></span><span>Homologado: <b><?=empty($r['homologado'])?'NÃO':'SIM'?></b></span></div>
+ <?php if((int)($m['notas_provisorias']??0)>0): ?><div class="mat-cur-pendencias"><b><?= (int)$m['notas_provisorias'] ?> nota(s) 1 provisória(s)</b>: atribuições exploratórias por evidência insuficiente, não validadas.</div><?php endif; ?>
+<div class="mat-cur-facts"><span>Categoria original: <b><?=h($r['categoria_original']?:'Não informada')?></b></span><span>Página do livro: <b><?=h((string)($r['pagina_livro']??$o['pagina_livro']??'Não informada'))?></b></span><span>Critérios pontuados: <b><?=$m['avaliadas']?>/11</b></span><span>Validado: <b><?=empty($r['homologado'])?'NÃO':'SIM'?></b></span></div>
  <?php if($r['pendencias']): ?><div class="mat-cur-pendencias"><h3>Pendências documentais</h3><ul><?php foreach($r['pendencias'] as $p):if(is_scalar($p)):?><li><?=h((string)$p)?></li><?php endif;endforeach;?></ul></div><?php endif; ?>
 </section>
 <section class="paper-panel mat-review-board" id="revisao-humana" aria-label="Controle de revisão humana">
  <div class="panel-head"><span>DECISÃO HUMANA / <?=h($r['id_extracao'])?></span><span>REGISTRO AUDITÁVEL NO MYSQL</span></div>
  <div class="mat-review-top"><div><h2>Revisão do dossiê</h2><p>A IA apenas propõe notas. A revisão humana registra justificativa e decisão, sem apagar o registro histórico.</p></div><span class="mat-review-tag status-<?=h(strtolower($revisao))?>"><?=h(CuradoriaRevisao::ESTADOS[$revisao]??$revisao)?></span></div>
- <div class="mat-review-checks"><div><b>Notas completas</b><span><?=$m['avaliadas']?> / 11</span></div><div><b>Fontes cadastradas</b><span><?=count($r['fontes'])?></span></div><div><b>Impedimentos</b><span><?=count($impedimentos)?></span></div><div><b>Homologado</b><span><?=!empty($r['homologado'])?'SIM':'NÃO'?></span></div></div>
+ <div class="mat-review-checks"><div><b>Notas completas</b><span><?=$m['avaliadas']?> / 11</span></div><div><b>Fontes cadastradas</b><span><?=count($r['fontes'])?></span></div><div><b>Impedimentos</b><span><?=count($impedimentos)?></span></div><div><b>Validado</b><span><?=!empty($r['homologado'])?'SIM':'NÃO'?></span></div></div>
  <?php if($impedimentos):?><details class="mat-review-blockers" open><summary><?=count($impedimentos)?> pendências impedem a aprovação <span aria-hidden="true">⌄</span></summary><ul><?php foreach($impedimentos as $p):?><li><?=h($p)?></li><?php endforeach;?></ul></details><?php else: ?><div class="mat-review-ready">Os requisitos estruturais estão completos. Confira pessoalmente a qualidade e independência das fontes antes de aprovar.</div><?php endif; ?>
  <?php if($revisao==='HOMOLOGADO'): ?>
-  <form method="post" action="actions.php" class="mat-review-form"><?=csrf_field()?><input type="hidden" name="action" value="curadoria_decisao"><input type="hidden" name="id_extracao" value="<?=h($r['id_extracao'])?>"><input type="hidden" name="decisao" value="reabrir"><label>Justificativa para reabrir homologação<textarea name="motivo" minlength="15" maxlength="2500" required placeholder="Explique a correção ou a nova evidência..." rows="2"></textarea></label><button class="mat-review-btn mat-review-neutral" type="submit">↶ Reabrir para revisão</button></form>
+  <form method="post" action="actions.php" class="mat-review-form"><?=csrf_field()?><input type="hidden" name="action" value="curadoria_decisao"><input type="hidden" name="id_extracao" value="<?=h($r['id_extracao'])?>"><input type="hidden" name="decisao" value="reabrir"><label>Justificativa para reabrir a validação<textarea name="motivo" minlength="15" maxlength="2500" required placeholder="Explique a correção ou a nova evidência..." rows="2"></textarea></label><button class="mat-review-btn mat-review-neutral" type="submit">↶ Reabrir para revisão</button></form>
  <?php else: ?>
  <form method="post" action="actions.php" class="mat-review-form"><?=csrf_field()?><input type="hidden" name="action" value="curadoria_decisao"><input type="hidden" name="id_extracao" value="<?=h($r['id_extracao'])?>">
   <label>Seu parecer documentado<textarea name="motivo" minlength="15" maxlength="2500" rows="3" required placeholder="Ex.: conferi a data e as fontes; a nota de difusão ainda depende de uma referência independente..."></textarea></label>
-  <label class="mat-review-confirm"><input type="checkbox" name="confirmacao_humana" value="1"> <?=CuradoriaPolitica::modo()===CuradoriaPolitica::SIMPLIFICADO?'Conferi a ocorrência e a fonte e reconheço as ressalvas da avaliação preliminar. A homologação continua rigorosa.':'Conferi pessoalmente todas as 11 rubricas, datas, citações e fontes para aprovar ou homologar.'?></label>
+  <label class="mat-review-confirm"><input type="checkbox" name="confirmacao_humana" value="1"> <?=CuradoriaPolitica::modo()===CuradoriaPolitica::SIMPLIFICADO?'Conferi a ocorrência e a fonte e reconheço as ressalvas da avaliação preliminar. A validação continua rigorosa.':'Conferi pessoalmente todas as 11 rubricas, datas, citações e fontes para aprovar ou validar.'?></label>
   <div class="mat-review-actions">
    <button type="submit" name="decisao" value="em_revisao" class="mat-review-btn mat-review-amber">◷ Em revisão</button>
    <button type="submit" name="decisao" value="rejeitar" class="mat-review-btn mat-review-red">✕ Rejeitar candidato</button>
    <button type="submit" name="decisao" value="aprovar" class="mat-review-btn mat-review-green" <?=$podeAprovar?'':'disabled title="Corrija os impedimentos antes da aprovação"'?>>✓ Aprovar dossiê</button>
-   <?php if($revisao==='APROVADO'): ?><button type="submit" name="decisao" value="homologar" class="mat-review-btn mat-review-deep" <?=$podeHomologar?'':'disabled'?>>✧ Homologar para o índice</button><?php endif; ?>
+   <?php if($revisao==='APROVADO'): ?><button type="submit" name="decisao" value="homologar" class="mat-review-btn mat-review-deep" <?=$podeHomologar?'':'disabled'?>>✧ Validar para o índice</button><?php endif; ?>
   </div>
  </form>
  <?php endif; ?>
@@ -98,16 +98,16 @@ if($pdo){try{
  <label>Justificativa histórica e fontes consultadas<textarea name="motivo" minlength="15" maxlength="2500" required rows="3" placeholder="Ex.: ano conferido na publicação original; páginas e links; resolução de dúvidas..."></textarea></label>
  <button type="submit" class="mat-review-btn mat-review-neutral">Salvar correções e registrar auditoria</button>
  </form></details>
- <p class="mat-review-legal"><strong>Aprovar</strong> confirma a auditoria do dossiê; <strong>homologar</strong> é uma decisão posterior e explícita que autoriza o cálculo oficial. Rejeitar não exclui fisicamente dados. Qualquer mudança fica no <code>cur_log</code>.</p>
+ <p class="mat-review-legal"><strong>Aprovar</strong> confirma a auditoria do dossiê; <strong>validar</strong> é uma decisão posterior e explícita que autoriza o cálculo oficial. Rejeitar não exclui fisicamente dados. Qualquer mudança fica no <code>cur_log</code>.</p>
 </section>
 <section class="paper-panel mat-cur-sources">
- <div class="panel-head"><span>DOCUMENTO DE ORIGEM</span><span>FONTE DO BANCO · NÃO É HOMOLOGAÇÃO</span></div>
+ <div class="panel-head"><span>DOCUMENTO DE ORIGEM</span><span>FONTE DO BANCO · NÃO É VALIDAÇÃO</span></div>
  <h2>Fragmento e referência preservados da extração</h2>
  <p><strong>Livro:</strong> <?=h($r['fonte_original']??'McClellan III & Dorn (2006)')?></p>
  <p><strong>Título extraído:</strong> <?=h($r['titulo_extraido']??'')?></p>
  <p><strong>Fragmento extraído (pode estar truncado):</strong> <?=h((string)($o['trecho_evidencia']??'Não registrado'))?></p>
  <p><strong>Capítulo:</strong> <?=h((string)($o['capitulo']??'Não informado'))?> · <strong>Página no PDF:</strong> <?=h((string)($o['pagina_pdf']??'Não informada'))?></p>
- <p class="mat-cur-research-disclaimer">Os fragmentos foram preservados como recebidos. Nem sempre representam o trecho integral do livro; verifique a obra original antes da homologação.</p>
+ <p class="mat-cur-research-disclaimer">Os fragmentos foram preservados como recebidos. Nem sempre representam o trecho integral do livro; verifique a obra original antes da validação.</p>
 </section>
 <?php if(!empty($r['analise'])): ?>
 <section class="paper-panel mat-cur-sources">
@@ -162,7 +162,7 @@ if($pdo){try{
      <p><code>F = 1 + 0,5 × (<?=$m['sums']['Relevância fundacional']?> / 9) = <?=decimal($m['F'],4)?></code></p>
      <p><code>peso = (I / 10)² × C × F = <?=decimal($m['peso'],6)?></code></p>
     </div>
-    <p><strong>Resultado demonstrativo não homologado.</strong> Este peso individual não constitui a série histórica ou o Índice Têmporis oficial. Depende da auditoria, da confirmação das fontes e da elegibilidade do marco.</p>
+    <p><strong>Resultado demonstrativo não validado.</strong> Este peso individual não constitui a série histórica ou o Índice Têmporis oficial. Depende da auditoria, da confirmação das fontes e da elegibilidade do marco.</p>
   <?php else: ?><p>Não é possível concluir o peso: <?=$m['avaliadas']?>/11 notas válidas e justificadas foram registradas, e/ou há documentação insuficiente. Os campos marcados com “?” ficam pendentes; nada é preenchido artificialmente.</p><?php endif; ?>
  </div></details>
 </section>
@@ -204,7 +204,7 @@ if($pdo){try{
  <div class="panel-head"><span>DOSSIÊS DA CURADORIA · MYSQL</span><span><?=short_num($lista['total'])?> RESULTADOS</span></div>
  <h2>Explorar os candidatos</h2>
  <p>Consulte todos os dossiês efetivamente armazenados. Os próximos lotes aparecerão ao serem importados, sem copiar dados para arquivos locais.</p>
- <form class="mat-cur-search" method="get" action="index.php"><input type="hidden" name="page" value="rodadas"><label>Pesquisar por ID ou título<input type="search" name="busca" maxlength="100" value="<?=h($busca)?>" placeholder="MCD-00422, transistor..."></label><label>Situação<select name="filtro"><?php foreach(['todos'=>'Todos','pesquisados'=>'Pesquisados','planejados'=>'Próxima rodada','nao_iniciados'=>'Não iniciados','duplicatas'=>'Possíveis duplicatas','sem_evidencia'=>'Sem pesquisa documental','em_revisao'=>'Em revisão','aprovados'=>'Aprovados','homologados'=>'Homologados','rejeitados'=>'Rejeitados'] as $k=>$t):?><option value="<?=h($k)?>" <?=$filtro===$k?'selected':''?>><?=h($t)?></option><?php endforeach;?></select></label><button class="btn btn-dark" type="submit">Filtrar ↗</button></form>
+ <form class="mat-cur-search" method="get" action="index.php"><input type="hidden" name="page" value="rodadas"><label>Pesquisar por ID ou título<input type="search" name="busca" maxlength="100" value="<?=h($busca)?>" placeholder="MCD-00422, transistor..."></label><label>Situação<select name="filtro"><?php foreach(['todos'=>'Todos','pesquisados'=>'Pesquisados','planejados'=>'Próxima rodada','nao_iniciados'=>'Não iniciados','duplicatas'=>'Possíveis duplicatas','sem_evidencia'=>'Sem pesquisa documental','em_revisao'=>'Em revisão','aprovados'=>'Aprovados','homologados'=>'Validados','rejeitados'=>'Rejeitados'] as $k=>$t):?><option value="<?=h($k)?>" <?=$filtro===$k?'selected':''?>><?=h($t)?></option><?php endforeach;?></select></label><button class="btn btn-dark" type="submit">Filtrar ↗</button></form>
  <div class="mat-cur-table-wrap"><table class="mat-cur-table"><thead><tr><th>ID</th><th>Candidato</th><th>Situação</th><th>Ano</th><th>Documento</th></tr></thead><tbody>
  <?php foreach($lista['rows'] as $item): ?><tr><td class="mat-cur-id"><?=h($item['id_extracao'])?></td><td><?=h($item['titulo_proposto']?:'Título a conferir')?></td><td><span class="mat-cur-table-status"><?=h(CuradoriaRevisao::ESTADOS[(string)$item['estado_revisao_humana']]??CuradoriaRodadas::label((string)$item['estado_fluxo']))?></span></td><td><?=isset($item['ano_original'])?yfmt((int)$item['ano_original']):'—'?></td><td><a href="<?=mat_url('rodadas',['id'=>$item['id_extracao']])?>">Ver ficha ↗</a></td></tr><?php endforeach;?>
  <?php if(!$lista['rows']): ?><tr><td colspan="5">Nenhum registro encontrado nesse filtro.</td></tr><?php endif;?></tbody></table></div>

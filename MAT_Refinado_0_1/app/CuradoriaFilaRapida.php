@@ -10,7 +10,7 @@ final class CuradoriaFilaRapida {
         'aptos' => 'Prontos para revisar',
         'bloqueados' => 'Precisam de correção',
         'aprovados' => 'Aprovados',
-        'homologados' => 'Homologados',
+        'homologados' => 'Validados',
         'todos' => 'Todos',
     ];
     public const PROBLEMAS = [

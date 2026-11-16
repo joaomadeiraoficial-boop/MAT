@@ -46,7 +46,7 @@ foreach($markers as $m){
 <?php if($selected):$sc=$sourceStats[$id]??['n'=>0,'c'=>0];?>
 <section class="panel" id="avaliar" style="margin-top:20px"><p><a href="fila_pontuacao.php">← Voltar à fila</a></p><h2><?=h($selected['titulo'])?></h2>
 <p>Marco #<?=$id?> · Ano: <?=h((string)$selected['ano'])?> · Situação: <?=h((string)$selected['status'])?> · Fontes: <?=$sc['n']?> · Fontes com trecho: <?=$sc['c']?></p>
-<div class="quicklinks"><a href="<?=mat_url('fontes',['marco_id'=>$id])?>">Vincular fonte e trecho</a><a href="<?=mat_url('triagem',['id'=>$id])?>">Revisar escopo</a><a href="<?=mat_url('avaliacao',['id'=>$id])?>">Avaliação oficial dos 11 critérios</a></div>
+<div class="quicklinks"><a href="<?=mat_url('fontes',['marco_id'=>$id])?>">Vincular fonte e trecho</a><a href="<?=mat_url('avaliacao',['id'=>$id])?>">Avaliação oficial dos 11 critérios</a></div>
 <?php if(($existing['estado']??'')==='confirmada'):?><div class="notice">Este marco já tem avaliação confirmada. Não vamos sobrescrevê-la a partir da IA; utilize o formulário oficial para qualquer revisão consciente.</div>
 <?php elseif(!$proposal):?><div class="notice"><?=$sc['c']<1?'Faltam trechos documentais: vincule uma fonte com um trecho de pelo menos 20 caracteres.':'Este marco ainda não possui proposta concluída do Qwen. Execute o comando acima e atualize a página.'?></div>
 <?php else:?>

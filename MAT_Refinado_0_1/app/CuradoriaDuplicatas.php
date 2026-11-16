@@ -229,13 +229,13 @@ final class CuradoriaDuplicatas
                 'secundario_id'=>$principal===null?null:($principal===$a?$b:$a),
                 'motivo'=>$motivo,'confirmacao_comparacao'=>true,'usuario_id'=>$user['id']??null,
                 'revisor'=>$user['nome']??'Pesquisador','referencias_removidas'=>$atualizados,
-                'observacao'=>$acao==='nao_duplicado'?'Referencias cruzadas removidas apos parecer humano; sem exclusao, sem homologacao e sem alteracao das notas.':'Parecer preservado; sem exclusao, sem homologacao e sem alteracao das notas.'
+                'observacao'=>$acao==='nao_duplicado'?'Referencias cruzadas removidas apos parecer humano; sem exclusao, sem validacao e sem alteracao das notas.':'Parecer preservado; sem exclusao, sem validacao e sem alteracao das notas.'
             ],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
             $pdo->prepare("INSERT INTO cur_log (id_extracao,acao,descricao) VALUES (?,'PARECER_DUPLICATA',?)")->execute([$a,$json]);
             $pdo->commit();
             return $acao==='nao_duplicado'
                 ? 'Os dois eventos foram registrados como distintos. Apenas o vínculo de duplicidade entre eles foi retirado dos dois dossiês, com histórico no MySQL.'
-                : 'Parecer registrado com justificativa. Os possíveis vínculos permanecem para conferência e não houve homologação.';
+                : 'Parecer registrado com justificativa. Os possíveis vínculos permanecem para conferência e não houve validação.';
         }catch(Throwable $e){if($pdo->inTransaction())$pdo->rollBack();throw $e;}
     }
 }

@@ -28,7 +28,7 @@ final class TemporisFinal {
         'sem_sem_evidencia'=>'Ampla sem texto SEM_EVIDENCIA',
         'sem_provisorias'=>'Ampla sem nota mínima provisória',
         'sem_contextos'=>'Ampla sem contexto ou escopo duvidoso',
-        'homologada'=>'Apenas homologados',
+        'homologada'=>'Apenas validados',
     ];
     public const MODELOS = [
         'sem_avanco'=>'Sem crescimento (controle)',

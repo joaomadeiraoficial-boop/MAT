@@ -84,7 +84,7 @@ try {
 <div><small>Índice bruto no corte <?=$pmCorte?></small><strong><?=$pmFmt(TemporisFinal::k($pmLine,$pmCorte))?></strong></div>
 <div><small>Ritmo médio · últimos 25 anos</small><strong><?=$pmFmt($pmV25,3)?></strong><small>pontos/ano</small></div>
 <div><small>Ritmo médio · últimos 50 anos</small><strong><?=$pmFmt($pmV50,3)?></strong><small>pontos/ano</small></div>
-<div><small>Marcos aprovados na seleção</small><strong><?=$pmQuality['aprovadas']?> / <?=$pmQuality['total']?></strong><small>Aprovado no sistema ≠ homologação externa</small></div>
+<div><small>Marcos aprovados na seleção</small><strong><?=$pmQuality['aprovadas']?> / <?=$pmQuality['total']?></strong><small>Aprovado no sistema ≠ validação externa</small></div>
 </div>
 <section class="paper-panel mat-final-section"><div class="panel-head"><span>02 / TESTE DE PREVISÃO</span><span>COMPARAÇÃO DO ANO-ALVO <?=$pmCorte+$pmHorizonte?></span></div>
 <h2>Treinar até <?=$pmCorte?> e tentar prever <?=$pmCorte+$pmHorizonte?></h2>
@@ -155,7 +155,7 @@ $pmGraph = static function(array $line,int $cut,int $target,?float $forecast,int
 <section class="paper-panel mat-final-section"><div class="panel-head"><span>04 / QUALIDADE DO CADASTRO</span><span>ALERTA DE INTERPRETAÇÃO</span></div>
 <h2>O que muda quando chegarmos a 2.000 marcos?</h2>
 <p>O MAT recalculará todo K(t) segundo as datas dos novos marcos: números antigos podem aumentar porque o catálogo ficou mais completo, não porque o passado mudou. Por isso, sempre identificar a fonte e congelar uma versão do banco para reproduzir um teste.</p>
-<p>Nesta coorte: <?=$pmQuality['datas_extraidas']?> datas ainda extraídas/não validadas, <?=$pmQuality['provisorias']?> notas provisórias e <?=$pmQuality['sem_evidencia']?> casos marcados com insuficiência de evidência. Não são marcos cientificamente homologados por aparecerem na curva.</p>
+<p>Nesta coorte: <?=$pmQuality['datas_extraidas']?> datas ainda extraídas/não validadas, <?=$pmQuality['provisorias']?> notas provisórias e <?=$pmQuality['sem_evidencia']?> casos marcados com insuficiência de evidência. Não são marcos cientificamente validados por aparecerem na curva.</p>
 <p><a href="<?=mat_url('backtesting',['fonte'=>$pmFonte,'coorte'=>$pmCoorte,'horizonte'=>$pmHorizonte])?>">Abrir backtesting aprofundado dos 11 modelos →</a> · <a href="<?=mat_url('temporis',['fonte'=>$pmFonte,'coorte'=>$pmCoorte])?>">Voltar para o índice histórico →</a> · <a href="<?=mat_url('metodo')?>">Ver fórmulas e premissas →</a></p>
 </section>
 <?php endif; ?>

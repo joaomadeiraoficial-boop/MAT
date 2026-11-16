@@ -7,7 +7,7 @@
 <title><?=h($pageLabels[$page]??'MAT')?> · MAT Refinado + Final</title>
 <meta name="description" content="MAT: acervo histórico e laboratório para estudar a evolução tecnológica e o Índice Têmporis.">
 <link rel="icon" href="assets/insignia.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/style.css?v=1.3">
+<link rel="stylesheet" href="assets/style.css?v=1.4">
 <link rel="stylesheet" href="assets/mat-final.css?v=1">
 <?php if($page==='metodo'): ?><link rel="stylesheet" href="assets/metodo-tres-versoes.css?v=1"><?php endif; ?>
 <?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=28"><?php endif; ?>
@@ -20,8 +20,8 @@
 <link rel="stylesheet" href="assets/fila-rapida.css?v=4">
 <link rel="stylesheet" href="assets/temporis-integracao.css?v=3">
 <link rel="stylesheet" href="assets/temporis-reorganizacao.css?v=2">
-<link rel="stylesheet" href="assets/duplicatas-comparacao.css?v=3">
-<script defer src="assets/app.js?v=1.6"></script>
+<link rel="stylesheet" href="assets/duplicatas-comparacao.css?v=6">
+<script defer src="assets/app.js?v=1.8"></script>
 <?php if(in_array($page,['rodadas','fila_rapida'],true)): ?><script defer src="assets/datacao-intervalo.js?v=1"></script><?php endif; ?>
 <?php if($page==='fila_rapida'): ?><script defer src="assets/fila-rapida.js?v=2"></script><?php endif; ?>
 </head>
@@ -52,7 +52,7 @@
  $grupoHistoria = in_array($navPage, ['linha','atlas','acervo'], true);
  $grupoTemporis = in_array($navPage, ['temporis','temporis_final','temporis_reformulado','temporis_legado','demonstracao_formulas','metodo','backtesting','projecoes','ensaio_didatico'], true)
      || in_array($matScript, ['experimento_temporis.php','resultado_temporis_piloto.php'], true);
- $grupoPesquisa = in_array($navPage, ['laboratorio','laboratorio','rodadas','fila_rapida','andamento','importar','triagem','fontes','duplicatas','auditoria','editar'], true)
+  $grupoPesquisa = in_array($navPage, ['laboratorio','laboratorio','rodadas','fila_rapida','andamento','importar','fontes','duplicatas','editar'], true)
      || in_array($matScript, ['assistente_ia.php','triagem_300_reais.php'], true);
  ?>
  <nav class="mat-nav" aria-label="Menu principal">
@@ -81,7 +81,7 @@
       <a href="<?=mat_url('temporis_legado')?>" class="nav-item <?=$navPage==='temporis_legado'?'active':''?>"><span class="nav-number">↳</span><span>Legada · potência 0,65</span></a>
      </div>
     </details>
-    <a href="<?=mat_url('projecoes')?>" class="nav-item"><span class="nav-number">03.6</span><span>Previsões · Têmporis bruto</span></a>
+    <a href="<?=mat_url('projecoes')?>" class="nav-item <?=$navPage==='projecoes'?'active':''?>" <?=$navPage==='projecoes'?'aria-current="page"':''?>><span class="nav-number">03.6</span><span>Previsões · Têmporis bruto</span></a>
    </div>
   </details>
   <details class="mat-nav-group" data-nav-group="pesquisa" <?=$grupoPesquisa?'open':''?>>
@@ -96,14 +96,9 @@
     <?php endif; ?>
     <span class="mat-nav-subheading">INVESTIGAÇÃO</span>
     <a href="<?=mat_url('importar')?>" class="nav-item <?=$navPage==='importar'?'active':''?>" <?=$navPage==='importar'?'aria-current="page"':''?>><span class="nav-glyph">⇣</span><span>Importar cronologias</span></a>
-    <a href="<?=mat_url('triagem')?>" class="nav-item <?=$navPage==='triagem'?'active':''?>" <?=$navPage==='triagem'?'aria-current="page"':''?>><span class="nav-glyph">◈</span><span>Triagem de escopo</span></a>
-    <?php if (is_admin() && is_file(MAT_ROOT . '/triagem_300_reais.php')): ?>
-      <a href="<?=mat_url('rodadas')?>" class="nav-item"><span class="nav-glyph">◎</span><span>Triagem dos candidatos</span></a>
-    <?php endif; ?>
     <span class="mat-nav-subheading">DOCUMENTAÇÃO E REVISÃO</span>
     <a href="<?=mat_url('fontes')?>" class="nav-item <?=$navPage==='fontes'?'active':''?>" <?=$navPage==='fontes'?'aria-current="page"':''?>><span class="nav-glyph">✣</span><span>Fontes &amp; vínculos</span></a>
     <a href="<?=mat_url('duplicatas')?>" class="nav-item <?=$navPage==='duplicatas'?'active':''?>" <?=$navPage==='duplicatas'?'aria-current="page"':''?>><span class="nav-glyph">≋</span><span>Conferir duplicatas</span></a>
-    <a href="<?=mat_url('auditoria')?>" class="nav-item <?=$navPage==='auditoria'?'active':''?>" <?=$navPage==='auditoria'?'aria-current="page"':''?>><span class="nav-glyph">☷</span><span>Auditoria</span></a>
     <?php if(is_admin()): ?>
      <a href="<?=mat_url('editar')?>" class="nav-item <?=$navPage==='editar'?'active':''?>" <?=$navPage==='editar'?'aria-current="page"':''?>><span class="nav-glyph">＋</span><span>Novo marco</span></a>
     <?php endif; ?>
@@ -134,7 +129,7 @@
     $matBreadcrumbGroup = match($navPage) {
         'linha','atlas','acervo' => 'Exploração histórica',
         'temporis','temporis_final','temporis_reformulado','temporis_legado','demonstracao_formulas','metodo','backtesting','projecoes','ensaio_didatico' => 'Índice Têmporis',
-        'laboratorio','laboratorio','rodadas','fila_rapida','andamento','importar','triagem','fontes','duplicatas','auditoria','editar','login' => 'Pesquisa e curadoria',
+        'laboratorio','laboratorio','rodadas','fila_rapida','andamento','importar','fontes','duplicatas','editar','login' => 'Pesquisa e curadoria',
         default => null,
     };
   ?>

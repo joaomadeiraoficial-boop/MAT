@@ -16,7 +16,7 @@ checkGraphs($base['series'][2]['log']>100. && $base['series'][2]['potencia']>100
 checkGraphs(TemporisGraficos::indice(3.,0.)===null,'Sem K-base não há índice fictício');
 $html=TemporisGraficos::svgCronologico(array_reverse($p),1920);
 checkGraphs(str_contains($html,'MCD-00003') && str_contains($html,'1800') && str_contains($html,'2000'),'SVG usa IDs e anos verdadeiros no eixo temporal');
-checkGraphs(str_contains($html,'intervalo 1820 a 1880') && str_contains($html,'HOMOLOGADO'),'Faixa de datação e status registrados em tooltip');
+checkGraphs(str_contains($html,'intervalo 1820 a 1880') && str_contains($html,'VALIDADO'),'Faixa de datação e status registrados em tooltip');
 $zoom=TemporisGraficos::svgCronologico($p,1920,'log',true,1800);
 checkGraphs(str_contains($zoom,'Base 1920'),'Zoom conserva o ano-base no eixo horizontal');
 $tooFew=TemporisGraficos::svgCronologico([$p[0]],1920);

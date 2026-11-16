@@ -276,7 +276,7 @@
     <div><span>03 / PREVER</span><h3>Modelos concorrentes</h3><p>Linear, exponencial, aceleração local, ímpeto, logístico e Gompertz tentam estimar K futuro e são avaliados separadamente.</p></div>
     <div><span>04 / VALIDAR</span><h3>Robustez histórica</h3><p>Testes temporais, anos validados, notas provisórias, duplicatas e fontes independentes. Um erro baixo não valida o índice por si só.</p></div>
   </div>
-  <div class="metodo-aviso" role="note"><strong>Limite científico atual.</strong> O conjunto amplo pode incluir marcos aprovados e candidatos ainda com <code>SEM_EVIDENCIA</code>, notas mínimas provisórias ou anos extraídos. <strong>Aprovação de um dossiê não é homologação científica.</strong> A aceleração tecnológica mundial permanece uma hipótese em avaliação, não uma conclusão estabelecida.</div>
+  <div class="metodo-aviso" role="note"><strong>Limite científico atual.</strong> O conjunto amplo pode incluir marcos aprovados e candidatos ainda com <code>SEM_EVIDENCIA</code>, notas mínimas provisórias ou anos extraídos. <strong>Aprovação de um dossiê não é validação científica.</strong> A aceleração tecnológica mundial permanece uma hipótese em avaliação, não uma conclusão estabelecida.</div>
 </section>
 
 <section id="metodo-contexto" class="paper-panel metodo-section" aria-labelledby="metodo-contexto-titulo">

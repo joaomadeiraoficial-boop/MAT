@@ -34,7 +34,6 @@ if (!str_contains($nextHeader, $navToken)) {
       ['avaliacao', 'Avaliar 11 critérios', '◎'],
       ['fontes', 'Fontes e evidências', '✣'],
       ['duplicatas', 'Verificar duplicatas', '≋'],
-      ['auditoria', 'Auditoria científica', '☷'],
     ];
     foreach ($routes as [$route, $label, $glyph]) {
         // Se a versão não disponibilizar essa rota, não criar link quebrado.

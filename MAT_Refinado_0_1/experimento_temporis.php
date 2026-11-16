@@ -8,7 +8,7 @@ if (!is_admin()) {header('Location: index.php?page=login');exit;}
 
 $origin=filter_input(INPUT_GET,'corte',FILTER_VALIDATE_INT) ?: 1920;
 $target=filter_input(INPUT_GET,'alvo',FILTER_VALIDATE_INT) ?: 2020;
-$allowed=['previa'=>'Curadoria: prévia documentada','ensaio'=>'Curadoria: datas extraídas (não auditadas)','homologada'=>'Curadoria: exclusivamente homologados','legado'=>'Banco legado: avaliações confirmadas'];
+$allowed=['previa'=>'Curadoria: prévia documentada','ensaio'=>'Curadoria: datas extraídas (não auditadas)','homologada'=>'Curadoria: exclusivamente validados','legado'=>'Banco legado: avaliações confirmadas'];
 $mode=(string)($_GET['conjunto']??'previa');
 if(!isset($allowed[$mode]))$mode='previa';
 $origin=max(-10000,min(2099,$origin));$target=max(-9999,min(2100,$target));
@@ -34,7 +34,7 @@ try {
             'com_notas_mas_sem_data_validada'=>(int)($dataset['sem_data']??0),
             'pendentes_de_homologacao'=>(int)($dataset['ainda_nao_homologados']??0)];
         if($mode==='ensaio')$notes[]='Série exploratória: datas extraídas não são datas validadas; podem ocorrer duplicidades e notas ainda não confirmadas.';
-        if($mode==='previa')$notes[]='Prévia exploratória: as 11 notas podem ser propostas, sem homologação; não é uma previsão científica validada.';
+        if($mode==='previa')$notes[]='Prévia exploratória: as 11 notas podem ser propostas, sem validação; não é uma previsão científica aprovada.';
     }
     $result=TemporisBacktest::experiment($points,$origin,$target);
     $folds=TemporisBacktest::historicalBacktests($points,$origin,$target-$origin,20);
@@ -42,7 +42,7 @@ try {
     if(($_GET['export']??'')==='json'){
         header('Content-Type: application/json; charset=utf-8');
         header('Content-Disposition: attachment; filename="mat_backtest_temporis.json"');
-        echo json_encode(['ALERTA'=>'Os dados de prévia/ensaio não representam marcos homologados.',
+        echo json_encode(['ALERTA'=>'Os dados de prévia/ensaio não representam marcos validados.',
             'conjunto'=>$mode,'total_acervo'=>$num,'elegiveis_conjunto'=>$eligible,'exclusoes'=>$excluded,
             'resultado'=>$result,'backtests_anteriores'=>$folds,'resumo'=>$summary],
             JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
@@ -64,7 +64,7 @@ require __DIR__.'/views/header.php';
 <p class="exp-tag">MAT / METODOLOGIA / TEMPO HISTÓRICO / ERRO DE PREVISÃO</p>
 <header class="page-heading"><div class="section-overline">03 / ÍNDICE TÊMPORIS / TESTES DE VALIDAÇÃO</div><h1>O passado como <em>teste.</em></h1><p>Backtesting da Têmporis 0.2 com corte histórico, previsão e confronto com o resultado observado.</p></header>
 <p>A curva usa os <strong>anos efetivos dos marcos</strong>. A margem de erro só é calculada quando existem resultados observados e previsões suficientes; dados faltantes nunca são substituídos por valores fictícios.</p>
-<div class="exp-warning"><strong>DADOS DO BANCO — REGRAS ESTRITAS</strong><p><strong>Homologada:</strong> apenas marcos com revisão científica completa. <strong>Prévia/ensaio:</strong> exibidos separadamente, com notas e anos reais do banco de curadoria, mas sujeitos à revisão; esses resultados não constituem evidência confirmada. O banco legado possui critérios próprios e não é convertido automaticamente.</p></div>
+<div class="exp-warning"><strong>DADOS DO BANCO — REGRAS ESTRITAS</strong><p><strong>Validada:</strong> apenas marcos com revisão científica completa. <strong>Prévia/ensaio:</strong> exibidos separadamente, com notas e anos reais do banco de curadoria, mas sujeitos à revisão; esses resultados não constituem evidência confirmada. O banco legado possui critérios próprios e não é convertido automaticamente.</p></div>
 <form class="exp-form" method="get">
  <label>Conjunto de dados
   <select name="conjunto"><?php foreach($allowed as $key=>$label):?><option value="<?=h($key)?>" <?=$mode===$key?'selected':''?>><?=h($label)?></option><?php endforeach;?></select>
@@ -95,7 +95,7 @@ require __DIR__.'/views/header.php';
 <h3>Marcos com decisão humana, inclusive fora do cálculo</h3>
 <div class="mat-grafo-bloco"><?=TemporisGraficos::svgDecisoes($decisoes)?></div>
 <?php endif; ?>
-<p class="mat-grafo-nota">As barras laranja são <strong>faixas de datação</strong>, não desvios-padrão. Pontos de aprovação e homologação usam cores distintas. Cada evento é plotado pelo próprio ano, sem comprimir arbitrariamente os espaços entre acontecimentos.</p>
+<p class="mat-grafo-nota">As barras laranja são <strong>faixas de datação</strong>, não desvios-padrão. Pontos de aprovação e validação usam cores distintas. Cada evento é plotado pelo próprio ano, sem comprimir arbitrariamente os espaços entre acontecimentos.</p>
 <h2>02 / Índice e observação</h2>
 <div class="exp-boxes">
  <div class="exp-box">T(<?=$origin?>) — base<strong><?=$baseReady?'100,00':'—'?></strong></div>

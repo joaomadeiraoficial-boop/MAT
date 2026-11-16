@@ -10,7 +10,8 @@
 <link rel="stylesheet" href="assets/style.css?v=1.4">
 <link rel="stylesheet" href="assets/mat-final.css?v=1">
 <?php if($page==='metodo'): ?><link rel="stylesheet" href="assets/metodo-tres-versoes.css?v=1"><?php endif; ?>
-<?php if($page==='destaques_previsoes'): ?><link rel="stylesheet" href="assets/destaques-previsoes.css?v=2"><?php endif; ?>
+<?php if($page==='destaques_previsoes'): ?><link rel="stylesheet" href="assets/destaques-previsoes.css?v=5"><?php endif; ?>
+<?php if($page==='backtesting'): ?><link rel="stylesheet" href="assets/backtesting-previsoes.css?v=1"><?php endif; ?>
 <?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=28"><?php endif; ?>
 <?php if(is_file(MAT_ROOT . '/assets/temporis-0-2.css')): ?><link rel="stylesheet" href="assets/temporis-0-2.css?v=1"><?php endif; ?>
 <link rel="stylesheet" href="assets/progresso-marcos.css?v=1">

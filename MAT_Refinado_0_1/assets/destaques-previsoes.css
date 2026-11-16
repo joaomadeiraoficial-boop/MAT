@@ -12,3 +12,43 @@
 @media(max-width:1000px){.mat-rp-hero-mark{display:none}.mat-rp-cards{gap:10px}.mat-rp-card{padding:17px}.mat-rp-card-label{min-height:2.5em}}
 @media(max-width:750px){.mat-rp-hero{border-radius:12px;padding:23px}.mat-rp-hero-body{padding:28px 0}.mat-rp-hero-bottom{font-size:.6rem}.mat-rp-cards{grid-template-columns:1fr}.mat-rp-card-number{margin:13px 0 2px;font-size:3.2rem}.mat-rp-card-label{min-height:auto}.mat-rp-section-heading{flex-direction:column;align-items:flex-start}.mat-rp-summary-strip{grid-template-columns:1fr 1fr}.mat-rp-summary-strip>div:last-child{grid-column:1/-1}.mat-rp-card>p{margin-bottom:14px}}
 @media print{.mat-rp-nav,.mat-rp-actions{display:none!important}.mat-rp-hero{box-shadow:none;print-color-adjust:exact;-webkit-print-color-adjust:exact}.mat-rp-section{break-inside:avoid}.mat-rp-cards{grid-template-columns:repeat(3,1fr)}.mat-rp-table{min-width:0}.mat-rp-table td,.mat-rp-table th{padding:8px}}
+
+/* Seção 04 · Método e fórmula (bloco recolhível) */
+.mat-rp-method{background:#fff;border:1px solid #dfe6dd;border-radius:13px;box-shadow:0 5px 20px rgba(12,45,35,.035)}
+.mat-rp-method summary{cursor:pointer;padding:17px 21px;font-weight:750;color:#183e32;font-size:.92rem;list-style:none;display:flex;align-items:center;gap:10px}
+.mat-rp-method summary::-webkit-details-marker{display:none}
+.mat-rp-method summary::before{content:'▸';color:#4b785a;font-size:.95rem;transition:transform .15s ease}
+.mat-rp-method[open] summary::before{transform:rotate(90deg)}
+.mat-rp-method-body{padding:6px 23px 23px;border-top:1px solid #e9eee7}
+.mat-rp-method-body h3{font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;color:#4e6757;margin:19px 0 7px}
+.mat-rp-method-body p{font-size:.87rem;color:#54685b;line-height:1.7;margin:0 0 4px}
+.mat-rp-method-body code{background:#f3f5f0;border:1px solid #e3e8df;border-radius:5px;padding:2px 7px;font-size:.82rem;color:#1c5947;font-weight:650}
+.mat-rp-method-body .mat-rp-formula{display:inline-block;background:#f7f6ef;border:1px solid #d6d9c6;border-radius:8px;padding:9px 14px;margin:6px 0;font-size:.98rem;color:#1c5947;font-weight:700;font-variant-numeric:tabular-nums}
+.mat-rp-method-body a{color:#245b47;font-weight:750;text-decoration:underline}
+
+/* Seção 06 · Piores cortes (vermelho) */
+.mat-rp-worst-pill{display:inline-block;background:#fbeeec;color:#8f2f25;padding:7px 12px;border-radius:30px;font-size:.75rem;font-weight:750;white-space:nowrap}
+.mat-rp-worst-table th{background:#f9eeec;color:#8f4a42}
+.mat-rp-worst-row td{color:#6b3b34}
+.mat-rp-worst-row td:first-child small{display:block;color:#a98d88;font-weight:600;font-size:.7rem;margin-top:2px}
+.mat-rp-worst-erro{display:inline-block;font-weight:800;font-size:1.03rem;color:#b3261e}
+.mat-rp-worst-row:hover{background:#fdf3f2}
+.mat-rp-worst-off{color:#7a5b55;font-size:.82rem;white-space:normal!important}
+.mat-rp-nav-worst{color:#b3261e;font-weight:750}
+.mat-rp-worst .mat-rp-overline{color:#a0554b}
+.mat-rp-worst .mat-rp-section-heading h2 em{color:#b3261e}
+
+/* Veredito "qual modelo foi o melhor" e ranking */
+.mat-rp-verdict{background:#f7f6ef;border:1px solid #d6d9c6;border-radius:13px;padding:19px 21px;margin-top:17px}
+.mat-rp-verdict>strong{display:block;font-size:.72rem;letter-spacing:.09em;color:#4e6757;margin-bottom:9px}
+.mat-rp-verdict ul{margin:0;padding:0;list-style:none}
+.mat-rp-verdict li{font-size:.86rem;color:#4d5f55;line-height:1.65;padding:6px 0;border-top:1px solid #e5e6d5}
+.mat-rp-verdict li:first-child{border-top:none}
+.mat-rp-verdict b{color:#244639}
+.mat-rp-verdict-badge{display:inline-block;background:#183e32;color:#fff;border-radius:6px;padding:2px 9px;font-weight:700;font-size:.78rem}
+.mat-rp-verdict a{color:#245b47;font-weight:750;text-decoration:underline}
+.mat-rp-rank-title{font-size:.78rem;letter-spacing:.07em;text-transform:uppercase;color:#4e6757;margin:21px 0 9px}
+.mat-rp-rank-table td small{display:block;color:#8a988e;font-size:.68rem;font-weight:650;margin-top:2px}
+.mat-rp-rank-table tr.mat-rp-rank-first{background:#ecf4ed}
+.mat-rp-rank-table tr.mat-rp-rank-first td{color:#1c5947}
+.mat-rp-rank-table tr[data-ab-model]{box-shadow:inset 3px 0 0 #b88635}

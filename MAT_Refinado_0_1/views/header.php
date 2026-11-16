@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="assets/style.css?v=1.4">
 <link rel="stylesheet" href="assets/mat-final.css?v=1">
 <?php if($page==='metodo'): ?><link rel="stylesheet" href="assets/metodo-tres-versoes.css?v=1"><?php endif; ?>
+<?php if($page==='destaques_previsoes'): ?><link rel="stylesheet" href="assets/destaques-previsoes.css?v=2"><?php endif; ?>
 <?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=28"><?php endif; ?>
 <?php if(is_file(MAT_ROOT . '/assets/temporis-0-2.css')): ?><link rel="stylesheet" href="assets/temporis-0-2.css?v=1"><?php endif; ?>
 <link rel="stylesheet" href="assets/progresso-marcos.css?v=1">
@@ -50,7 +51,7 @@
  // A página ativa abre automaticamente o seu grupo (inclusive sem JavaScript).
  $matScript = basename((string)($_SERVER['SCRIPT_NAME'] ?? ''));
  $grupoHistoria = in_array($navPage, ['linha','atlas','acervo'], true);
- $grupoTemporis = in_array($navPage, ['temporis','temporis_final','temporis_reformulado','temporis_legado','demonstracao_formulas','metodo','backtesting','projecoes','ensaio_didatico'], true)
+ $grupoTemporis = in_array($navPage, ['temporis','temporis_final','temporis_reformulado','temporis_legado','destaques_previsoes','demonstracao_formulas','metodo','backtesting','projecoes','ensaio_didatico'], true)
      || in_array($matScript, ['experimento_temporis.php','resultado_temporis_piloto.php'], true);
   $grupoPesquisa = in_array($navPage, ['laboratorio','laboratorio','rodadas','fila_rapida','andamento','importar','fontes','duplicatas','editar'], true)
      || in_array($matScript, ['assistente_ia.php','triagem_300_reais.php'], true);
@@ -71,6 +72,7 @@
    <summary><span class="nav-number">03</span><span>Índice Têmporis</span><span class="mat-nav-chevron" aria-hidden="true">⌄</span></summary>
    <div class="mat-nav-submenu">
     <a href="<?=mat_url('temporis')?>" class="nav-item <?=in_array($navPage,['temporis','temporis_final'],true)?'active':''?>"><span class="nav-number">03.1</span><span>★ Têmporis · resultado atual</span></a>
+    <a href="<?=mat_url('destaques_previsoes')?>" class="nav-item <?=$navPage==='destaques_previsoes'?'active':''?>" <?=$navPage==='destaques_previsoes'?'aria-current="page"':''?>><span class="nav-number">★</span><span>★ Melhores previsões · 50 anos</span></a>
     <a href="<?=mat_url('demonstracao_formulas')?>" class="nav-item <?=$navPage==='demonstracao_formulas'?'active':''?>" <?=$navPage==='demonstracao_formulas'?'aria-current=\"page\"':''?>><span class="nav-number">03.2</span><span>Demonstrativo simples</span></a>
     <a href="<?=mat_url('metodo')?>" class="nav-item <?=$navPage==='metodo'?'active':''?>"><span class="nav-number">03.3</span><span>Caderno de fórmulas</span></a>
     <a href="<?=mat_url('backtesting')?>" class="nav-item <?=$navPage==='backtesting'?'active':''?>"><span class="nav-number">03.4</span><span>Backtesting · teste de previsões</span></a>
@@ -128,7 +130,7 @@
   <?php
     $matBreadcrumbGroup = match($navPage) {
         'linha','atlas','acervo' => 'Exploração histórica',
-        'temporis','temporis_final','temporis_reformulado','temporis_legado','demonstracao_formulas','metodo','backtesting','projecoes','ensaio_didatico' => 'Índice Têmporis',
+        'temporis','temporis_final','temporis_reformulado','temporis_legado','destaques_previsoes','demonstracao_formulas','metodo','backtesting','projecoes','ensaio_didatico' => 'Índice Têmporis',
         'laboratorio','laboratorio','rodadas','fila_rapida','andamento','importar','fontes','duplicatas','editar','login' => 'Pesquisa e curadoria',
         default => null,
     };

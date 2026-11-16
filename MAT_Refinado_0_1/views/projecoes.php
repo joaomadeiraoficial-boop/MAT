@@ -7,13 +7,16 @@ $pmPick=static function(string $name,string $default,array $valid):string {
 };
 $pmFonte=$pmPick('fonte','auto',TemporisFinal::FONTES);
 $pmCoorte=$pmPick('coorte','ampla',TemporisFinal::COORTES);
-$pmModelo=$pmPick('modelo','linear50',TemporisFinal::MODELOS);
-$pmCorte=filter_var($_GET['corte']??2026,FILTER_VALIDATE_INT);
+$pmModelo=$pmPick('modelo','exponencial50',TemporisFinal::MODELOS);
+$pmCorte=filter_var($_GET['corte']??1900,FILTER_VALIDATE_INT);
 $pmCorte=$pmCorte===false?2026:max(1700,min(2026,$pmCorte));
-$pmHorizonte=(int)($_GET['horizonte']??25);
-if(!in_array($pmHorizonte,TemporisMetodologia2026::HORIZONTES,true))$pmHorizonte=25;
+// A tela de previsão usa SEMPRE horizonte de 50 anos; ignorar GET
+// horizonte evita comparações acidentais com períodos diferentes.
+$pmHorizonte=50;
 $pmError=null;$pmRows=[];$pmComparacao=[];$pmFocus=[];$pmHistoric=[];$pmAudit=[];
 $pmInfo=null;$pmLine=[];$pmQuality=[];$pmV25=null;$pmV50=null;
+$pmRecortesBase=[];$pmRecortesAtuais=[];$pmErroReferencia=null;
+$pmCortesResumo=[1850,1875,1900];
 $pmFmt=static fn($n,int $dec=2):string=>$n===null?'—':number_format((float)$n,$dec,',','.');
 try {
     $pmInfo=TemporisFinal::obterDados($pmFonte,2026);
@@ -21,6 +24,9 @@ try {
     $pmLine=TemporisFinal::linha($pmPts,'quadratica');
     $pmAudit=$pmInfo['dados']['audit'];
     $pmHistoric=TemporisMetodologia2026::historico($pmLine);
+    foreach($pmCortesResumo as $recorte){
+        $pmRecortesAtuais[]=TemporisMetodologia2026::confronto($pmLine,$recorte,50,'exponencial50',2026);
+    }
     $pmV25=TemporisMetodologia2026::velocidade($pmLine,$pmCorte,25);
     $pmV50=TemporisMetodologia2026::velocidade($pmLine,$pmCorte,50);
     $pmComparacao=TemporisMetodologia2026::compararMesmosCortes($pmLine,$pmHorizonte,2026);
@@ -36,6 +42,26 @@ try {
         'provisorias'=>count(array_filter($pmPts,static fn($p)=>$p['provisorio'])),
         'aprovadas'=>count(array_filter($pmPts,static fn($p)=>$p['aprovado']))];
 } catch(Throwable $e) {$pmError=$e->getMessage();}
+// Referência histórica separada: o snapshot de 07/11 não deve mudar
+// quando a curadoria MySQL for atualizada. Cálculo real com o motor MAT,
+// sem números de previsão digitados manualmente.
+try {
+    $pmRefFonte=TemporisFinal::obterDados('snapshot',2026);
+    $pmRefPontos=TemporisFinal::filtrar($pmRefFonte['dados']['pontos'],'ampla');
+    $pmRefLinha=TemporisFinal::linha($pmRefPontos,'quadratica');
+    foreach($pmCortesResumo as $recorte){
+        $pmRecortesBase[]=TemporisMetodologia2026::confronto($pmRefLinha,$recorte,50,'exponencial50',2026);
+    }
+    $pmRefStats=TemporisMetodologia2026::validacao($pmRefLinha,'exponencial50',50,2026);
+    $pmRefQuantidade=count($pmRefPontos);
+} catch(Throwable $e){$pmErroReferencia=$e->getMessage();}
+// Percentual de aumento observado é calculado em relação ao K no corte,
+// distinto do erro sobre o incremento observado.
+$pmAumentoReal=static function(array $f):?float {
+    $base=(float)($f['k_corte']??0.0);
+    return $base>0 && ($f['delta_observado']??null)!==null
+        ?100*(float)$f['delta_observado']/$base:null;
+};
 ?>
 <style>
 .mat-met-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
@@ -53,20 +79,55 @@ try {
 .mat-met-filter{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:15px 0}
 .mat-met-filter label{display:flex;flex-direction:column;gap:4px;min-width:140px;flex:1}
 .mat-met-filter select,.mat-met-filter input{padding:9px 10px;width:100%;border:1px solid #c8d3c9;border-radius:7px;background:white}
+.mat-recap{margin:18px 0}.mat-recap h2{margin-bottom:7px}
+.mat-recap-kicker{font-size:.85rem;color:#557367;letter-spacing:.045em;text-transform:uppercase}
+.mat-recap-footnote{font-size:.87rem;color:#52665f;line-height:1.55;margin:12px 0 0}
+.mat-recap-note{margin-top:12px;padding:12px 14px;background:#fbf9f3;border-left:3px solid #b8a47a;border-radius:5px}
+.mat-recap-table{min-width:630px}.mat-recap-table tbody tr:last-child{background:#f1f7f0}
+.mat-recap-details{margin:18px 0 28px;border:1px solid #dadfd7;border-radius:12px;overflow:hidden;background:#fff}
+.mat-recap-details>summary{padding:16px 18px;cursor:pointer;font-weight:700;color:#1b5849;background:#f7f8f3;list-style:revert}
+.mat-recap-details-body{padding:18px}
+.mat-horizon-fixed{font-weight:700;color:#185448;padding:8px 10px;border:1px solid #b7d6c8;border-radius:7px;background:#eff7f1}
 @media(max-width:720px){.mat-met-steps{grid-template-columns:1fr}.mat-met-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 <header class="page-heading tf-heading">
  <div class="section-overline">MAT / ÍNDICE TÊMPORIS / PROJEÇÕES REPRODUZÍVEIS</div>
- <h1>Prever usando <em>o histórico bruto.</em></h1>
- <p>Primeiro calculamos K(t) pelos marcos; em seguida, medimos sua velocidade; por último, cada modelo prevê sem enxergar os anos posteriores ao corte. A escala 1900 = 100 não participa do ajuste.</p>
+ <h1>Previsões de <em>50 anos.</em></h1>
+ <p>Três resultados históricos em uma tabela simples. O horizonte de previsão está fixado em 50 anos; os detalhes e as comparações com sua curadoria ficam disponíveis abaixo.</p>
 </header>
+<?php if($pmErroReferencia): ?>
+<div class="mat-met-warning"><strong>O snapshot histórico não pôde ser carregado:</strong> <?=h($pmErroReferencia)?></div>
+<?php else: ?>
+<section class="paper-panel mat-recap" aria-label="Três testes de previsão histórica a 50 anos">
+  <div class="panel-head"><span>RESUMO / BACKTEST HISTÓRICO</span><span>HORIZONTE FIXO: 50 ANOS</span></div>
+  <div class="mat-recap-kicker">Têmporis Final · modelo exponencial local</div>
+  <h2>Três previsões históricas de 50 anos</h2>
+  <p>Referência <strong>congelada de 07/11/2026</strong> · <?=$pmRefQuantidade?> marcos elegíveis · cortes separados por 25 anos, cada previsão com duração de 50 anos.</p>
+  <div class="mat-met-scroll"><table class="mat-met-table mat-recap-table">
+    <thead><tr><th>Período</th><th>K previsto</th><th>K observado</th><th>Erro na previsão</th><th>Aumento real de K</th></tr></thead>
+    <tbody><?php foreach($pmRecortesBase as $res): ?>
+      <tr>
+        <td><strong><?=$res['corte']?>–<?=$res['alvo']?></strong></td>
+        <td><?=$pmFmt($res['previsto'])?></td>
+        <td><?=$pmFmt($res['observado'])?></td>
+        <td><strong><?=$pmFmt($res['erro_pct_delta'])?>%</strong></td>
+        <td>+<?=$pmFmt($pmAumentoReal($res))?>%</td>
+      </tr>
+    <?php endforeach; ?></tbody>
+  </table></div>
+  <p class="mat-recap-footnote">Erro calculado sobre o <strong>crescimento de K</strong>, não sobre o valor total do índice. Valores gerados com a fórmula original do MAT, não preenchidos manualmente.</p>
+  <div class="mat-recap-note"><strong>Resultado completo:</strong> o exponencial local obteve WAPE de <strong><?=$pmFmt($pmRefStats['wape'])?>%</strong> nos <strong><?=$pmRefStats['n']?></strong> cortes históricos de 50 anos. Estes três períodos são exemplos selecionados, não a média de erro do método.</div>
+</section>
+<?php endif; ?>
+<details class="mat-recap-details" id="mat-detalhes-previsao"><summary>Comparar com a curadoria atual e abrir os detalhes técnicos</summary><div class="mat-recap-details-body">
+<p><strong>Fonte histórica e fonte atual são diferentes.</strong> Os três resultados acima pertencem ao snapshot de 07/11/2026. Abaixo, o MAT permite recalcular com a fonte escolhida, sem modificar os marcos ou as notas.</p>
 <div class="mat-met-steps"><div><b>01 / Medir</b><p>K(t) = soma dos pesos documentados até cada ano. Sem ano-base.</p></div><div><b>02 / Analisar</b><p>ΔK por período e V25/V50 em pontos por ano.</p></div><div><b>03 / Validar</b><p>Previsão às cegas por corte; comparar incrementos com WAPE.</p></div></div>
 <form class="mat-met-filter" method="get" action="index.php">
 <input type="hidden" name="page" value="projecoes">
 <label>Fonte<select name="fonte"><?php foreach(TemporisFinal::FONTES as $id=>$label):?><option value="<?=h($id)?>" <?=$id===$pmFonte?'selected':''?>><?=h($label)?></option><?php endforeach;?></select></label>
 <label>Conjunto de marcos<select name="coorte"><?php foreach(TemporisFinal::COORTES as $id=>$label):?><option value="<?=h($id)?>" <?=$id===$pmCoorte?'selected':''?>><?=h($label)?></option><?php endforeach;?></select></label>
 <label>Corte histórico<input name="corte" type="number" min="1700" max="2026" value="<?=$pmCorte?>"></label>
-<label>Prever<select name="horizonte"><?php foreach(TemporisMetodologia2026::HORIZONTES as $h):?><option value="<?=$h?>" <?=$h===$pmHorizonte?'selected':''?>><?=$h?> anos</option><?php endforeach;?></select></label>
+<label>Prever <span class="mat-horizon-fixed">50 anos (fixo)</span></label>
 <label>Modelo visualizado<select name="modelo"><?php foreach(TemporisFinal::MODELOS as $id=>$label):?><option value="<?=h($id)?>" <?=$pmModelo===$id?'selected':''?>><?=h($label)?></option><?php endforeach;?></select></label>
 <button type="submit" class="btn btn-dark">Calcular com esses dados →</button>
 </form>
@@ -74,6 +135,18 @@ try {
 <div class="mat-met-warning"><strong>Não foi possível carregar a fonte solicitada.</strong> <?=h($pmError)?>. <a href="<?=mat_url('projecoes',['fonte'=>'snapshot'])?>">Abrir somente o snapshot histórico (base menor)</a>.</div>
 <?php else: ?>
 <div class="mat-met-highlight"><strong>Origem efetiva:</strong> <?=h($pmInfo['fonte']==='snapshot'?'Snapshot fixo de 07/11/2026 — NÃO é o banco atual':$pmInfo['database'])?> · <strong><?=$pmQuality['total']?></strong> marcos na coorte. <?php if($pmInfo['fonte']==='snapshot'):?><span>Inicie o MySQL para usar o acervo mais recente; nunca compare o snapshot como se fosse a base atual.</span><?php endif;?></div>
+<section class="paper-panel mat-final-section" aria-label="Resultados recalculados com a fonte selecionada">
+<div class="panel-head"><span>FONTE SELECIONADA / EXPO 50 ANOS</span><span>ATUALIZA AUTOMATICAMENTE</span></div>
+<h2>Os mesmos três cortes na fonte selecionada</h2>
+<div class="mat-met-scroll"><table class="mat-met-table mat-recap-table">
+<thead><tr><th>Período</th><th>K previsto</th><th>K observado</th><th>Erro na previsão</th><th>Aumento real de K</th></tr></thead>
+<tbody><?php foreach($pmRecortesAtuais as $res): ?><tr>
+<td><?=$res['corte']?>–<?=$res['alvo']?></td><td><?=$pmFmt($res['previsto'])?></td>
+<td><?=$pmFmt($res['observado'])?></td><td><?=$res['erro_pct_delta']===null?'—':$pmFmt($res['erro_pct_delta']).'%'?></td>
+<td><?=($pmAumentoReal($res)===null?'—':'+'.$pmFmt($pmAumentoReal($res)).'%')?></td>
+</tr><?php endforeach;?></tbody></table></div>
+<p class="mat-recap-footnote">Esta tabela usa a fonte e a coorte selecionadas no formulário. Se os dados mudarem, os resultados também podem mudar. Somente a tabela de referência acima permanece fixa.</p>
+</section>
 <section class="paper-panel mat-final-section">
 <div class="panel-head"><span>01 / MEDIÇÃO HISTÓRICA</span><span>ACUMULADO BRUTO</span></div><h2>Têmporis registrado de 50 em 50 anos</h2>
 <div class="mat-met-scroll"><table class="mat-met-table"><thead><tr><th>Ano</th><th>K(t) bruto</th><th>Δ K no período</th><th>Anos no período</th><th>Velocidade</th></tr></thead><tbody>
@@ -159,3 +232,4 @@ $pmGraph = static function(array $line,int $cut,int $target,?float $forecast,int
 <p><a href="<?=mat_url('backtesting',['fonte'=>$pmFonte,'coorte'=>$pmCoorte,'horizonte'=>$pmHorizonte])?>">Abrir backtesting aprofundado dos 11 modelos →</a> · <a href="<?=mat_url('temporis',['fonte'=>$pmFonte,'coorte'=>$pmCoorte])?>">Voltar para o índice histórico →</a> · <a href="<?=mat_url('metodo')?>">Ver fórmulas e premissas →</a></p>
 </section>
 <?php endif; ?>
+</div></details>

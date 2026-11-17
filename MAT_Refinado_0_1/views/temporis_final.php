@@ -258,16 +258,16 @@ $tfSvg=function(array $series,array $years,int $height=290):string{
         <button class="mat-bt-run" type="submit">Calcular avanço →</button>
       </div>
     </form>
-    <?php if($tfConsultaErro):?><div class="mat-bt-warning" role="alert" style="margin-top:13px"><?=h($tfConsultaErro)?></div><?php endif; ?>
-    <?php if($tfConsulta): ?>
+    <div id="tf-res-erro"><?php if($tfConsultaErro):?><div class="mat-bt-warning" role="alert" style="margin-top:13px"><?=h($tfConsultaErro)?></div><?php endif; ?></div>
+    <div id="tf-res-ano"><?php if($tfConsulta): ?>
     <div class="mat-bt-cards" style="margin-top:14px">
       <div class="mat-bt-card mat-bt-card-lead"><span class="mat-bt-card-label">Têmporis de <?=$tfConsulta['ano']?></span><div class="mat-bt-card-number"><?=$tfNumber($tfConsulta['t'])?></div></div>
       <div class="mat-bt-card"><span class="mat-bt-card-label">K(<?=$tfConsulta['ano']?>) acumulado</span><div class="mat-bt-card-number"><?=$tfNumber($tfConsulta['k'],3)?></div></div>
       <div class="mat-bt-card"><span class="mat-bt-card-label">Marcos até <?=$tfConsulta['ano']?></span><div class="mat-bt-card-number"><?=$tfConsulta['marcos']?></div></div>
     </div>
     <p class="mat-bt-table-note"><?= $tfEscala==='bruta' ? 'K(t) é a soma ponderada até a data, independente de 1900.' : 'O valor relativo foi obtido a partir de K(t) e da referência '.$tfBase.'; o cálculo bruto permanece inalterado.' ?><?php if($tfConsulta['t']===null):?> · <strong>indefinido nesta seleção</strong>: K(<?=$tfBase?>) é zero, então o índice não pode ser calculado<?php endif; ?>.</p>
-    <?php endif; ?>
-    <?php if($tfAvanco): ?>
+    <?php endif; ?></div>
+    <div id="tf-res-avanco"><?php if($tfAvanco): ?>
     <div class="mat-bt-cards mat-bt-cards-4" style="margin-top:14px">
       <div class="mat-bt-card"><span class="mat-bt-card-label">Têmporis de <?=$tfAvanco['a']?></span><div class="mat-bt-card-number"><?=$tfNumber($tfAvanco['ta'])?></div></div>
       <div class="mat-bt-card"><span class="mat-bt-card-label">Têmporis de <?=$tfAvanco['b']?></span><div class="mat-bt-card-number"><?=$tfNumber($tfAvanco['tb'])?></div></div>
@@ -275,7 +275,8 @@ $tfSvg=function(array $series,array $years,int $height=290):string{
       <div class="mat-bt-card"><span class="mat-bt-card-label">ΔK no período</span><div class="mat-bt-card-number"><?=$tfNumber($tfAvanco['dk'],3)?></div></div>
     </div>
     <p class="mat-bt-table-note">Entre <?=$tfAvanco['a']?> e <?=$tfAvanco['b']?> entraram <strong><?=$tfAvanco['marcos']?> marcos</strong> (Σ pesos = <?=$tfNumber($tfAvanco['dk'],3)?>), ritmo de <?=$tfNumber($tfAvanco['taxa'],4)?> pontos de K por ano em <?=$tfAvanco['anos']?> anos. O avanço em Têmporis é <strong><?=$tfNumber($tfAvanco['dt'])?> pontos</strong><?php if($tfAvanco['ta']===null||$tfAvanco['tb']===null):?> · indefinido nesta seleção (K do ano-base é zero)<?php endif; ?>.</p>
-    <?php endif; ?>
+    <?php endif; ?></div>
+    <div id="tf-loading" class="mat-bt-loading" hidden aria-live="polite"><span class="mat-bt-loading-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>Somando os marcos reais até o ano pedido…</span></div>
   </section>
 
   <section id="tf-curva" class="mat-bt-section" aria-labelledby="tf-curva-titulo">
@@ -340,4 +341,38 @@ $tfCutIndex=TemporisFinal::indice($tfKcut,$tfKbase,$tfEscala); ?>
       <a class="mat-bt-textlink" href="<?=mat_url('metodo')?>">Caderno de fórmulas</a>
     </div>
   </footer>
+<script>
+(function(){
+  var sec=document.getElementById('tf-consulta');
+  if(!sec)return;
+  var loading=document.getElementById('tf-loading');
+  var get=function(k){return document.getElementById('tf-res-'+k);};
+  sec.querySelectorAll('form').forEach(function(form){
+    form.addEventListener('submit',function(ev){
+      ev.preventDefault();
+      var query=new URLSearchParams(new FormData(form)).toString();
+      var url=form.getAttribute('action')+'?'+query;
+      var botao=form.querySelector('.mat-bt-run');
+      if(botao)botao.disabled=true;
+      if(loading)loading.hidden=false;
+      fetch(url,{headers:{'X-Requested-With':'fetch'}})
+        .then(function(r){return r.text();})
+        .then(function(html){
+          var doc=new DOMParser().parseFromString(html,'text/html');
+          ['erro','ano','avanco'].forEach(function(k){
+            var alvo=get(k);if(!alvo)return;
+            var novo=doc.getElementById('tf-res-'+k);
+            alvo.innerHTML=novo?novo.innerHTML:'';
+          });
+          window.history.replaceState(null,'',url);
+        })
+        .catch(function(){window.location.href=url;})
+        .finally(function(){
+          if(loading)loading.hidden=true;
+          if(botao)botao.disabled=false;
+        });
+    });
+  });
+})();
+</script>
 </div>

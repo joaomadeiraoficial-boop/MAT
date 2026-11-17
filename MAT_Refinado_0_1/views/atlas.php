@@ -48,7 +48,7 @@ $inflexoes=[];$inflexResumo=null;$inflexErro='';$inflexDetails=[];$inflexPending
 <?php if(!is_admin()): ?><p>Entre como pesquisador para examinar a fila de preparação e os registros individuais.</p>
 <?php else: ?>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:24px">
-<div><h3>Candidatos em curadoria</h3><?php if(!$atlasPending):?><p>Nenhum candidato nesta era.</p><?php else:?><ol><?php foreach($atlasPending as $m):?><li><a href="<?=mat_url('rodadas',['id'=>(string)($m['id_extracao']??'')])?>"><?=h($m['titulo'])?></a> (<?=h((string)$m['ano'])?>) · estado: <?=h((string)$m['status'])?></li><?php endforeach;?></ol><?php endif;?></div>
+<div><h3>Candidatos em curadoria</h3><?php if(!$atlasPending):?><p>Nenhum candidato nesta era.</p><?php else:?><ol><?php foreach($atlasPending as $m):?><li><a href="<?=mat_url('linha')?>#mat-linha-cand-<?=h((string)($m['id_extracao']??''))?>"><?=h($m['titulo'])?></a> (<?=h((string)$m['ano'])?>) · estado: <?=h((string)$m['status'])?></li><?php endforeach;?></ol><?php endif;?></div>
 </div>
 <p class="research-small">São exibidos no máximo 45 exemplos de cada grupo por era. Os totais por era excluem candidatos sem ano classificável; esses estão contados no resumo geral.</p>
 <?php endif;?></section>
@@ -67,7 +67,7 @@ $inflexoes=[];$inflexResumo=null;$inflexErro='';$inflexDetails=[];$inflexPending
 <?php if(!is_admin()): ?><p>Entre como pesquisador para examinar os registros individuais vinculados ao ponto.</p>
 <?php else: ?>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:24px">
-<div><h3>Candidatos em curadoria</h3><?php if(!$inflexPending):?><p>Nenhum candidato da curadoria no intervalo deste ponto.</p><?php else:?><ol><?php foreach($inflexPending as $m):?><li><a href="<?=mat_url('rodadas',['id'=>(string)($m['id_extracao']??'')])?>"><?=h($m['titulo'])?></a> (<?=h((string)$m['ano'])?>) · estado: <?=h((string)$m['status'])?></li><?php endforeach;?></ol><?php endif;?></div>
+<div><h3>Candidatos em curadoria</h3><?php if(!$inflexPending):?><p>Nenhum candidato da curadoria no intervalo deste ponto.</p><?php else:?><ol><?php foreach($inflexPending as $m):?><li><a href="<?=mat_url('linha')?>#mat-linha-cand-<?=h((string)($m['id_extracao']??''))?>"><?=h($m['titulo'])?></a> (<?=h((string)$m['ano'])?>) · estado: <?=h((string)$m['status'])?></li><?php endforeach;?></ol><?php endif;?></div>
 </div>
 <p class="research-small">São exibidos no máximo 45 exemplos de cada grupo. Como os intervalos podem se sobrepor, o mesmo dossiê pode figurar também em outro ponto de inflexão.</p>
 <?php endif;?></section>
@@ -81,6 +81,6 @@ $inflexoes=[];$inflexResumo=null;$inflexErro='';$inflexDetails=[];$inflexPending
 <?php if(is_admin()): $pyrAprov=[];foreach($atlas as $key=>$info){$pyrAprov[$key]=array_values(array_filter(AtlasReais::rows(db(),$key,true),static fn(array $r): bool=>in_array((string)$r['status'],['APROVADO','HOMOLOGADO'],true)));} ?>
 <div class="pyramid-approved">
 <?php foreach($pyrAprov as $key=>$itens): $info=$atlas[$key]; ?>
-<div class="pyr-approved-era"><h3><?=h($info['nome'])?> · <?=count($itens)?> aprovado(s)</h3><?php if(!$itens):?><p class="pyr-none">Nenhum aprovado neste período ainda.</p><?php else:?><ol><?php foreach($itens as $m):?><li><a href="<?=mat_url('rodadas',['id'=>(string)($m['id_extracao']??'')])?>"><?=h($m['titulo'])?></a> (<?=h((string)$m['ano'])?>)</li><?php endforeach;?></ol><?php endif;?></div>
+<div class="pyr-approved-era"><h3><?=h($info['nome'])?> · <?=count($itens)?> aprovado(s)</h3><?php if(!$itens):?><p class="pyr-none">Nenhum aprovado neste período ainda.</p><?php else:?><ol><?php foreach($itens as $m):?><li><a href="<?=mat_url('linha')?>#mat-linha-cand-<?=h((string)($m['id_extracao']??''))?>"><?=h($m['titulo'])?></a> (<?=h((string)$m['ano'])?>)</li><?php endforeach;?></ol><?php endif;?></div>
 <?php endforeach;?></div>
 <?php endif;?></div></section>

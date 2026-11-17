@@ -10,7 +10,8 @@
 <link rel="stylesheet" href="assets/style.css?v=1.4">
 <link rel="stylesheet" href="assets/mat-final.css?v=1">
 <?php if($page==='destaques_previsoes'): ?><link rel="stylesheet" href="assets/destaques-previsoes.css?v=5"><?php endif; ?>
-<?php if($page==='backtesting'||in_array($page,['temporis','temporis_final'],true)): ?><link rel="stylesheet" href="assets/backtesting-previsoes.css?v=2"><?php endif; ?>
+<?php if($page==='backtesting'||in_array($page,['temporis','temporis_final'],true)): ?><link rel="stylesheet" href="assets/backtesting-previsoes.css?v=3"><?php endif; ?>
+<?php if($page==='linha'): ?><link rel="stylesheet" href="assets/backtesting-previsoes.css?v=3"><link rel="stylesheet" href="assets/linha-timeline.css?v=4"><?php endif; ?>
 <?php if(in_array($page, ['demonstracao_formulas','metodo','temporis_legado','temporis_reformulado'], true)): ?><link rel="stylesheet" href="assets/temporis-editorial.css?v=2"><?php endif; ?>
 <?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=28"><?php endif; ?>
 <?php if(is_file(MAT_ROOT . '/assets/temporis-0-2.css')): ?><link rel="stylesheet" href="assets/temporis-0-2.css?v=1"><?php endif; ?>
@@ -64,8 +65,8 @@
   <details class="mat-nav-group" data-nav-group="historia" <?=$grupoHistoria?'open':''?>>
    <summary><span class="nav-number">02</span><span>Exploração histórica</span><span class="mat-nav-chevron" aria-hidden="true">⌄</span></summary>
    <div class="mat-nav-submenu">
-    <a href="<?=mat_url('linha')?>" class="nav-item <?=$navPage==='linha'?'active':''?>" <?=$navPage==='linha'?'aria-current="page"':''?>><span class="nav-number">02.1</span><span>Linha do tempo</span></a>
-    <a href="<?=mat_url('atlas')?>" class="nav-item <?=$navPage==='atlas'?'active':''?>" <?=$navPage==='atlas'?'aria-current="page"':''?>><span class="nav-number">02.2</span><span>Atlas das eras</span></a>
+    <a href="<?=mat_url('atlas')?>" class="nav-item <?=$navPage==='atlas'?'active':''?>" <?=$navPage==='atlas'?'aria-current="page"':''?>><span class="nav-number">02.1</span><span>Atlas das eras</span></a>
+    <a href="<?=mat_url('linha')?>" class="nav-item <?=$navPage==='linha'?'active':''?>" <?=$navPage==='linha'?'aria-current="page"':''?>><span class="nav-number">02.2</span><span>Linha do tempo</span></a>
     <a href="<?=mat_url('acervo')?>" class="nav-item <?=$navPage==='acervo'?'active':''?>" <?=$navPage==='acervo'?'aria-current="page"':''?>><span class="nav-number">02.3</span><span>Acervo de marcos</span></a>
    </div>
   </details>

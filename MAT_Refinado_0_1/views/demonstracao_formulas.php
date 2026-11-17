@@ -223,197 +223,217 @@ $tLog = TemporisFinal::indice($k2026,$Kbase,'log');
 $tLeg = TemporisFinal::indice($k2026,$Kbase,'pot065');
 $ln1k = log1p(max(0.0,$k2026));
 $ln1k0 = log1p(max(0.0,$Kbase));
+$fonteLabel = $fonte==='curadoria' ? 'Curadoria ativa (MySQL)' : ($fonte==='final' ? 'Base isolada MAT Final (MySQL)' : ($fonte==='snapshot' ? 'Exportação estática (snapshot)' : 'Fonte automática'));
 ?>
 
-<style>
-  .demo-hero-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.75rem;margin:.5rem 0 0}
-  .demo-card{background:#fbfaf6;border:1px solid #e7dfd0;border-radius:12px;padding:.85rem .95rem}
-  .demo-card h3{margin:.1rem 0 .35rem;font-size:1rem}
-  .demo-card .big{font-size:1.35rem;font-weight:700;color:#17332d}
-  .demo-formula-block{background:#f7f4ec;border:1px solid #e3dccb;border-radius:10px;padding:.7rem .85rem;margin:.45rem 0;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.98rem;line-height:1.45}
-  .demo-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.8rem;margin-top:.6rem}
-  .demo-step{background:#fff;border:1px solid #e6dfd1;border-left:4px solid #0f766e;border-radius:10px;padding:.75rem .85rem}
-  .demo-step.alt-log{border-left-color:#5b6470}
-  .demo-step.alt-leg{border-left-color:#b45309}
-  .demo-step .k{display:inline-block;font-size:.75rem;letter-spacing:.04em;color:#5c6b66;font-weight:700;margin-bottom:.2rem}
-  .demo-step h4{margin:.05rem 0 .35rem;font-size:1rem}
-  .demo-step code{background:#f3efe5;padding:.05rem .3rem;border-radius:4px}
-  .demo-table-note{color:#56655f;font-size:.92rem;margin:.35rem 0 .6rem}
-  .demo-pill{display:inline-block;padding:.15rem .55rem;border-radius:999px;background:#eef3ef;color:#1f4a41;font-size:.8rem;font-weight:600;margin-left:.35rem}
-  .mat-final-chart svg{width:100%;height:auto;display:block}
-</style>
+<div class="mat-ed" id="mat-demo-formulas">
 
-<header class="page-heading">
-  <div class="section-overline">DEMONSTRAÇÃO SIMPLES / FÓRMULAS EM FUNCIONAMENTO</div>
-  <h1>Demonstrativo <em>das fórmulas.</em></h1>
-  <p>Página separada para mostrar, de forma clara, como os 4 modos de exibição funcionam na prática: mesma base de dados, mesmo acúmulo <strong>K(t)</strong> e comparações opcionais que transformam esse acúmulo em índice <strong>T(t)</strong>.</p>
-</header>
-
-<section class="paper-panel" style="margin-bottom:1rem">
-  <div class="panel-head"><span>CONEXÃO E DADOS ATUAIS</span><span>SOMENTE LEITURA</span></div>
-  <?php if ($erro): ?>
-    <div class="mat-final-warning" role="alert"><strong>Não foi possível carregar os dados:</strong> <?=h($erro)?></div>
-    <p>Tente outra fonte: <a href="<?=mat_url('demonstracao_formulas',['fonte'=>'auto','base'=>$base,'coorte'=>$coorte])?>">automática</a> · <a href="<?=mat_url('demonstracao_formulas',['fonte'=>'curadoria','base'=>$base,'coorte'=>$coorte])?>">curadoria (MySQL)</a> · <a href="<?=mat_url('demonstracao_formulas',['fonte'=>'final','base'=>$base,'coorte'=>$coorte])?>">MAT Final (MySQL)</a> · <a href="<?=mat_url('demonstracao_formulas',['fonte'=>'snapshot','base'=>$base,'coorte'=>$coorte])?>">snapshot</a></p>
-  <?php else: ?>
-    <div class="tf-source-bar" role="status" style="margin-bottom:.75rem">
-      <strong><?= $fonte==='curadoria' ? 'Conectado à curadoria atual (MySQL)' : ($fonte==='final' ? 'Conectado à base isolada MAT Final (MySQL)' : ($fonte==='snapshot' ? 'Usando exportação estática (snapshot)' : 'Fonte automática')) ?></strong>
-      <span>Origem: <code><?=h($banco)?></code></span>
-      <span>Solicitado: <?=h(TemporisFinal::FONTES[$fontePedida] ?? $fontePedida)?></span>
+  <header class="mat-ed-hero">
+    <div class="mat-ed-hero-top">
+      <span class="mat-ed-eyebrow"><span class="mat-ed-dot" aria-hidden="true"></span>ÍNDICE TÊMPORIS / DEMONSTRAÇÃO SIMPLES · FÓRMULAS EM FUNCIONAMENTO</span>
+      <span class="mat-ed-year">EDIÇÃO DE PESQUISA · MMXXVI</span>
     </div>
-    <form method="get" action="index.php" class="tf-form" style="margin-bottom:.5rem">
+    <div class="mat-ed-hero-body">
+      <div>
+        <h1>Demonstrativo <em>das fórmulas.</em></h1>
+        <p>Mesma base de dados, mesmo acúmulo <strong>K(t)</strong> — e as comparações opcionais que transformam esse acúmulo em índice <strong>T(t)</strong>. Cada passo fica aberto para conferência.</p>
+      </div>
+      <div class="mat-ed-hero-mark" aria-hidden="true"><span>4</span><small>FÓRMULAS À VISTA</small></div>
+    </div>
+<?php if(!$erro): ?>
+    <div class="mat-ed-hero-bottom">
+      <span><?=h($fonteLabel)?></span>
+      <span>Banco <code><?=h($banco)?></code></span>
+      <span><?=$fmt(count($pontos),0)?> marcos · somente leitura</span>
+    </div>
+<?php endif; ?>
+  </header>
+
+  <nav class="mat-ed-nav" aria-label="Ir para as seções da demonstração">
+    <a href="#demo-dados">Dados de hoje</a>
+    <a href="#demo-grafico">Gráfico comparativo</a>
+    <a href="#demo-passo">Passo a passo</a>
+    <a href="#demo-escalas">K bruto e escalas</a>
+    <a href="#demo-tabela">Resultados numéricos</a>
+  </nav>
+
+  <section id="demo-dados" class="mat-ed-section">
+    <div class="mat-ed-section-heading"><div><span class="mat-ed-overline">01 / CONEXÃO E DADOS ATUAIS</span><h2 id="demo-dados-t">De onde vêm os números <em>agora.</em></h2></div><span class="mat-ed-source-pill">Somente leitura</span></div>
+<?php if ($erro): ?>
+    <div class="mat-ed-warning" role="alert"><strong>Não foi possível carregar os dados:</strong> <?=h($erro)?>. Tente outra fonte: <a href="<?=mat_url('demonstracao_formulas',['fonte'=>'auto','base'=>$base,'coorte'=>$coorte])?>">automática</a> · <a href="<?=mat_url('demonstracao_formulas',['fonte'=>'curadoria','base'=>$base,'coorte'=>$coorte])?>">curadoria (MySQL)</a> · <a href="<?=mat_url('demonstracao_formulas',['fonte'=>'snapshot','base'=>$base,'coorte'=>$coorte])?>">snapshot</a>.</div>
+<?php else: ?>
+    <form method="get" action="index.php" class="mat-ed-console">
       <input type="hidden" name="page" value="demonstracao_formulas">
-      <div class="tf-form-main">
-        <label>Fonte de dados<select name="fonte"><?php foreach(TemporisFinal::FONTES as $id=>$desc): ?><option value="<?=h($id)?>" <?=$fontePedida===$id?'selected':''?>><?=h($desc)?></option><?php endforeach; ?></select></label>
-        <label>Seleção de marcos<select name="coorte"><?php foreach(TemporisFinal::COORTES as $id=>$desc): ?><option value="<?=h($id)?>" <?=$coorte===$id?'selected':''?>><?=h($desc)?></option><?php endforeach; ?></select></label>
-        <label>Ano-base (apenas opções relativas)<input type="number" name="base" value="<?=$base?>" min="1600" max="2000"></label>
-        <button class="btn btn-dark" type="submit">Recalcular</button>
+      <div class="mat-ed-console-head"><strong>Console da demonstração</strong><span>Origem: <code><?=h($banco)?></code> · Solicitado: <?=h(TemporisFinal::FONTES[$fontePedida] ?? $fontePedida)?></span></div>
+      <div class="mat-ed-console-fields">
+        <label><span>Fonte de dados</span><select name="fonte"><?php foreach(TemporisFinal::FONTES as $id=>$desc): ?><option value="<?=h($id)?>" <?=$fontePedida===$id?'selected':''?>><?=h($desc)?></option><?php endforeach; ?></select></label>
+        <label><span>Seleção de marcos</span><select name="coorte"><?php foreach(TemporisFinal::COORTES as $id=>$desc): ?><option value="<?=h($id)?>" <?=$coorte===$id?'selected':''?>><?=h($desc)?></option><?php endforeach; ?></select></label>
+        <label><span>Ano-base (escalas relativas)</span><input type="number" name="base" value="<?=$base?>" min="1600" max="2000"></label>
+        <button class="mat-ed-run" type="submit">Recalcular →</button>
       </div>
     </form>
-    <div class="demo-hero-grid">
-      <div class="demo-card"><div class="panel-head" style="margin:0 0 .3rem"><span>DADOS</span></div><div class="big"><?=$fmt(count($pontos),0)?></div><div>marcos na seleção atual (de <?=$fmt($dados['audit']['elegiveis'] ?? 0,0)?> elegíveis / <?=$fmt($dados['audit']['total'] ?? 0,0)?> na fonte)</div></div>
-      <div class="demo-card"><div class="panel-head" style="margin:0 0 .3rem"><span>ACÚMULO BASE</span></div><div class="big">K(<?=$base?>)=<?=$fmt($Kbase,3)?></div><div>referência usada apenas nas escalas opcionais</div></div>
-      <div class="demo-card"><div class="panel-head" style="margin:0 0 .3rem"><span>ACÚMULO ATUAL</span></div><div class="big">K(2026)=<?=$fmt($k2026,3)?></div><div>razão K(2026)/K(<?=$base?>) = <?=$ratio===null?'—':$fmt($ratio,4)?></div></div>
-      <div class="demo-card"><div class="panel-head" style="margin:0 0 .3rem"><span>RESULTADO FINAL</span></div><div class="big">K(2026)=<?=$fmt($tFinal,2)?></div><div>índice bruto atual, independente de ano-base</div></div>
+    <div class="mat-ed-cards" style="margin-top:16px">
+      <div class="mat-ed-card mat-ed-card-lead">
+        <span class="mat-ed-card-label">Marcos na seleção atual</span>
+        <div class="mat-ed-card-number"><?=$fmt(count($pontos),0)?></div>
+        <p>De <b><?=$fmt($dados['audit']['elegiveis'] ?? 0,0)?></b> elegíveis · <b><?=$fmt($dados['audit']['total'] ?? 0,0)?></b> na fonte.</p>
+      </div>
+      <div class="mat-ed-card">
+        <span class="mat-ed-card-label">Acúmulo no ano-base</span>
+        <div class="mat-ed-card-number">K(<?=$base?>) <span>=</span> <?=$fmt($Kbase,3)?></div>
+        <p>Referência usada apenas pelas escalas opcionais.</p>
+      </div>
+      <div class="mat-ed-card">
+        <span class="mat-ed-card-label">Acúmulo atual</span>
+        <div class="mat-ed-card-number">K(2026) <span>=</span> <?=$fmt($k2026,3)?></div>
+        <p>Razão K(2026)/K(<?=$base?>) = <b><?=$ratio===null?'—':$fmt($ratio,4)?></b>.</p>
+      </div>
+      <div class="mat-ed-card">
+        <span class="mat-ed-card-label">Resultado final · índice bruto</span>
+        <div class="mat-ed-card-number"><?=$fmt($tFinal,2)?></div>
+        <p>K(2026) sem ano-base — o valor usado na previsão.</p>
+      </div>
     </div>
     <?php if ($Kbase <= 0): ?>
-      <div class="mat-final-warning" style="margin-top:.75rem"><strong>Atenção:</strong> K(<?=$base?>)=0 nesta seleção; somente as escalas relativas ficam indefinidas. O índice bruto K(t) continua válido.</div>
+      <div class="mat-ed-warning" style="margin-top:15px"><strong>Atenção:</strong> K(<?=$base?>)=0 nesta seleção; somente as escalas relativas ficam indefinidas. O índice bruto K(t) continua válido.</div>
     <?php endif; ?>
-  <?php endif; ?>
-</section>
+<?php endif; ?>
+  </section>
 
 <?php if (!$erro): ?>
-<section class="paper-panel tf-chart-main" style="margin-bottom:1rem">
-  <div class="panel-head"><span>GRÁFICO COMPARATIVO</span><span>K(t) BRUTO E 3 ESCALAS OPCIONAIS</span></div>
-  <h2>Como cada fórmula transforma o mesmo acúmulo</h2>
-  <p>Mesmos marcos, mesmas datas e mesmos pesos → mesmo <strong>K(t)</strong>. O que muda é apenas a transformação matemática para obter <strong>T(t)</strong>. O acumulado bruto é o método atual; as demais curvas são apenas formas alternativas de apresentação.</p>
-  <div class="mat-final-chart"><?=$svgChart($tabela,$formulas,$base)?></div>
-  <p class="demo-table-note">Dica: passe o mouse sobre os pontos para ver os valores. Os anos do eixo horizontal estão na proporção temporal real.</p>
-</section>
+  <section id="demo-grafico" class="mat-ed-section" aria-labelledby="demo-grafico-t">
+    <div class="mat-ed-section-heading"><div><span class="mat-ed-overline">02 / GRÁFICO COMPARATIVO · K(t) BRUTO E 3 ESCALAS OPCIONAIS</span><h2 id="demo-grafico-t">Como cada fórmula transforma o <em>mesmo acúmulo</em></h2></div><span class="mat-ed-source-pill">Mesmos marcos · mesmos pesos</span></div>
+    <p class="mat-ed-intro">Mesmos marcos, mesmas datas e mesmos pesos → mesmo <strong>K(t)</strong>. O que muda é apenas a transformação matemática para obter <strong>T(t)</strong>. O acumulado bruto é o método atual; as demais curvas são apenas formas alternativas de apresentação.</p>
+    <div class="mat-ed-chart"><?=$svgChart($tabela,$formulas,$base)?></div>
+    <p class="mat-ed-table-note">Dica: passe o mouse sobre os pontos para ver os valores. Os anos do eixo horizontal estão na proporção temporal real.</p>
+  </section>
 
-<section class="paper-panel" style="margin-bottom:1rem">
-  <div class="panel-head"><span>DECOMPOSIÇÃO DA FÓRMULA (PASSO A PASSO)</span><span>DO MARCO AO ÍNDICE</span></div>
-  <h2>Como a fórmula funciona, parte por parte</h2>
-
-  <div class="demo-steps">
-    <div class="demo-step">
-      <span class="k">ETAPA 1 — NOTAS DO MARCO</span>
-      <h4>Rubricas (0 a 3)</h4>
-      <p>Cada marco recebe 11 notas, agrupadas em somas:</p>
-      <div class="demo-formula-block">S<sub>I</sub> = soma das 4 rubricas de Impacto ∈ [0,12]<br>S<sub>C</sub> = soma das 4 rubricas de Confiabilidade ∈ [0,12]<br>S<sub>F</sub> = soma das 3 rubricas de Fundação ∈ [0,9]</div>
-    </div>
-    <div class="demo-step">
-      <span class="k">ETAPA 2 — DIMENSÕES</span>
-      <h4>Conversão das somas em I, C, F</h4>
-      <div class="demo-formula-block">I = 1 + 9·(S<sub>I</sub>/12) &nbsp;⇒&nbsp; I ∈ [1, 10]<br>C = S<sub>C</sub>/12 &nbsp;⇒&nbsp; C ∈ [0, 1]<br>F = 1 + 0,5·(S<sub>F</sub>/9) &nbsp;⇒&nbsp; F ∈ [1; 1,5]</div>
-      <p class="demo-table-note">Médias na seleção atual: I=<?=$fmt($stats['I'],3)?>, C=<?=$fmt($stats['C'],3)?>, F=<?=$fmt($stats['F'],3)?>.</p>
-    </div>
-    <div class="demo-step">
-      <span class="k">ETAPA 3 — PESO DO MARCO</span>
-      <h4>Peso wᵢ e contribuição</h4>
-      <div class="demo-formula-block">fator impacto = (I / 10)<br>impacto² = (I / 10)²<br>wᵢ = (I / 10)² · C · F</div>
-      <p class="demo-table-note">Peso médio: w=<?=$fmt($stats['w'],4)?> (min <?=$fmt($stats['wmin'],4)?>, máx <?=$fmt($stats['wmax'],4)?>).</p>
-    </div>
-    <div class="demo-step">
-      <span class="k">ETAPA 4 — ACÚMULO NO TEMPO</span>
-      <h4>Construção de K(t)</h4>
-      <div class="demo-formula-block">K(t) = Σ wᵢ &nbsp; para todo marco i com ano tᵢ ≤ t</div>
-      <p>Exemplo com dados atuais: <code>K(<?=$base?>)=<?=$fmt($Kbase,4)?></code>, <code>K(2026)=<?=$fmt($k2026,4)?></code>.</p>
-    </div>
-  </div>
-
-  <?php if ($exemplo): 
-    $eI=(float)$exemplo['I']; $eC=(float)$exemplo['C']; $eF=(float)$exemplo['F']; $eW=(float)$exemplo['pesos']['quadratica'];
-    $eImp = $eI/10.0; $eImp2 = $eImp*$eImp; $eAno=(int)$exemplo['year'];
-  ?>
-  <details style="margin-top:.85rem" open>
-    <summary><strong>Exemplo real decomposto (1 marco do banco)</strong> — clique para expandir/recolher</summary>
-    <div class="demo-steps" style="margin-top:.7rem">
-      <div class="demo-step">
-        <span class="k">MARCO EXEMPLO</span>
-        <h4><?=h((string)$exemplo['titulo'])?> <span class="demo-pill"><?= $eAno ?></span></h4>
-        <p>ID: <code><?=h((string)$exemplo['id'])?></code><br>Dimensões calculadas a partir das notas: <code>I=<?=$fmt($eI,6)?></code>, <code>C=<?=$fmt($eC,6)?></code>, <code>F=<?=$fmt($eF,6)?></code></p>
+  <section id="demo-passo" class="mat-ed-section" aria-labelledby="demo-passo-t">
+    <div class="mat-ed-section-heading"><div><span class="mat-ed-overline">03 / DECOMPOSIÇÃO DA FÓRMULA · DO MARCO AO ÍNDICE</span><h2 id="demo-passo-t">Como a fórmula funciona, <em>parte por parte</em></h2></div><span class="mat-ed-source-pill">4 etapas</span></div>
+    <div class="mat-ed-steps">
+      <div class="mat-ed-step">
+        <span class="mat-ed-step-k">Etapa 1 · Notas do marco</span>
+        <h4>Rubricas (0 a 3)</h4>
+        <p>Cada marco recebe 11 notas, agrupadas em somas:</p>
+        <div class="mat-ed-formula">S<sub>I</sub> = soma das 4 rubricas de Impacto ∈ [0,12]<br>S<sub>C</sub> = soma das 4 rubricas de Confiabilidade ∈ [0,12]<br>S<sub>F</sub> = soma das 3 rubricas de Fundação ∈ [0,9]</div>
       </div>
-      <div class="demo-step">
-        <span class="k">CÁLCULO DO PESO wᵢ</span>
-        <h4>Substituindo na fórmula</h4>
-        <div class="demo-formula-block">(I/10) = <?=$fmt($eI,6)?> / 10 = <?=$fmt($eImp,6)?><br>(I/10)² = <?=$fmt($eImp,6)?>² = <?=$fmt($eImp2,6)?><br>wᵢ = <?=$fmt($eImp2,6)?> · <?=$fmt($eC,6)?> · <?=$fmt($eF,6)?><br><strong>wᵢ = <?=$fmt($eW,6)?></strong></div>
+      <div class="mat-ed-step">
+        <span class="mat-ed-step-k">Etapa 2 · Dimensões</span>
+        <h4>Conversão das somas em I, C, F</h4>
+        <div class="mat-ed-formula">I = 1 + 9·(S<sub>I</sub>/12) &nbsp;⇒&nbsp; I ∈ [1, 10]<br>C = S<sub>C</sub>/12 &nbsp;⇒&nbsp; C ∈ [0, 1]<br>F = 1 + 0,5·(S<sub>F</sub>/9) &nbsp;⇒&nbsp; F ∈ [1; 1,5]</div>
+        <p>Médias na seleção atual: I=<?=$fmt($stats['I'],3)?>, C=<?=$fmt($stats['C'],3)?>, F=<?=$fmt($stats['F'],3)?>.</p>
       </div>
-      <div class="demo-step">
-        <span class="k">CONTRIBUIÇÃO PARA K(t)</span>
-        <h4>Efeito no acúmulo</h4>
-        <p>Esse marco soma <strong><?=$fmt($eW,6)?></strong> a <code>K(t)</code> em todos os anos <code>t ≥ <?=$eAno?></code>. K(t) é o próprio Têmporis principal; escalas normalizadas são secundárias.</p>
+      <div class="mat-ed-step">
+        <span class="mat-ed-step-k">Etapa 3 · Peso do marco</span>
+        <h4>Peso wᵢ e contribuição</h4>
+        <div class="mat-ed-formula">fator impacto = (I / 10)<br>impacto² = (I / 10)²<br>wᵢ = (I / 10)² · C · F</div>
+        <p>Peso médio: w=<?=$fmt($stats['w'],4)?> (min <?=$fmt($stats['wmin'],4)?>, máx <?=$fmt($stats['wmax'],4)?>).</p>
+      </div>
+      <div class="mat-ed-step">
+        <span class="mat-ed-step-k">Etapa 4 · Acúmulo no tempo</span>
+        <h4>Construção de K(t)</h4>
+        <div class="mat-ed-formula">K(t) = Σ wᵢ &nbsp; para todo marco i com ano tᵢ ≤ t</div>
+        <p>Exemplo com dados atuais: <code>K(<?=$base?>)=<?=$fmt($Kbase,4)?></code>, <code>K(2026)=<?=$fmt($k2026,4)?></code>.</p>
       </div>
     </div>
-  </details>
-  <?php endif; ?>
-</section>
 
-<section class="paper-panel" style="margin-bottom:1rem">
-  <div class="panel-head"><span>ÍNDICE PRINCIPAL E ESCALAS COMPARATIVAS</span><span>ANO 2026, BASE OPCIONAL <?=$base?></span></div>
-  <h2>Mesmo acervo: primeiro K bruto, depois comparação</h2>
-  <div class="demo-steps">
-    <div class="demo-step" style="border-left-color:#0f766e">
-      <span class="k">FÓRMULA PRINCIPAL — K(t)</span>
-      <h4>Acumulado bruto</h4>
-      <div class="demo-formula-block">K(t) = Σ wᵢ, anoᵢ ≤ t<br><br>K(2026) = <strong><?=$fmt($tFinal,6)?></strong></div>
-      <p>Esta é a medida que usamos na previsão. 1900 não participa deste cálculo.</p>
-    </div>
-    <div class="demo-step">
-      <span class="k">ESCALA OPCIONAL — PROPORCIONAL</span>
-      <h4>Ano-base = 100 (comparação)</h4>
-      <div class="demo-formula-block">N(t) = 100 · K(t) / K(<?=$base?>)<br>N(2026) = <?=$fmt(TemporisFinal::indice($k2026,$Kbase,'empirica'),6)?></div>
-      <p>É uma regra de exibição; o crescimento bruto continua inalterado.</p>
-    </div>
-    <div class="demo-step alt-log">
-      <span class="k">ESCALA OPCIONAL — REFORMULADA</span>
-      <h4>Transformação logarítmica</h4>
-      <div class="demo-formula-block">T(t) = 100 · ln(1 + K(t)) / ln(1 + K(t₀))<br><br>ln(1 + K(2026)) = ln(1 + <?=$fmt($k2026,6)?>) = <strong><?=$fmt($ln1k,6)?></strong><br>ln(1 + K(<?=$base?>)) = ln(1 + <?=$fmt($Kbase,6)?>) = <strong><?=$fmt($ln1k0,6)?></strong><br>T(2026) = 100 · <?=$fmt($ln1k,6)?> / <?=$fmt($ln1k0,6)?> = <strong><?=$fmt($tLog,6)?></strong></div>
-      <p>Interpretação: comprime a escala quando K cresce muito.</p>
-    </div>
-    <div class="demo-step alt-leg">
-      <span class="k">ESCALA OPCIONAL — LEGADA (ADAPTADA)</span>
-      <h4>Potência 0,65</h4>
-      <div class="demo-formula-block">T(t) = 100 · (K(t) / K(t₀))^0,65<br><br>R = K(2026)/K(<?=$base?>) = <strong><?=$ratio===null?'—':$fmt($ratio,6)?></strong><br>R^0,65 = (<?=$ratio===null?'—':$fmt($ratio,6)?>)^0,65 = <strong><?=$ratio===null?'—':$fmt(pow((float)$ratio,0.65),6)?></strong><br>T(2026) = 100 · R^0,65 = <strong><?=$fmt($tLeg,6)?></strong></div>
-      <p>Interpretação: atenua o crescimento pela potência &lt; 1.</p>
-    </div>
-  </div>
-</section>
+    <?php if ($exemplo): 
+      $eI=(float)$exemplo['I']; $eC=(float)$exemplo['C']; $eF=(float)$exemplo['F']; $eW=(float)$exemplo['pesos']['quadratica'];
+      $eImp = $eI/10.0; $eImp2 = $eImp*$eImp; $eAno=(int)$exemplo['year'];
+    ?>
+    <details class="mat-ed-details" style="margin-top:14px" open>
+      <summary><strong>Exemplo real decomposto (1 marco do banco)</strong></summary>
+      <div class="mat-ed-details-body">
+        <div class="mat-ed-steps">
+          <div class="mat-ed-step">
+            <span class="mat-ed-step-k">Marco exemplo</span>
+            <h4><?=h((string)$exemplo['titulo'])?> <span class="mat-ed-row-mark"><?=$eAno?></span></h4>
+            <p>ID: <code><?=h((string)$exemplo['id'])?></code><br>Dimensões calculadas a partir das notas: <code>I=<?=$fmt($eI,6)?></code>, <code>C=<?=$fmt($eC,6)?></code>, <code>F=<?=$fmt($eF,6)?></code></p>
+          </div>
+          <div class="mat-ed-step">
+            <span class="mat-ed-step-k">Cálculo do peso wᵢ</span>
+            <h4>Substituindo na fórmula</h4>
+            <div class="mat-ed-formula">(I/10) = <?=$fmt($eI,6)?> / 10 = <?=$fmt($eImp,6)?><br>(I/10)² = <?=$fmt($eImp,6)?>² = <?=$fmt($eImp2,6)?><br>wᵢ = <?=$fmt($eImp2,6)?> · <?=$fmt($eC,6)?> · <?=$fmt($eF,6)?><br><strong>wᵢ = <?=$fmt($eW,6)?></strong></div>
+          </div>
+          <div class="mat-ed-step">
+            <span class="mat-ed-step-k">Contribuição para K(t)</span>
+            <h4>Efeito no acúmulo</h4>
+            <p>Esse marco soma <strong><?=$fmt($eW,6)?></strong> a <code>K(t)</code> em todos os anos <code>t ≥ <?=$eAno?></code>. K(t) é o próprio Têmporis principal; escalas normalizadas são secundárias.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+    <?php endif; ?>
+  </section>
 
-<section class="paper-panel" style="margin-bottom:1rem">
-  <div class="panel-head"><span>RESULTADOS NUMÉRICOS</span><span>TABELA COMPARATIVA POR ANO</span></div>
-  <h2>Valores calculados (mesma base de dados)</h2>
-  <div class="mat-final-table-wrap">
-    <table class="mat-final-table">
-      <thead>
-        <tr>
-          <th>Ano</th>
-          <th>K(t) — acúmulo</th>
-          <th>Razão K/K(<?=$base?>)</th>
-          <th>Relativa (base 100)</th>
-          <th>Reformulada (log)</th>
-          <th>Legada (pot. 0,65)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php foreach($tabela as $row): $isBase=((int)$row['ano']===$base); $rk = ($Kbase>0)?($row['k']/$Kbase):null; ?>
-        <tr <?=$isBase?'class="mat-final-adotada"':''?>>
-          <th><?= (int)$row['ano'] ?><?=$isBase?' (base)':''?></th>
-          <td><?=$fmt($row['k'],4)?></td>
-          <td><?=$rk===null?'—':$fmt($rk,4)?></td>
-          <td><strong><?=$fmt($row['empirica'],4)?></strong></td>
-          <td><?=$fmt($row['log'],4)?></td>
-          <td><?=$fmt($row['pot065'],4)?></td>
-        </tr>
-        <?php endforeach; ?>
-      </tbody>
-    </table>
-  </div>
-  <p class="demo-table-note">A primeira coluna numérica, <strong>K(t) bruto</strong>, é o índice científico principal. As demais são transformações opcionais usadas apenas para comparar escalas. Os modelos preditivos usam K(t), sem base 100.</p>
-</section>
+  <section id="demo-escalas" class="mat-ed-section" aria-labelledby="demo-escalas-t">
+    <div class="mat-ed-section-heading"><div><span class="mat-ed-overline">04 / ÍNDICE PRINCIPAL E ESCALAS COMPARATIVAS · ANO 2026, BASE OPCIONAL <?=$base?></span><h2 id="demo-escalas-t">Primeiro o K bruto, <em>depois a comparação</em></h2></div><span class="mat-ed-source-pill">Mesmo acervo</span></div>
+    <div class="mat-ed-steps">
+      <div class="mat-ed-step">
+        <span class="mat-ed-step-k">Fórmula principal · K(t)</span>
+        <h4>Acumulado bruto</h4>
+        <div class="mat-ed-formula">K(t) = Σ wᵢ, anoᵢ ≤ t<br><br>K(2026) = <strong><?=$fmt($tFinal,6)?></strong></div>
+        <p>Esta é a medida que usamos na previsão. 1900 não participa deste cálculo.</p>
+      </div>
+      <div class="mat-ed-step mat-ed-step-alt-rel">
+        <span class="mat-ed-step-k">Escala opcional · proporcional</span>
+        <h4>Ano-base = 100 (comparação)</h4>
+        <div class="mat-ed-formula">N(t) = 100 · K(t) / K(<?=$base?>)<br>N(2026) = <?=$fmt(TemporisFinal::indice($k2026,$Kbase,'empirica'),6)?></div>
+        <p>É uma regra de exibição; o crescimento bruto continua inalterado.</p>
+      </div>
+      <div class="mat-ed-step mat-ed-step-alt-log">
+        <span class="mat-ed-step-k">Escala opcional · reformulada</span>
+        <h4>Transformação logarítmica</h4>
+        <div class="mat-ed-formula">T(t) = 100 · ln(1 + K(t)) / ln(1 + K(t₀))<br><br>ln(1 + K(2026)) = ln(1 + <?=$fmt($k2026,6)?>) = <strong><?=$fmt($ln1k,6)?></strong><br>ln(1 + K(<?=$base?>)) = ln(1 + <?=$fmt($Kbase,6)?>) = <strong><?=$fmt($ln1k0,6)?></strong><br>T(2026) = 100 · <?=$fmt($ln1k,6)?> / <?=$fmt($ln1k0,6)?> = <strong><?=$fmt($tLog,6)?></strong></div>
+        <p>Interpretação: comprime a escala quando K cresce muito.</p>
+      </div>
+      <div class="mat-ed-step mat-ed-step-alt-leg">
+        <span class="mat-ed-step-k">Escala opcional · legada (adaptada)</span>
+        <h4>Potência 0,65</h4>
+        <div class="mat-ed-formula">T(t) = 100 · (K(t) / K(t₀))^0,65<br><br>R = K(2026)/K(<?=$base?>) = <strong><?=$ratio===null?'—':$fmt($ratio,6)?></strong><br>R^0,65 = (<?=$ratio===null?'—':$fmt($ratio,6)?>)^0,65 = <strong><?=$ratio===null?'—':$fmt(pow((float)$ratio,0.65),6)?></strong><br>T(2026) = 100 · R^0,65 = <strong><?=$fmt($tLeg,6)?></strong></div>
+        <p>Interpretação: atenua o crescimento pela potência &lt; 1.</p>
+      </div>
+    </div>
+  </section>
 
-<section class="paper-panel">
-  <div class="panel-head"><span>APRESENTAÇÃO</span><span>USO RÁPIDO</span></div>
-  <p><strong>Link direto:</strong> <code><?=h((isset($_SERVER['HTTP_HOST'])?((!empty($_SERVER['HTTPS'])?'https':'http').'://'.$_SERVER['HTTP_HOST']):'').strtok($_SERVER['REQUEST_URI'] ?? 'index.php?page=demonstracao_formulas','?'))?>?page=demonstracao_formulas</code></p>
-  <p>Esta página é demonstrativa e de somente leitura: ela não altera notas nem aprova marcos. Os resultados dependem da fonte, da seleção e do ano-base escolhidos.</p>
-</section>
+  <section id="demo-tabela" class="mat-ed-section" aria-labelledby="demo-tabela-t">
+    <div class="mat-ed-section-heading"><div><span class="mat-ed-overline">05 / RESULTADOS NUMÉRICOS · TABELA COMPARATIVA POR ANO</span><h2 id="demo-tabela-t">Valores calculados, <em>mesma base de dados</em></h2></div><span class="mat-ed-source-pill">Ano-base <?=$base?> = 100</span></div>
+    <div class="mat-ed-table-wrap">
+      <table class="mat-ed-table">
+        <thead>
+          <tr>
+            <th>Ano</th>
+            <th>K(t) — acúmulo</th>
+            <th>Razão K/K(<?=$base?>)</th>
+            <th>Relativa (base 100)</th>
+            <th>Reformulada (log)</th>
+            <th>Legada (pot. 0,65)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach($tabela as $row): $isBase=((int)$row['ano']===$base); $rk = ($Kbase>0)?($row['k']/$Kbase):null; ?>
+          <tr <?=$isBase?'class="mat-ed-featured-row"':''?>>
+            <th><?= (int)$row['ano'] ?><?=$isBase?' (base)':''?></th>
+            <td><?=$fmt($row['k'],4)?></td>
+            <td><?=$rk===null?'—':$fmt($rk,4)?></td>
+            <td><span class="mat-ed-result"><?=$fmt($row['empirica'],4)?></span></td>
+            <td><?=$fmt($row['log'],4)?></td>
+            <td><?=$fmt($row['pot065'],4)?></td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+    <p class="mat-ed-table-note">A primeira coluna numérica, <strong>K(t) bruto</strong>, é o índice científico principal. As demais são transformações opcionais usadas apenas para comparar escalas. Os modelos preditivos usam K(t), sem base 100.</p>
+  </section>
+
+  <footer class="mat-ed-footnote">
+    <p><strong>Uso rápido:</strong> link direto <code><?=h((isset($_SERVER['HTTP_HOST'])?((!empty($_SERVER['HTTPS'])?'https':'http').'://'.$_SERVER['HTTP_HOST']):'').strtok($_SERVER['REQUEST_URI'] ?? 'index.php?page=demonstracao_formulas','?'))?>?page=demonstracao_formulas</code>. Esta página é demonstrativa e de somente leitura: não altera notas nem aprova marcos. Os resultados dependem da fonte, da seleção e do ano-base escolhidos.</p>
+    <div class="mat-ed-actions">
+      <a class="mat-ed-button" href="<?=mat_url('metodo')?>">Caderno de fórmulas →</a>
+      <a class="mat-ed-button" href="<?=mat_url('backtesting')?>">Teste das previsões →</a>
+      <a class="mat-ed-textlink" href="<?=mat_url('temporis')?>">Voltar ao Índice Têmporis</a>
+    </div>
+  </footer>
 <?php endif; ?>
+</div>

@@ -21,9 +21,9 @@ $g=TemporisGraficos::svgDecisoes([['id'=>'MCD-1','year'=>1800,'title'=>'Teste','
 ok(str_contains($g,'MCD-1') && str_contains($g,'MCD-2') && str_contains($g,'ano exato'),'Regua historica com tooltip e sem etiquetas por ponto');
 $root=dirname(__DIR__);
 $matProj=file_get_contents($root.'/mat_proj/index.php');
-ok(str_contains($matProj,"page']='projecoes'") && !str_contains($matProj,'EXEMPLO_SINTETICO.csv'),'MAT-Proj usa pagina cientifica integrada');
-$proj=file_get_contents($root.'/views/projecoes.php');
-ok(str_contains($proj,'TemporisMetodologia2026::compararMesmosCortes') && str_contains($proj,'TemporisMetodologia2026::confronto'),'MAT-Proj usa K bruto e validação por cortes cegos');
+ok(str_contains($matProj,"page']='backtesting'") && !str_contains($matProj,'EXEMPLO_SINTETICO.csv'),'MAT-Proj usa pagina cientifica integrada (Backtesting)');
+$proj=file_get_contents($root.'/views/backtesting.php');
+ok(str_contains($proj,'TemporisMetodologia2026::compararMesmosCortes') && str_contains($proj,'TemporisFinal::validar'),'MAT-Proj usa K bruto e validação por cortes cegos');
 $did=file_get_contents($root.'/resultado_temporis_piloto.php');
 ok(!str_contains($did,'Location: experimento_temporis.php'),'Ensaio didatico e backtest nao sao mesmo destino');
 $nav=file_get_contents($root.'/views/header.php');

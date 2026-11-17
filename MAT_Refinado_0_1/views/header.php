@@ -9,9 +9,9 @@
 <link rel="icon" href="assets/insignia.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css?v=1.4">
 <link rel="stylesheet" href="assets/mat-final.css?v=1">
-<?php if($page==='metodo'): ?><link rel="stylesheet" href="assets/metodo-tres-versoes.css?v=1"><?php endif; ?>
 <?php if($page==='destaques_previsoes'): ?><link rel="stylesheet" href="assets/destaques-previsoes.css?v=5"><?php endif; ?>
-<?php if($page==='backtesting'): ?><link rel="stylesheet" href="assets/backtesting-previsoes.css?v=1"><?php endif; ?>
+<?php if($page==='backtesting'||in_array($page,['temporis','temporis_final'],true)): ?><link rel="stylesheet" href="assets/backtesting-previsoes.css?v=2"><?php endif; ?>
+<?php if(in_array($page, ['demonstracao_formulas','metodo','temporis_legado','temporis_reformulado'], true)): ?><link rel="stylesheet" href="assets/temporis-editorial.css?v=2"><?php endif; ?>
 <?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=28"><?php endif; ?>
 <?php if(is_file(MAT_ROOT . '/assets/temporis-0-2.css')): ?><link rel="stylesheet" href="assets/temporis-0-2.css?v=1"><?php endif; ?>
 <link rel="stylesheet" href="assets/progresso-marcos.css?v=1">
@@ -52,7 +52,7 @@
  // A página ativa abre automaticamente o seu grupo (inclusive sem JavaScript).
  $matScript = basename((string)($_SERVER['SCRIPT_NAME'] ?? ''));
  $grupoHistoria = in_array($navPage, ['linha','atlas','acervo'], true);
- $grupoTemporis = in_array($navPage, ['temporis','temporis_final','temporis_reformulado','temporis_legado','destaques_previsoes','demonstracao_formulas','metodo','backtesting','projecoes','ensaio_didatico'], true)
+ $grupoTemporis = in_array($navPage, ['temporis','temporis_final','temporis_reformulado','temporis_legado','destaques_previsoes','demonstracao_formulas','metodo','backtesting','ensaio_didatico'], true)
      || in_array($matScript, ['experimento_temporis.php','resultado_temporis_piloto.php'], true);
   $grupoPesquisa = in_array($navPage, ['laboratorio','laboratorio','rodadas','fila_rapida','andamento','importar','fontes','duplicatas','editar'], true)
      || in_array($matScript, ['assistente_ia.php','triagem_300_reais.php'], true);
@@ -84,7 +84,7 @@
       <a href="<?=mat_url('temporis_legado')?>" class="nav-item <?=$navPage==='temporis_legado'?'active':''?>"><span class="nav-number">↳</span><span>Legada · potência 0,65</span></a>
      </div>
     </details>
-    <a href="<?=mat_url('projecoes')?>" class="nav-item <?=$navPage==='projecoes'?'active':''?>" <?=$navPage==='projecoes'?'aria-current="page"':''?>><span class="nav-number">03.6</span><span>Previsões · Têmporis bruto</span></a>
+
    </div>
   </details>
   <details class="mat-nav-group" data-nav-group="pesquisa" <?=$grupoPesquisa?'open':''?>>
@@ -131,7 +131,7 @@
   <?php
     $matBreadcrumbGroup = match($navPage) {
         'linha','atlas','acervo' => 'Exploração histórica',
-        'temporis','temporis_final','temporis_reformulado','temporis_legado','destaques_previsoes','demonstracao_formulas','metodo','backtesting','projecoes','ensaio_didatico' => 'Índice Têmporis',
+        'temporis','temporis_final','temporis_reformulado','temporis_legado','destaques_previsoes','demonstracao_formulas','metodo','backtesting','ensaio_didatico' => 'Índice Têmporis',
         'laboratorio','laboratorio','rodadas','fila_rapida','andamento','importar','fontes','duplicatas','editar','login' => 'Pesquisa e curadoria',
         default => null,
     };

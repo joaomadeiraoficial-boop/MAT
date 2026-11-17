@@ -9,7 +9,7 @@ if (is_admin()) {
     if (is_file(MAT_ROOT . '/experimento_temporis.php')) $matHomeActions[] = ['experimento_temporis.php', 'Teste histórico Têmporis', 'Previsão 1920 → 2020, comparação e erros'];
     $matHomeActions[] = ['index.php?page=importar', 'Importar cronologias', 'Preparação e revisão de candidatos'];
     if (is_dir(MAT_ROOT . '/mat_proj')) {
-        $matHomeActions[] = [mat_url('projecoes'), 'Previsões Têmporis', 'Comparar modelos e erro WAPE nos mesmos cortes históricos'];
+        $matHomeActions[] = [mat_url('backtesting'), 'Teste das previsões', 'Comparar modelos e erro WAPE nos mesmos cortes históricos'];
     }
     if (is_file(MAT_ROOT . '/views/avaliacao.php') && isset($pageLabels['avaliacao'])) {
         $matHomeActions[] = ['index.php?page=avaliacao', 'Avaliar 11 critérios', 'Rubricas e validação humana'];

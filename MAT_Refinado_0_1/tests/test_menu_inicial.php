@@ -12,6 +12,7 @@ assertion(str_contains($home,'mat_acessos_inicio.php'),'Atalhos da pagina inicia
 assertion(str_contains($shortcuts,'mat-home-access-grid'),'Atalhos visuais preparados');
 assertion(substr_count($header,'MAT_NAV_EXTENSIONS_V07_START')===1,'Menu nao duplicado');
 assertion(substr_count($home,'mat_acessos_inicio.php')===1,'Atalhos nao duplicados');
-assertion(str_contains($header,'Caderno de fórmulas') && str_contains($header,'Acervo de marcos'),'Menu original preservado');
+assertion(str_contains($header,'Caderno de fórmulas') && str_contains($header,'Atlas das eras') && str_contains($header,'Linha do tempo'),'Exploração histórica com Atlas e Linha do tempo');
+assertion(!str_contains($header,'page=acervo'),'Acervo fundido na Linha do tempo (sem aba própria)');
 if($err){echo 'MAT MENU: FALHA NO TESTE'.PHP_EOL;exit(1);}
 echo 'MAT MENU: TESTES APROVADOS.' . PHP_EOL;

@@ -48,3 +48,10 @@
 .mat-tl-title-plain{color:#173b30}
 .mat-tl-locked{font-weight:650;color:#8a988e}
 .mat-tl-row:target{outline:2px solid #b88635;outline-offset:4px;border-radius:12px;background:#fbf7ec}
+/* Registros aguardando ano */
+.mat-tl-sem{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:11px}
+.mat-tl-sem-row{background:#fff;border:1px solid #e3e8df;border-radius:11px;padding:13px 16px;display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0}
+.mat-tl-sem-row h3{margin:0;font:normal 1rem/1.35 Georgia,'Times New Roman',serif;color:#173b30;letter-spacing:-.01em}
+.mat-tl-sem-row h3 a{color:#173b30;text-decoration:none}
+.mat-tl-sem-row h3 a:hover,.mat-tl-sem-row h3 a:focus-visible{color:#0d4a34;text-decoration:underline}
+@media(max-width:760px){.mat-tl-sem{grid-template-columns:1fr}}

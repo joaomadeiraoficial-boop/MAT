@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="assets/mat-final.css?v=1">
 <?php if($page==='destaques_previsoes'): ?><link rel="stylesheet" href="assets/destaques-previsoes.css?v=5"><?php endif; ?>
 <?php if($page==='backtesting'||in_array($page,['temporis','temporis_final'],true)): ?><link rel="stylesheet" href="assets/backtesting-previsoes.css?v=3"><?php endif; ?>
-<?php if($page==='linha'): ?><link rel="stylesheet" href="assets/backtesting-previsoes.css?v=3"><link rel="stylesheet" href="assets/linha-timeline.css?v=4"><?php endif; ?>
+<?php if($page==='linha'): ?><link rel="stylesheet" href="assets/backtesting-previsoes.css?v=3"><link rel="stylesheet" href="assets/linha-timeline.css?v=5"><?php endif; ?>
 <?php if(in_array($page, ['demonstracao_formulas','metodo','temporis_legado','temporis_reformulado'], true)): ?><link rel="stylesheet" href="assets/temporis-editorial.css?v=2"><?php endif; ?>
 <?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=28"><?php endif; ?>
 <?php if(is_file(MAT_ROOT . '/assets/temporis-0-2.css')): ?><link rel="stylesheet" href="assets/temporis-0-2.css?v=1"><?php endif; ?>
@@ -67,7 +67,6 @@
    <div class="mat-nav-submenu">
     <a href="<?=mat_url('atlas')?>" class="nav-item <?=$navPage==='atlas'?'active':''?>" <?=$navPage==='atlas'?'aria-current="page"':''?>><span class="nav-number">02.1</span><span>Atlas das eras</span></a>
     <a href="<?=mat_url('linha')?>" class="nav-item <?=$navPage==='linha'?'active':''?>" <?=$navPage==='linha'?'aria-current="page"':''?>><span class="nav-number">02.2</span><span>Linha do tempo</span></a>
-    <a href="<?=mat_url('acervo')?>" class="nav-item <?=$navPage==='acervo'?'active':''?>" <?=$navPage==='acervo'?'aria-current="page"':''?>><span class="nav-number">02.3</span><span>Acervo de marcos</span></a>
    </div>
   </details>
   <details class="mat-nav-group" data-nav-group="temporis" <?=$grupoTemporis?'open':''?>>
@@ -138,7 +137,7 @@
     };
   ?>
   <div class="breadcrumbs">MAT <span class="slash">/</span> <?php if($matBreadcrumbGroup): ?><?=h($matBreadcrumbGroup)?> <span class="slash">/</span><?php endif; ?><?=h($pageLabels[$page]??'Observatório')?></div>
-  <div class="topbar-right"><span class="edition">EDIÇÃO DE PESQUISA <strong>MMXXVI</strong></span><span class="topbar-rule"></span><a class="topbar-action" href="<?=mat_url('acervo')?>">Explorar acervo <span>↗</span></a></div>
+  <div class="topbar-right"><span class="edition">EDIÇÃO DE PESQUISA <strong>MMXXVI</strong></span><span class="topbar-rule"></span><a class="topbar-action" href="<?=mat_url('linha')?>">Explorar o tempo <span>↗</span></a></div>
 </header>
 <main id="conteudo" class="main-content">
 <?php if($flash):?><div class="flash <?=h($flash['type'])?>" role="status"><?=h($flash['message'])?></div><?php endif;?>

@@ -13,7 +13,8 @@
 <?php if($page==='backtesting'||in_array($page,['temporis','temporis_final'],true)): ?><link rel="stylesheet" href="assets/backtesting-previsoes.css?v=3"><?php endif; ?>
 <?php if($page==='linha'): ?><link rel="stylesheet" href="assets/backtesting-previsoes.css?v=3"><link rel="stylesheet" href="assets/linha-timeline.css?v=5"><?php endif; ?>
 <?php if(in_array($page, ['demonstracao_formulas','metodo','temporis_legado','temporis_reformulado'], true)): ?><link rel="stylesheet" href="assets/temporis-editorial.css?v=2"><?php endif; ?>
-<?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=28"><?php endif; ?>
+<?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=28"><link rel="stylesheet" href="assets/atlas-pagina.css?v=2"><?php endif; ?>
+<?php if($page==='observatorio'): ?><link rel="stylesheet" href="assets/observatorio-eras.css?v=2"><?php endif; ?>
 <?php if(is_file(MAT_ROOT . '/assets/temporis-0-2.css')): ?><link rel="stylesheet" href="assets/temporis-0-2.css?v=1"><?php endif; ?>
 <link rel="stylesheet" href="assets/progresso-marcos.css?v=1">
 <link rel="stylesheet" href="assets/navegacao-grupos.css?v=1">

@@ -34,6 +34,47 @@ $matErasMax=1;foreach($matEras as $k=>$i){$matErasMax=max($matErasMax,(int)$i['p
 <section class="mat-home-eras" aria-label="As sete eras da curadoria">
  <div class="section-overline">EXPLORAÇÃO HISTÓRICA <span class="overline-sep">/</span> AS SETE ERAS</div>
  <div class="mat-home-eras-heading"><h2>Um inventário em <em>sete eras.</em></h2><a href="<?=mat_url('atlas')?>">Abrir o Atlas completo ↗</a></div>
+<?php if($matErasOk): ?>
+ <div class="mat-time-machine" data-tm data-era="prehistoria">
+  <?php include __DIR__ . '/observatorio-cenas.php'; ?>
+  <div class="mat-tm-head">
+   <div>
+    <span class="mat-tm-kicker">MÁQUINA DO TEMPO <span class="mat-tm-status" data-tm-status>desligada</span></span>
+    <p>Cada era tem sua própria cena de fundo. No modo desligado ela fica estática, sem listeners; ao ativar, as camadas passam a acompanhar o mouse.</p>
+   </div>
+   <button type="button" class="mat-tm-toggle" data-tm-toggle aria-pressed="false" aria-controls="mat-tm-stage">
+    <span class="mat-tm-toggle-dot" aria-hidden="true"></span>
+    <span data-tm-toggle-label>Ativar modo interativo</span>
+   </button>
+  </div>
+  <div class="mat-tm-stage" id="mat-tm-stage" data-tm-stage hidden>
+   <div class="mat-tm-view">
+    <div class="mat-tm-view-body">
+    <div class="mat-tm-view-head"><span class="mat-tm-count" data-tm-count>01 / 07</span><span class="mat-tm-flag">ERA SELECIONADA</span></div>
+    <h3 data-tm-name>—</h3>
+    <p data-tm-dates>—</p>
+    <div class="mat-tm-metrics">
+     <div><strong data-tm-total>0</strong><small>candidatos com ano</small></div>
+     <div><strong data-tm-approved>0</strong><small>aprovados pelo pesquisador</small></div>
+    </div>
+    <a class="mat-tm-link" data-tm-link href="<?=mat_url('atlas')?>">Abrir esta era no Atlas ↗</a>
+    </div>
+   </div>
+   <div class="mat-tm-control">
+    <label class="mat-tm-range-label" for="mat-tm-range">Arraste para atravessar as eras</label>
+    <input class="mat-tm-range" id="mat-tm-range" data-tm-range type="range" min="0" max="<?=max(0,count($matEras)-1)?>" step="1" value="0">
+    <div class="mat-tm-ticks" role="group" aria-label="Escolher uma era diretamente">
+    <?php $matEraIndex=0;foreach($matEras as $matEraKey=>$matEraInfo):$matEraTot=(int)$matEraInfo['preparacao'];$matEraAp=(int)$matEraInfo['cur_aprovados'];$matEraShort=$matEraKey==='contemporanea'?'Presente':preg_replace('/^Era /u','',$matEraInfo['nome']);$matEraIndex++; ?>
+     <button type="button" class="mat-tm-tick" data-tm-tick data-tm-index="<?=$matEraIndex-1?>" data-tm-era="<?=h($matEraKey)?>" data-tm-name="<?=h($matEraInfo['nome'])?>" data-tm-dates="<?=h($matEraInfo['datas'])?>" data-tm-total="<?=$matEraTot?>" data-tm-approved="<?=$matEraAp?>" data-tm-url="<?=h(mat_url('atlas',['era'=>$matEraKey]))?>" aria-pressed="false" aria-label="<?=h($matEraInfo['nome'])?> · <?=h($matEraInfo['datas'])?>">
+      <span><?=str_pad((string)$matEraIndex,2,'0',STR_PAD_LEFT)?></span><b><?=h($matEraShort)?></b><small><?=h($matEraInfo['datas'])?></small>
+     </button>
+    <?php endforeach; ?>
+    </div>
+   </div>
+  </div>
+  <p class="mat-tm-note" data-tm-note>Desligado: a cena fica estática, sem parallax nem listeners. A lista abaixo continua funcionando normalmente.</p>
+ </div>
+<?php endif; ?>
  <div class="mat-home-eras-list">
  <?php foreach($matEras as $matEraKey=>$matEraInfo):$matEraTot=(int)$matEraInfo['preparacao'];$matEraAp=(int)$matEraInfo['cur_aprovados'];$matEraW=$matEraTot>0?max(7,(int)round(100*$matEraTot/$matErasMax)):4; ?>
   <a class="mat-home-era" href="<?=mat_url('atlas',['era'=>$matEraKey])?>">

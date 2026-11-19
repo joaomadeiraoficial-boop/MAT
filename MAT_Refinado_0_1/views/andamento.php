@@ -60,7 +60,19 @@ $percent=$progress ? min(100,max(0,(float)$progress['progresso_percentual'])) : 
  <section class="paper-panel mat-progress-section"><div class="panel-head"><span>TRILHA DE AUDITORIA</span><span>EVENTOS SALVOS NO MYSQL</span></div><h2>Atividade registrada</h2>
  <?php if(!is_admin()): ?><p>O histórico detalhado e os registros individuais estão disponíveis apenas na área do pesquisador. Os indicadores e as rodadas acima são públicos.</p>
  <?php elseif(!$progress['atividade']):?><p>Nenhum evento foi registrado em cur_log até o momento.</p><?php else: ?><div class="mat-progress-activity">
- <?php foreach($progress['atividade'] as $event): ?><div><small><?=h((string)($event['data_acao']??''))?></small><b><?=h((string)($event['acao']??'Registro'))?></b><span><?=h((string)($event['descricao']??''))?></span><?php if(preg_match('/^MCD-[0-9]{5}$/D',(string)($event['id_extracao']??''))): ?><a href="<?=mat_url('rodadas',['id'=>$event['id_extracao']])?>">Abrir <?=h($event['id_extracao'])?> ↗</a><?php endif; ?></div><?php endforeach; ?></div><?php endif; ?>
+ <?php foreach($progress['atividade'] as $event):
+   $eventoBruto=(string)($event['descricao']??'');
+   $eventoTecnico=null;
+   if($eventoBruto!==''&&($eventoBruto[0]==='{'||$eventoBruto[0]==='[')){$decodificado=json_decode($eventoBruto,true);if(is_array($decodificado))$eventoTecnico=$decodificado;}
+   $eventoResumo=$eventoBruto;
+   if($eventoTecnico!==null){
+     $eventoResumo='';
+     foreach(['motivo','resumo','descricao','observacao','parecer'] as $campoResumo){
+       if(isset($eventoTecnico[$campoResumo])&&is_string($eventoTecnico[$campoResumo])&&trim($eventoTecnico[$campoResumo])!==''){$eventoResumo=trim($eventoTecnico[$campoResumo]);break;}
+     }
+     if($eventoResumo==='')$eventoResumo='Registro técnico com '.count($eventoTecnico).' campos, salvo no MySQL.';
+   }
+ ?><div><small><?=h((string)($event['data_acao']??''))?></small><b><?=h((string)($event['acao']??'Registro'))?></b><?php if($eventoTecnico!==null): ?><span class="mat-progress-activity-summary"><?=h($eventoResumo)?></span><details class="mat-progress-activity-json"><summary>Ver registro técnico</summary><pre><?=h((string)json_encode($eventoTecnico,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES))?></pre></details><?php else: ?><span><?=h($eventoResumo)?></span><?php endif; ?><?php if(preg_match('/^MCD-[0-9]{5}$/D',(string)($event['id_extracao']??''))): ?><a href="<?=mat_url('rodadas',['id'=>$event['id_extracao']])?>">Abrir <?=h($event['id_extracao'])?> ↗</a><?php endif; ?></div><?php endforeach; ?></div><?php endif; ?>
  </section>
 </div>
 <section class="mat-progress-footer-note"><strong>Critério de apresentação científica:</strong> o sistema separa identificação, investigação, pontuação e validação. O avanço é mensurado pela documentação disponível no banco e não pelo resultado sugerido por uma IA. Nenhum candidato passa a integrar a série Têmporis apenas por ter recebido notas.</section>

@@ -187,18 +187,29 @@ if($pdo){try{
 <?php endif; ?>
 <?php endif; ?>
 <?php else: ?>
-<section class="mat-cur-round-grid">
- <?php foreach($resumosRodadas as $rod):$planejada=$rod['estado']==='PLANEJADA'; ?>
- <div class="paper-panel mat-cur-round <?=$planejada?'mat-cur-round-next':''?>">
-  <div class="panel-head"><span>RODADA / <?=str_pad((string)$rod['numero'],2,'0',STR_PAD_LEFT)?></span><span><?=h(CuradoriaRodadas::label($rod['estado']))?></span></div>
-  <h2><?=count($rod['itens'])?> <?=count($rod['itens'])===1?'candidato':'candidatos'?> cadastrados</h2>
-  <p><?=h($rod['descricao']?:'Acompanhe os registros reais desta rodada no banco MySQL.')?></p>
-  <div class="mat-cur-round-preview">
-  <?php foreach(array_slice($rod['itens'],0,5) as $item): ?><a href="<?=mat_url('rodadas',['id'=>$item['id_extracao']])?>"><span><?=h($item['id_extracao'])?></span><span><?=h($item['titulo_proposto'])?></span><span>↗</span></a><?php endforeach; ?>
-  <?php if(!$rod['itens']): ?><p>Nenhum dossiê desta rodada foi importado ainda.</p><?php endif; ?>
-  </div>
+<section class="mat-rounds-section">
+ <div class="mat-rounds-head">
+  <div><div class="section-overline">RODADAS DE PESQUISA <span class="overline-sep">/</span> LOTES DE DEZ</div><h2>Pesquisa por <em>lotes de dez.</em></h2></div>
+  <span class="mat-rounds-count"><?=count($resumosRodadas)?> RODADAS · <?=short_num($dados['total'])?> CANDIDATOS</span>
+  <p>Cada rodada reúne até dez dossiês. Abra uma rodada para ver os candidatos; o estado indica se a pesquisa está planejada, em andamento ou concluída.</p>
+  <span class="mat-rounds-hint"><span aria-hidden="true">↕</span> Role a lista para percorrer as <?=count($resumosRodadas)?> rodadas</span>
  </div>
+ <div class="mat-rounds-scroll" tabindex="0" role="region" aria-label="Lista de rodadas de pesquisa">
+ <div class="mat-cur-round-grid">
+ <?php foreach($resumosRodadas as $rod):$planejada=$rod['estado']==='PLANEJADA';$qtdItens=count($rod['itens']); ?>
+ <details class="paper-panel mat-cur-round <?=$planejada?'mat-cur-round-next':''?>">
+  <summary class="mat-cur-round-sum"><span class="mat-cur-round-no">RODADA <?=str_pad((string)$rod['numero'],2,'0',STR_PAD_LEFT)?></span><strong><?=$qtdItens?> <?=$qtdItens===1?'candidato cadastrado':'candidatos cadastrados'?></strong><span class="mat-cur-round-state"><?=h(CuradoriaRodadas::label($rod['estado']))?></span><span class="mat-cur-round-chev" aria-hidden="true">⌄</span></summary>
+  <div class="mat-cur-round-body">
+   <p><?=h($rod['descricao']?:'Acompanhe os registros reais desta rodada no banco MySQL.')?></p>
+   <div class="mat-cur-round-preview">
+   <?php foreach(array_slice($rod['itens'],0,5) as $item): ?><a href="<?=mat_url('rodadas',['id'=>$item['id_extracao']])?>"><span><?=h($item['id_extracao'])?></span><span><?=h($item['titulo_proposto'])?></span><span>↗</span></a><?php endforeach; ?>
+   <?php if(!$rod['itens']): ?><p>Nenhum dossiê desta rodada foi importado ainda.</p><?php endif; ?>
+   </div>
+  </div>
+ </details>
  <?php endforeach; ?>
+ </div>
+ </div>
 </section>
 <section class="paper-panel mat-cur-list">
  <div class="panel-head"><span>DOSSIÊS DA CURADORIA · MYSQL</span><span><?=short_num($lista['total'])?> RESULTADOS</span></div>

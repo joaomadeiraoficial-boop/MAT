@@ -52,6 +52,7 @@ $anoDe=function(array $item){ return $item['ano_validado'] ?? $item['ano_origina
   <div class="mat-dup-tabs" data-dup-filters><button type="button" data-dup-filter="pending" aria-pressed="true">Pendentes</button><button type="button" data-dup-filter="decided" aria-pressed="false">Decididos</button><button type="button" data-dup-filter="alerts" aria-pressed="false">⚠ Sem semelhança aparente (<?=$curAlertas?>)</button><button type="button" data-dup-filter="all" aria-pressed="false">Todos</button></div>
   <small class="mat-dup-visible" data-dup-count></small>
  </div>
+ <div class="mat-dup-list">
  <?php foreach($curPairs as $pair):
     $exp=$pair['diagnostico'];
     $dec=$pair['decisao'];$tipo=(string)($dec['decisao']??'');
@@ -113,6 +114,7 @@ $anoDe=function(array $item){ return $item['ano_validado'] ?? $item['ano_origina
   </div>
  </details>
  <?php endforeach;?>
+ </div>
  <?php if(!$curPairs):?><p>Nenhum par explícito encontrado nos dados da curadoria.</p><?php endif;?>
  <p class="mat-dup-empty" data-dup-empty hidden>Não existem pares nessa categoria.</p>
  <?php endif;?>
@@ -167,7 +169,7 @@ if($curPdo instanceof PDO){try{
   </div>
   <small class="mat-dup-visible" data-dup-count></small>
  </div>
- <div class="mat-dup-pairs" id="mat-dup-pairs">
+ <div class="mat-dup-pairs mat-dup-list" id="mat-dup-pairs">
  <?php foreach($pares as $pair):
     $st=(string)$pair['status'];$dec=(string)($pair['decisao_explicita']??'');
     $decidido=$st==='nao_duplicado' || in_array($dec,['duplicata_manter_a','duplicata_manter_b','duplicata_distintos'],true);

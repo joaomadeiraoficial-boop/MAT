@@ -13,7 +13,7 @@
 <?php if($page==='backtesting'||in_array($page,['temporis','temporis_final'],true)): ?><link rel="stylesheet" href="assets/backtesting-previsoes.css?v=3"><?php endif; ?>
 <?php if($page==='linha'): ?><link rel="stylesheet" href="assets/backtesting-previsoes.css?v=3"><link rel="stylesheet" href="assets/linha-timeline.css?v=5"><?php endif; ?>
 <?php if(in_array($page, ['demonstracao_formulas','metodo','temporis_legado','temporis_reformulado'], true)): ?><link rel="stylesheet" href="assets/temporis-editorial.css?v=2"><?php endif; ?>
-<?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=28"><link rel="stylesheet" href="assets/atlas-pagina.css?v=2"><?php endif; ?>
+<?php if($page==='atlas'): ?><link rel="stylesheet" href="assets/inflexoes.css?v=28"><link rel="stylesheet" href="assets/atlas-pagina.css?v=3"><?php endif; ?>
 <?php if($page==='observatorio'): ?><link rel="stylesheet" href="assets/observatorio-eras.css?v=15"><?php endif; ?>
 <?php if(is_file(MAT_ROOT . '/assets/temporis-0-2.css')): ?><link rel="stylesheet" href="assets/temporis-0-2.css?v=1"><?php endif; ?>
 <link rel="stylesheet" href="assets/progresso-marcos.css?v=1">
@@ -25,6 +25,7 @@
 <link rel="stylesheet" href="assets/temporis-integracao.css?v=3">
 <link rel="stylesheet" href="assets/temporis-reorganizacao.css?v=2">
 <link rel="stylesheet" href="assets/duplicatas-comparacao.css?v=6">
+<?php if(in_array($page,['laboratorio','andamento','rodadas','fila_rapida','importar','fontes','duplicatas','editar'],true)): ?><link rel="stylesheet" href="assets/curadoria-paginas.css?v=4"><?php endif; ?>
 <script defer src="assets/app.js?v=1.8"></script>
 <?php if(in_array($page,['rodadas','fila_rapida'],true)): ?><script defer src="assets/datacao-intervalo.js?v=1"></script><?php endif; ?>
 <?php if($page==='fila_rapida'): ?><script defer src="assets/fila-rapida.js?v=2"></script><?php endif; ?>

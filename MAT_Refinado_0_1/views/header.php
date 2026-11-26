@@ -25,7 +25,7 @@
 <link rel="stylesheet" href="assets/temporis-integracao.css?v=3">
 <link rel="stylesheet" href="assets/temporis-reorganizacao.css?v=2">
 <link rel="stylesheet" href="assets/duplicatas-comparacao.css?v=6">
-<?php if(in_array($page,['laboratorio','andamento','rodadas','fila_rapida','importar','fontes','duplicatas','editar'],true)): ?><link rel="stylesheet" href="assets/curadoria-paginas.css?v=4"><?php endif; ?>
+<?php if(in_array($page,['laboratorio','andamento','rodadas','fila_rapida','importar','fontes','duplicatas','editar'],true)): ?><link rel="stylesheet" href="assets/curadoria-paginas.css?v=9"><?php endif; ?>
 <script defer src="assets/app.js?v=1.8"></script>
 <?php if(in_array($page,['rodadas','fila_rapida'],true)): ?><script defer src="assets/datacao-intervalo.js?v=1"></script><?php endif; ?>
 <?php if($page==='fila_rapida'): ?><script defer src="assets/fila-rapida.js?v=2"></script><?php endif; ?>

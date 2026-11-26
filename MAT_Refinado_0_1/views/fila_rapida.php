@@ -95,7 +95,7 @@ if($curDb) { try {
     <a class="mat-fast-item <?=$active?'active':''?>" <?=$active?'aria-current="page"':''?> href="<?=mat_url('fila_rapida',['id'=>$item['id_extracao'],'filtro'=>$filter,'busca'=>$search,'problema'=>$problem])?>">
       <span class="mat-fast-item-head"><b><?=h($item['id_extracao'])?></b><small><?=h((string)($item['quantidade_notas']??0))?>/11</small></span>
       <span class="mat-fast-item-name"><?=h((string)$item['titulo_proposto'])?></span>
-      <span class="mat-fast-item-foot"><?=h((string)($item['ano_validado']===null?'Ano pendente':yfmt((int)$item['ano_validado'])))?> · <?=h($state==='APROVADO'?'Aprovado':($state==='HOMOLOGADO'?'Validado':($state==='REJEITADO'?'Rejeitado':($blocked?'⚠ '.$item['quantidade_bloqueios'].' impedimento(s)':'Pronto para conferir'))))?></span>
+      <span class="mat-fast-item-foot"><?=h((string)($item['ano_validado']===null?'Ano pendente':yfmt((int)$item['ano_validado'])))?> · <?=h($state==='APROVADO'?'Aprovado':($state==='HOMOLOGADO'?'Validado':($state==='REJEITADO'?'Rejeitado':($blocked?'⚠ '.$item['quantidade_bloqueios'].' '.((int)$item['quantidade_bloqueios']===1?'impedimento':'impedimentos'):'Pronto para conferir'))))?></span>
     </a>
    <?php endforeach; ?>
   </div>
@@ -120,7 +120,7 @@ if($curDb) { try {
    <h2><?=h($current['titulo_proposto'])?></h2>
    <p class="mat-fast-facts">Ano de referência: <strong><?=h(CuradoriaDatacao::intervalo($current) ? CuradoriaDatacao::texto($current) : ($current['ano_validado']===null?'Não validado':yfmt((int)$current['ano_validado'])))?></strong> · Fontes cadastradas: <strong><?=count($current['fontes'])?></strong> · Revisão: <strong><?=h(CuradoriaRevisao::ESTADOS[$state]??$state)?></strong></p>
    <?php if(CuradoriaPolitica::modo()===CuradoriaPolitica::SIMPLIFICADO): $avisos=CuradoriaPolitica::avisos($current); ?>
-   <div class="mat-fast-blocker mat-fast-aviso" style="margin:14px 0"><div class="mat-fast-aviso-head"><strong>Modo simplificado: <?=count($avisos)?> ressalva(s) para a auditoria futura</strong>
+   <div class="mat-fast-blocker mat-fast-aviso" style="margin:14px 0"><div class="mat-fast-aviso-head"><strong>Modo simplificado: <?=count($avisos)?> <?=count($avisos)===1?'ressalva':'ressalvas'?> para a auditoria futura</strong>
    <details class="mat-fast-saiba"><summary>Saiba mais</summary><div class="mat-fast-saiba-body"><p>A fila está no <b>modo simplificado</b>: a aprovação aqui é preliminar e cada ressalva fica registrada no dossiê para a auditoria futura. As ressalvas típicas são:</p><ul><li><b>Ano somente extraído</b> — o ano veio da triagem do livro-base, mas nunca foi confirmado em documento; enquanto isso não entra na série oficial do Índice Têmporis.</li><li><b>Fonte do intervalo ausente</b> — a datação citada não tem fonte cadastrada.</li><li><b>Pendências históricas</b> — perguntas de revisão ainda abertas no dossiê.</li><li><b>Duplicatas</b> — possíveis repetições de dossiê ainda sem verificação.</li><li><b>Nota mínima provisória</b> — critério pontuado por convenção conservadora, sem evidência específica; não é comprovação.</li><li><b>Justificativa ou fonte insuficiente</b> — nota sem justificativa escrita ou sem fonte vinculada.</li></ul><p>Nada disso impede a aprovação preliminar, mas tudo permanece preservado no dossiê e aparece na trilha de auditoria.</p></div></details></div>
    <?php if($avisos): ?><details><summary>Ver ressalvas preservadas</summary><ul><?php foreach($avisos as $av): ?><li><?=h($av)?></li><?php endforeach; ?></ul></details><?php endif; ?>
    <p>Esta fase permite apenas aprovação preliminar. Notas mínimas não são comprovação científica.</p></div>
@@ -128,7 +128,7 @@ if($curDb) { try {
   <p class="mat-fast-facts"><strong>Próxima ação:</strong> <?=h((string)($chosen['proxima_acao']??'Conferir dossiê'))?> · <strong><?=h((string)($chosen['quantidade_notas']??0))?>/11 notas</strong></p>
    <div class="mat-fast-extract"><b>Menção de origem</b><p><?=h((string)($current['titulo_original']??'Não informado'))?></p><small>Página do livro: <?=h((string)($current['pagina_livro']??'não informada'))?> · Página do PDF: <?=h((string)($current['pagina_pdf']??'não informada'))?></small></div>
    <?php if($blockers): ?>
-   <div class="mat-fast-blocker" role="status"><h3><span aria-hidden="true">!</span> <?=count($blockers)?> impedimento(s) para aprovação</h3>
+   <div class="mat-fast-blocker" role="status"><h3><span aria-hidden="true">!</span> <?=count($blockers)?> <?=count($blockers)===1?'impedimento':'impedimentos'?> para a aprovação</h3>
     <p class="mat-fast-blocker-explain">Cada impedimento tem uma correção acessível nesta página. Marque como resolvido <b>apenas após verificar o documento</b>, e registre a justificativa no histórico.</p>
     <ul><?php foreach($blockers as $error):
         $link='#mat-fast-edit-meta';

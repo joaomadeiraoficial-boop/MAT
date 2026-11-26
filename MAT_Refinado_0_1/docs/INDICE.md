@@ -7,6 +7,7 @@ Este documento é o **ponto de entrada único** da documentação do projeto (Et
 | Documento | Conteúdo |
 |---|---|
 | [`../README.md`](../README.md) | Apresentação do projeto, estado da versão e instalação local (XAMPP) |
+| [`TCC_Indice_Temporis_2026.pdf`](TCC_Indice_Temporis_2026.pdf) | Artigo do TCC (formato SBC, 16 páginas): Índice Têmporis e curadoria assistida por IA |
 | [`01_ROADMAP_GERAL.md`](01_ROADMAP_GERAL.md) | Visão geral e marcos do ciclo |
 | [`02_CADERNO_TECNICO.md`](02_CADERNO_TECNICO.md) | Caderno técnico-mestre e contrato de continuidade |
 | [`PARIDADE_E_MIGRACAO.md`](PARIDADE_E_MIGRACAO.md) | Situação em relação à base anterior (Lab v6.x) e paridade/migração |
